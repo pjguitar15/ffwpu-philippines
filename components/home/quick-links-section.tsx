@@ -47,12 +47,11 @@ export function QuickLinksSection() {
               className='group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg py-0'
             >
               {/* Image */}
-              <div className='relative aspect-[16/9] md:aspect-[3/2]'>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+              <div className='relative aspect-[21/9] md:aspect-[24/9] overflow-hidden'>
                 <img
                   src={it.img}
                   alt={it.title}
-                  className='block h-full w-full object-cover' /* block removes inline img whitespace */
+                  className='absolute inset-0 h-full w-full object-cover'
                 />
               </div>
 

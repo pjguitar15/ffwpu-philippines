@@ -1,46 +1,144 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import Link from 'next/link'
+import { SideBySide } from '@/components/side-by-side'
+import { HighlightTitle } from '@/components/ui/highlight-title'
+import { Crown } from 'lucide-react'
 
 export function TrueParentsSection() {
   return (
-    <section className="bg-gradient-to-r from-primary/5 via-yellow-50 to-primary/5 rounded-xl p-8 md:p-12 relative overflow-hidden">
-      <div className="absolute top-4 right-4 opacity-30">
-        <div className="w-8 h-8 bg-pink-200 rounded-full blur-sm"></div>
-      </div>
-      <div className="absolute bottom-4 left-4 opacity-30">
-        <div className="w-6 h-6 bg-yellow-200 rounded-full blur-sm"></div>
+    <section className='relative overflow-hidden'>
+      {/* Royal crest (top center) */}
+      <div className='pointer-events-none absolute left-1/2 -translate-x-1/2 top-4 z-40'>
+        <div className='relative flex items-center justify-center'>
+          <div className='absolute -inset-8 rounded-full bg-amber-300/30 blur-3xl' />
+          <Crown className='relative h-7 w-7 md:h-10 md:w-10 text-amber-400 drop-shadow-[0_12px_28px_rgba(251,191,36,0.55)]' />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-        <div className="space-y-6">
-          <h2 className="font-heading text-3xl font-bold">True Parents</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            Rev. Sun Myung Moon and Hak Ja Han Moon, known as True Parents, dedicated their lives to building a world of
-            peace and unity. Their teachings continue to inspire millions worldwide to live for the sake of others and
-            create one human family under God.
-          </p>
-          <div className="bg-white/50 p-4 rounded-lg border-l-4 border-primary">
-            <p className="text-muted-foreground leading-relaxed font-medium">
-              Today, <span className="text-primary font-bold">Holy Mother Han</span> (True Mother Hak Ja Han Moon)
-              continues this providential mission, guiding us toward the realization of Cheon Il Guk - God's Kingdom on
-              Earth.
+      <SideBySide
+        withSocials
+        imgUrl='/true-parents-portrait.jpg'
+        imgAlt='True Parents - Rev. Sun Myung Moon and Hak Ja Han Moon'
+        eyebrow='Cheon Il Guk • Heavenly Parent’s Holy Community'
+        title='True Parents: Building One Family Under God'
+        highlightedText='True Parents'
+        highlightedGradientClassName='bg-gradient-to-r from-violet-900 via-purple-900 to-fuchsia-800 bg-clip-text text-transparent'
+        sideText='CHEON IL GUK'
+        description='Rev. Sun Myung Moon and Dr. Hak Ja Han Moon—revered as the True Parents—devoted their lives to realizing a world of interdependence, mutual prosperity, and universally shared values. Today, Holy Mother Han continues this providence, guiding families to live for the sake of others and to establish Cheon Il Guk in daily life.'
+        bottomLinks={[
+          { label: 'Life Course', href: '/about/true-parents' },
+          { label: 'Cheon Il Guk Vision', href: '/about/cheoneilguk' },
+          { label: 'True Mother’s Messages', href: '/messages/true-mother' },
+        ]}
+        className='py-16'
+      />
+
+      {/* subtle decorative blobs */}
+      <div className='pointer-events-none absolute -top-24 -left-24 h-64 w-64 rounded-full bg-fuchsia-400/20 blur-3xl' />
+      <div className='pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-sky-300/20 blur-3xl' />
+
+      {/* crown watermark (bottom-right) */}
+      <Crown className='pointer-events-none absolute right-8 bottom-6 h-24 w-24 text-amber-300/15' />
+
+      {/* details / artistry */}
+      <div className='container mx-auto px-4 md:px-6 pb-16'>
+        <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+          {/* Core themes */}
+          <div className='group relative rounded-2xl bg-white/70 dark:bg-slate-900/60 ring-1 ring-black/5 p-6 backdrop-blur'>
+            <div className='absolute inset-0 rounded-2xl group-hover:ring-2 group-hover:ring-fuchsia-400/50 transition-all' />
+            <h3 className='text-lg font-extrabold tracking-wide uppercase'>
+              Core Themes
+            </h3>
+            <ul className='mt-3 grid grid-cols-2 gap-2 text-sm text-slate-600 dark:text-slate-300'>
+              {[
+                'Hyojeong (filial heart)',
+                'Blessing & Family',
+                'Cheon Shim Won devotion',
+                'Peace & Service',
+              ].map((t) => (
+                <li
+                  key={t}
+                  className='rounded-full bg-slate-100/70 dark:bg-slate-800/60 px-3 py-1'
+                >
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* True Mother today */}
+          <div className='relative overflow-hidden rounded-2xl ring-1 ring-black/5 bg-gradient-to-br from-violet-600/10 via-fuchsia-500/10 to-rose-500/10 p-[1px]'>
+            <div className='rounded-2xl bg-white/80 dark:bg-slate-900/70 p-6 backdrop-blur'>
+              <h3 className='text-lg font-extrabold tracking-wide uppercase flex items-center gap-2'>
+                <Crown className='h-4 w-4 text-amber-500' />
+                True Mother Today
+              </h3>
+              <p className='mt-2 text-sm text-slate-600 dark:text-slate-300'>
+                Holy Mother Han calls families to be <em>pure water</em>—clear,
+                life-giving, and without shadow—through daily jeongseong,
+                education, and service that uplift the community and nation.
+              </p>
+              <div className='mt-4 flex flex-wrap gap-3'>
+                <span className='inline-flex items-center rounded-full bg-fuchsia-600/10 px-3 py-1 text-xs font-semibold text-fuchsia-700'>
+                  Pure Water
+                </span>
+                <span className='inline-flex items-center rounded-full bg-indigo-600/10 px-3 py-1 text-xs font-semibold text-indigo-700'>
+                  HJ CheonBo
+                </span>
+                <span className='inline-flex items-center rounded-full bg-rose-600/10 px-3 py-1 text-xs font-semibold text-rose-700'>
+                  Peace Initiatives
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quote */}
+          <div className='relative rounded-2xl bg-white/80 dark:bg-slate-900/70 ring-1 ring-black/5 p-6 backdrop-blur'>
+            <div className='absolute -left-0 top-0 h-full w-1.5 rounded-bl-2xl rounded-tl-2xl bg-gradient-to-b from-fuchsia-500 to-indigo-500' />
+            <p className='text-slate-700 dark:text-slate-200 italic'>
+              “Let families become beacons of hope—living for the sake of
+              others—so that one global family under God may shine.”{' '}
+              <span className='not-italic font-semibold'>
+                — True Mother Hak Ja Han Moon
+              </span>
             </p>
           </div>
-          <Button asChild className="cursor-pointer">
-            <Link href="/about/true-parents">
-              Learn More About True Parents
-            </Link>
-          </Button>
         </div>
-        <div className="order-first lg:order-last">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/true-parents-portrait.jpg"
-            alt="True Parents - Rev. Sun Myung Moon and Hak Ja Han Moon"
-            className="rounded-lg shadow-lg w-full"
-          />
+
+        {/* Milestones */}
+        <div className='mt-10'>
+          <div className='flex items-center gap-2'>
+            <Crown className='h-5 w-5 text-amber-400' />
+            <HighlightTitle
+              text='Providential Milestones'
+              highlightedText='Milestones'
+              as='h3'
+              className='text-xl md:text-2xl'
+              uppercase
+              gradientClassName='bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 bg-clip-text text-transparent'
+            />
+          </div>
+
+          <div className='mt-4 grid grid-cols-1 md:grid-cols-4 gap-4'>
+            {[
+              { y: '1960', t: 'Holy Wedding' },
+              { y: '1992', t: 'Women’s Federation Worldwide' },
+              { y: '2013', t: 'Cheon Il Guk Foundation Day' },
+              { y: 'Today', t: 'Global Mother of Peace' },
+            ].map((s) => (
+              <div
+                key={s.y}
+                className='relative rounded-xl border border-slate-200/70 dark:border-slate-700/60 p-4 bg-white/70 dark:bg-slate-900/60'
+              >
+                <Crown className='absolute -top-3 -right-3 h-5 w-5 text-amber-400/70' />
+                <div className='text-sm font-bold text-fuchsia-700'>{s.y}</div>
+                <div className='mt-1 text-slate-700 dark:text-slate-300'>
+                  {s.t}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

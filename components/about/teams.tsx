@@ -51,24 +51,34 @@ const TEAMS = [
 
 export function Teams({ id }: TeamsProps) {
   return (
-  <section id={id} className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold">Find your Team</h2>
-          <p className="mt-3 text-muted-foreground">
-            Discover where your calling intersects with the needs of our community.
+    <section id={id} className='py-16 bg-white px-12'>
+      <div className='container mx-auto px-4'>
+        <div className='text-center max-w-3xl mx-auto'>
+          <h2 className='text-3xl md:text-4xl font-bold'>Find your Team</h2>
+          <p className='mt-3 text-muted-foreground'>
+            Discover where your calling intersects with the needs of our
+            community.
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className='mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
           {TEAMS.map((t) => (
-            <article key={t.name} className="bg-white border rounded-lg overflow-hidden shadow-sm">
+            <article
+              key={t.name}
+              className='bg-white border rounded-lg overflow-hidden shadow-sm'
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={t.image} alt={t.name} className="w-full h-56 object-cover" />
-              <div className="p-5">
-                <h3 className="text-lg font-semibold">{t.name}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{t.headline}</p>
-                <p className="mt-2 text-sm text-muted-foreground">{t.copy}</p>
+              <img
+                src={t.image}
+                alt={t.name}
+                className='w-full h-56 object-cover'
+              />
+              <div className='p-5'>
+                <h3 className='text-lg font-semibold'>{t.name}</h3>
+                <p className='mt-1 text-sm text-muted-foreground'>
+                  {t.headline}
+                </p>
+                <p className='mt-2 text-sm text-muted-foreground'>{t.copy}</p>
               </div>
             </article>
           ))}

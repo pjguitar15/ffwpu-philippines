@@ -1,13 +1,45 @@
-import Link from "next/link"
-import { Separator } from "@/components/ui/separator"
-import Image from "next/image"
+import Link from 'next/link'
+import Image from 'next/image'
+import { Separator } from '@/components/ui/separator'
+
+// Keep footer links in sync with Header:
+const mainNavItems = [
+  { href: '/holy-mother-han', label: 'Holy Mother Han' },
+  { href: '/about', label: 'About' },
+  { href: '/news', label: 'News' },
+  { href: '/newsletter', label: 'Newsletter' },
+  { href: '/contact', label: 'Contact' },
+]
+
+const extraNavItems = [
+  { href: '/global-news', label: 'Global News' },
+  { href: '/contact', label: 'Contact' }, // duplicate; we’ll dedupe
+  { href: '/about/history', label: 'Our History' },
+  { href: '/about/true-parents', label: 'True Parents' },
+  { href: '/privacy', label: 'Privacy Policy' },
+  { href: '/terms', label: 'Terms of Service' },
+]
+
+// Optional: keep your existing non-header link(s)
+const otherItems = [{ href: '/articles', label: 'Articles' }]
+
+function dedupe(items: { href: string; label: string }[]) {
+  const seen = new Set<string>()
+  return items.filter((i) =>
+    seen.has(i.href) ? false : (seen.add(i.href), true),
+  )
+}
 
 export function Footer() {
+  const explore = dedupe(mainNavItems)
+  const more = dedupe(extraNavItems)
+  const showOther = otherItems // keep if you still want Articles in the footer
+
   return (
     <footer className='border-t bg-muted/30'>
       <div className='container py-12 mx-auto'>
         <div className='grid grid-cols-1 md:grid-cols-4 gap-8'>
-          {/* Logo and Description */}
+          {/* Logo + blurb */}
           <div className='space-y-4'>
             <div className='flex items-center space-x-2'>
               <div className='flex flex-col'>
@@ -25,77 +57,54 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Explore (main header links) */}
           <div className='space-y-4'>
-            <h4 className='font-heading font-semibold'>Quick Links</h4>
+            <h4 className='font-heading font-semibold'>Explore</h4>
             <ul className='space-y-2 text-sm'>
-              <li>
-                <Link
-                  href='/about'
-                  className='text-muted-foreground hover:text-foreground transition-colors'
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/news'
-                  className='text-muted-foreground hover:text-foreground transition-colors'
-                >
-                  News
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/articles'
-                  className='text-muted-foreground hover:text-foreground transition-colors'
-                >
-                  Articles
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/newsletter'
-                  className='text-muted-foreground hover:text-foreground transition-colors'
-                >
-                  Newsletter
-                </Link>
-              </li>
+              {explore.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className='text-muted-foreground hover:text-foreground transition-colors'
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+              {/* Keep Articles if you want it here */}
+              {showOther.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className='text-muted-foreground hover:text-foreground transition-colors'
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Resources */}
+          {/* More (drawer-only header links) */}
           <div className='space-y-4'>
-            <h4 className='font-heading font-semibold'>Resources</h4>
+            <h4 className='font-heading font-semibold'>More</h4>
             <ul className='space-y-2 text-sm'>
-              <li>
-                <Link
-                  href='/about/true-parents'
-                  className='text-muted-foreground hover:text-foreground transition-colors'
-                >
-                  True Parents
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/global-news'
-                  className='text-muted-foreground hover:text-foreground transition-colors'
-                >
-                  Global News
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/contact'
-                  className='text-muted-foreground hover:text-foreground transition-colors'
-                >
-                  Contact
-                </Link>
-              </li>
+              {more
+                .filter((l) => !explore.some((e) => e.href === l.href)) // avoid duplicates (e.g., /contact)
+                .map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className='text-muted-foreground hover:text-foreground transition-colors'
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact */}
           <div className='space-y-4'>
             <h4 className='font-heading font-semibold'>Contact</h4>
             <div className='space-y-2 text-sm text-muted-foreground'>

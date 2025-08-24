@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
@@ -21,31 +21,97 @@ import {
   FiShield,
   FiFile,
 } from 'react-icons/fi'
+import { Sparkles, Search as SearchIcon } from 'lucide-react'
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // --- NEW: header search state synced to ?q=
+  const [searchTerm, setSearchTerm] = useState('')
+  useEffect(() => {
+    setSearchTerm(searchParams.get('q') || '')
+  }, [searchParams])
+
+  const runSearch = () => {
+    const term = searchTerm.trim()
+    const qs = term ? `?q=${encodeURIComponent(term)}` : ''
+    router.push(`/news${qs}`)
+    setIsOpen(false)
+  }
 
   const mainNavItems = [
-    { href: '/about', label: 'About' },
-    { href: '/news', label: 'News' },
-    { href: '/articles', label: 'Articles' },
-    { href: '/newsletter', label: 'Newsletter' },
+    {
+      href: '/holy-mother-han',
+      label: 'Holy Mother Han',
+      desc: 'Learn about Holy Mother Han',
+      icon: Sparkles,
+    },
+    {
+      href: '/about',
+      label: 'About',
+      desc: 'Who we are & our mission',
+      icon: FiInfo,
+    },
+    {
+      href: '/news',
+      label: 'News',
+      desc: 'Latest updates & reports',
+      icon: FiFileText,
+    },
+    {
+      href: '/newsletter',
+      label: 'Newsletter',
+      desc: 'Stay connected weekly',
+      icon: FiMail,
+    },
+    {
+      href: '/contact',
+      label: 'Contact',
+      desc: 'Reach out to our team',
+      icon: FiPhone,
+    },
   ]
 
-  const mobileNavItems = [
-    // main
-    { href: "/about", label: "About", desc: "Who we are & our mission", icon: FiInfo },
-    { href: "/news", label: "News", desc: "Latest updates & reports", icon: FiFileText },
-    { href: "/articles", label: "Articles", desc: "Providence reads & insights", icon: FiBookOpen },
-    { href: "/newsletter", label: "Newsletter", desc: "Stay connected weekly", icon: FiMail },
-    // mobile-only extras
-    { href: "/global-news", label: "Global News", desc: "Watch weekly HQ video", icon: FiVideo },
-    { href: "/contact", label: "Contact", desc: "Reach out to our team", icon: FiPhone },
-    { href: "/about/history", label: "Our History", desc: "Roots of our movement", icon: FiClock },
-    { href: "/about/true-parents", label: "True Parents", desc: "Rev. Moon & Holy Mother Han", icon: FiHeart },
-    { href: "/privacy", label: "Privacy Policy", desc: "How we handle data", icon: FiShield },
-    { href: "/terms", label: "Terms of Service", desc: "Site use & policies", icon: FiFile },
+  const extraNavItems = [
+    {
+      href: '/global-news',
+      label: 'Global News',
+      desc: 'Watch weekly HQ video',
+      icon: FiVideo,
+    },
+    {
+      href: '/contact',
+      label: 'Contact',
+      desc: 'Reach out to our team',
+      icon: FiPhone,
+    },
+    {
+      href: '/about/history',
+      label: 'Our History',
+      desc: 'Roots of our movement',
+      icon: FiClock,
+    },
+    {
+      href: '/about/true-parents',
+      label: 'True Parents',
+      desc: 'Rev. Moon & Holy Mother Han',
+      icon: FiHeart,
+    },
+    {
+      href: '/privacy',
+      label: 'Privacy Policy',
+      desc: 'How we handle data',
+      icon: FiShield,
+    },
+    {
+      href: '/terms',
+      label: 'Terms of Service',
+      desc: 'Site use & policies',
+      icon: FiFile,
+    },
   ]
 
   const isActive = (href: string) => pathname === href
@@ -56,6 +122,47 @@ export function Header() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
+
+  const DrawerList = ({ items }: { items: typeof mainNavItems }) => (
+    <nav className='p-5 mt-2 space-y-1'>
+      {items.map((item, index) => {
+        const Icon = item.icon as any
+        const active = isActive(item.href)
+        return (
+          <Link
+            key={index}
+            href={item.href}
+            onClick={() => setIsOpen(false)}
+            className={cn(
+              'group flex items-center gap-3 rounded-xl px-6 py-4 cursor-pointer transition-none',
+              'hover:bg-blue-100',
+              active && 'bg-blue-100',
+            )}
+          >
+            <Icon
+              className='mt-0.5 h-5 w-5 text-foreground/80'
+              aria-hidden='true'
+            />
+            <div className='flex-1'>
+              <div
+                className={cn(
+                  'text-md font-semibold leading-none',
+                  active && 'text-foreground',
+                )}
+              >
+                {item.label}
+              </div>
+              {item.desc && (
+                <div className='mt-1 text-xs text-foreground/70'>
+                  {item.desc}
+                </div>
+              )}
+            </div>
+          </Link>
+        )
+      })}
+    </nav>
+  )
 
   return (
     <>
@@ -82,26 +189,53 @@ export function Header() {
             </div>
           </Link>
 
-          {/* Right: main links (left) + burger (right) */}
-          <div className='ml-auto flex items-center gap-2'>
+          {/* Search Input */}
+          <div className='hidden md:block ml-12'>
+            <div className='relative'>
+              <input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && runSearch()}
+                placeholder='Search news…'
+                className='rounded-full border border-slate-400 bg-white pl-10 pr-9 py-2 text-sm outline-none focus:border-slate-600'
+              />
+              <button
+                aria-label='Search'
+                onClick={runSearch}
+                className='absolute left-3 top-1/2 -translate-y-1/2 text-slate-500'
+              >
+                <SearchIcon className='h-4 w-4' />
+              </button>
+              {searchTerm && (
+                <button
+                  aria-label='Clear search'
+                  onClick={() => setSearchTerm('')}
+                  className='absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600'
+                >
+                  <FiX className='h-4 w-4' />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Right: main links + search + burger */}
+          <div className='ml-auto flex items-center gap-3'>
+            {/* Desktop inline navigation */}
             <nav className='hidden md:flex items-center gap-6'>
               {mainNavItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'text-sm font-medium cursor-pointer transition-none',
-                    isActive(item.href)
-                      ? 'bg-primary text-primary-foreground px-4 py-2 rounded-full uppercase font-bold'
-                      : 'text-foreground',
+                    'text-sm font-medium cursor-pointer transition-none hover:bg-blue-100 rounded-full px-4 py-2',
+                    isActive(item.href) ? 'font-bold' : 'text-foreground',
                   )}
                 >
                   {item.label}
                 </Link>
               ))}
             </nav>
-
-            {/* Burger button using react-icons */}
+            {/* Burger */}
             <button
               type='button'
               aria-label='Open menu'
@@ -113,7 +247,7 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile drawer */}
+        {/* Drawer */}
         {isOpen && (
           <>
             {/* overlay */}
@@ -128,119 +262,54 @@ export function Header() {
               role='dialog'
               aria-modal='true'
             >
-              {/* header */}
               <div className='flex items-center justify-between p-4 border-b'>
                 <span className='text-lg font-semibold'>Menu</span>
                 <button
                   type='button'
                   aria-label='Close menu'
                   onClick={() => setIsOpen(false)}
-                  className='h-10 w-10 inline-flex items-center justify-center rounded-md hover:bg-accent transition-none'
+                  className='h-10 w-10 inline-flex items-center justify-center hover:bg-blue-100 transition-none cursor-pointer rounded-full'
                 >
                   <FiX className='h-6 w-6' strokeWidth={2.5} />
                 </button>
               </div>
 
-              {/* nav */}
-              <nav className='p-5 mt-2 space-y-1'>
-                {[
-                  // main
-                  {
-                    href: '/about',
-                    label: 'About',
-                    desc: 'Who we are & our mission',
-                    icon: FiInfo,
-                  },
-                  {
-                    href: '/news',
-                    label: 'News',
-                    desc: 'Latest updates & reports',
-                    icon: FiFileText,
-                  },
-                  {
-                    href: '/articles',
-                    label: 'Articles',
-                    desc: 'Providence reads & insights',
-                    icon: FiBookOpen,
-                  },
-                  {
-                    href: '/newsletter',
-                    label: 'Newsletter',
-                    desc: 'Stay connected weekly',
-                    icon: FiMail,
-                  },
-                  // mobile-only extras
-                  {
-                    href: '/global-news',
-                    label: 'Global News',
-                    desc: 'Watch weekly HQ video',
-                    icon: FiVideo,
-                  },
-                  {
-                    href: '/contact',
-                    label: 'Contact',
-                    desc: 'Reach out to our team',
-                    icon: FiPhone,
-                  },
-                  {
-                    href: '/about/history',
-                    label: 'Our History',
-                    desc: 'Roots of our movement',
-                    icon: FiClock,
-                  },
-                  {
-                    href: '/about/true-parents',
-                    label: 'True Parents',
-                    desc: 'Rev. Moon & Holy Mother Han',
-                    icon: FiHeart,
-                  },
-                  {
-                    href: '/privacy',
-                    label: 'Privacy Policy',
-                    desc: 'How we handle data',
-                    icon: FiShield,
-                  },
-                  {
-                    href: '/terms',
-                    label: 'Terms of Service',
-                    desc: 'Site use & policies',
-                    icon: FiFile,
-                  },
-                ].map((item) => {
-                  const Icon = item.icon
-                  const active = isActive(item.href)
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setIsOpen(false)}
-                      className={cn(
-                        'group flex items-center gap-3 rounded-xl px-6 py-4 cursor-pointer transition-none',
-                        'hover:bg-blue-100',
-                        active && 'bg-blue-100',
-                      )}
+              {/* NEW: Mobile/desktop drawer search */}
+              <div className='p-4 border-b'>
+                <div className='relative'>
+                  <input
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && runSearch()}
+                    placeholder='Search news…'
+                    className='w-full rounded-xl border bg-white pl-10 pr-9 py-2.5 text-sm outline-none focus:border-slate-300'
+                  />
+                  <button
+                    aria-label='Search'
+                    onClick={runSearch}
+                    className='absolute left-3 top-1/2 -translate-y-1/2 text-slate-500'
+                  >
+                    <SearchIcon className='h-4 w-4' />
+                  </button>
+                  {searchTerm && (
+                    <button
+                      aria-label='Clear search'
+                      onClick={() => setSearchTerm('')}
+                      className='absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600'
                     >
-                      <Icon
-                        className='mt-0.5 h-5 w-5 text-foreground/80'
-                        aria-hidden='true'
-                      />
-                      <div className='flex-1'>
-                        <div
-                          className={cn(
-                            'text-md font-semibold leading-none',
-                            active && 'text-foreground',
-                          )}
-                        >
-                          {item.label}
-                        </div>
-                        <div className='mt-1 text-xs text-foreground/70'>
-                          {item.desc}
-                        </div>
-                      </div>
-                    </Link>
-                  )
-                })}
-              </nav>
+                      <FiX className='h-4 w-4' />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* lists */}
+              <div className='md:hidden'>
+                <DrawerList items={[...mainNavItems, ...extraNavItems]} />
+              </div>
+              <div className='hidden md:block'>
+                <DrawerList items={extraNavItems as any} />
+              </div>
             </div>
           </>
         )}
