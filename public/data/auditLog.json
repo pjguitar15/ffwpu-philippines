@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "adminId": 1,
+    "adminName": "System Administrator",
+    "action": "CREATE_NEWS",
+    "details": "Created news article: 'FFWPU Philippines Celebrates True Parents' Birthday'",
+    "timestamp": "2024-02-22T15:30:00Z",
+    "ipAddress": "192.168.1.100"
+  },
+  {
+    "id": 2,
+    "adminId": 2,
+    "adminName": "Content Manager",
+    "action": "UPDATE_ANNOUNCEMENT",
+    "details": "Updated announcement: 'Special Sunday Service - True Parents' Birthday Celebration'",
+    "timestamp": "2024-02-20T11:15:00Z",
+    "ipAddress": "192.168.1.101"
+  },
+  {
+    "id": 3,
+    "adminId": 1,
+    "adminName": "System Administrator",
+    "action": "PUBLISH_NEWSLETTER",
+    "details": "Published newsletter: 'February 2024 - True Love Newsletter'",
+    "timestamp": "2024-02-25T10:00:00Z",
+    "ipAddress": "192.168.1.100"
+  },
+  {
+    "id": 4,
+    "adminId": 3,
+    "adminName": "News Editor",
+    "action": "DELETE_NEWS",
+    "details": "Deleted news article: 'Outdated Event Announcement'",
+    "timestamp": "2024-02-23T16:45:00Z",
+    "ipAddress": "192.168.1.102"
+  },
+  {
+    "id": 5,
+    "adminId": 2,
+    "adminName": "Content Manager",
+    "action": "UPDATE_GLOBAL_NEWS",
+    "details": "Updated global news YouTube URL for February 2024",
+    "timestamp": "2024-02-25T09:30:00Z",
+    "ipAddress": "192.168.1.101"
+  }
+]

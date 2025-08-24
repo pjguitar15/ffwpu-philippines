@@ -1,0 +1,18 @@
+[
+  {
+    "id": "a1",
+    "title": "Upcoming Youth Gathering",
+    "description": "Join us this Saturday for a youth fellowship focusing on True Parents' teachings and building lasting friendships.",
+    "date": "2025-09-01",
+    "location": "Quezon City HQ",
+    "status": "active"
+  },
+  {
+    "id": "a2",
+    "title": "Family Blessing Ceremony Preparation",
+    "description": "Preparation sessions for couples interested in the Holy Marriage Blessing ceremony.",
+    "date": "2025-09-15",
+    "location": "Manila Center",
+    "status": "active"
+  }
+]

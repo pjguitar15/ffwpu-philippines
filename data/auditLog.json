@@ -1,0 +1,16 @@
+[
+  {
+    "id": "log1",
+    "adminId": "u2",
+    "action": "Created News Article",
+    "details": "National Sunday Service Held in Quezon City",
+    "timestamp": "2025-08-23T12:30:00Z"
+  },
+  {
+    "id": "log2",
+    "adminId": "u1",
+    "action": "Published Newsletter",
+    "details": "Weekly Inspiration - August 2025",
+    "timestamp": "2025-08-20T09:15:00Z"
+  }
+]

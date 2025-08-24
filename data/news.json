@@ -1,0 +1,119 @@
+[
+  {
+    "id": "1",
+    "title": "National Sunday Service Held in Quezon City",
+    "author": "Rev. Ronnie Sodusta",
+    "date": "2025-08-24",
+    "image": "/placeholder.svg?height=300&width=500",
+    "tags": ["Sunday Service", "Philippines", "Community"],
+    "status": "active",
+    "views": 128,
+    "likes": 34,
+    "content": "A beautiful Sunday service was held at our Quezon City headquarters, bringing together families from across Metro Manila. The service focused on the teachings of True Parents and the importance of building strong family bonds in our community. Over 200 families attended this inspiring gathering, where we celebrated the blessing of marriage and the importance of living for the sake of others.",
+    "comments": [
+      {
+        "id": "c1",
+        "name": "Maria Santos",
+        "comment": "Beautiful service! Very inspiring message about family unity.",
+        "date": "2025-08-24",
+        "replies": [
+          {
+            "id": "r1",
+            "name": "Admin",
+            "comment": "Thank you for joining us, Maria! We're blessed to have you in our community.",
+            "date": "2025-08-24"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "title": "Youth Workshop on True Love and Marriage",
+    "author": "Mrs. Grace Lim",
+    "date": "2025-08-20",
+    "image": "/placeholder.svg?height=300&width=500",
+    "tags": ["Youth", "Education", "Marriage"],
+    "status": "active",
+    "views": 89,
+    "likes": 22,
+    "content": "Our youth participated in an enlightening workshop about the principles of true love and the blessing of marriage according to True Parents' teachings. The workshop covered topics such as purity, commitment, and building God-centered relationships. Young people from different regions shared their experiences and learned valuable lessons about preparing for blessed marriage.",
+    "comments": [
+      {
+        "id": "c2",
+        "name": "John Cruz",
+        "comment": "This workshop really opened my eyes to what true love means. Thank you!",
+        "date": "2025-08-21",
+        "replies": []
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "title": "Community Outreach Program in Cebu",
+    "author": "Rev. Michael Torres",
+    "date": "2025-08-18",
+    "image": "/placeholder.svg?height=300&width=500",
+    "tags": ["Outreach", "Cebu", "Service"],
+    "status": "active",
+    "views": 156,
+    "likes": 45,
+    "content": "FFWPU Philippines organized a successful community outreach program in Cebu, providing food packages and educational materials to underprivileged families. Over 100 volunteers participated in this service project, embodying True Parents' teaching of living for the sake of others. The program reached 500 families and included health consultations and children's activities.",
+    "comments": []
+  },
+  {
+    "id": "4",
+    "title": "International Day of Families Celebration",
+    "author": "Mrs. Elena Rodriguez",
+    "date": "2025-08-15",
+    "image": "/placeholder.svg?height=300&width=500",
+    "tags": ["Families", "Celebration", "International"],
+    "status": "active",
+    "views": 203,
+    "likes": 67,
+    "content": "We celebrated the International Day of Families with a grand festival at our Manila center. Blessed families from all over the Philippines gathered to share testimonies, enjoy cultural performances, and participate in family-oriented activities. The event highlighted the importance of strong family values in building a peaceful society.",
+    "comments": [
+      {
+        "id": "c3",
+        "name": "Rosa Dela Cruz",
+        "comment": "What a wonderful celebration! Our children loved the activities.",
+        "date": "2025-08-16",
+        "replies": []
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "title": "Peace Education Seminar for Students",
+    "author": "Dr. Antonio Reyes",
+    "date": "2025-08-12",
+    "image": "/placeholder.svg?height=300&width=500",
+    "tags": ["Education", "Peace", "Students"],
+    "status": "active",
+    "views": 134,
+    "likes": 28,
+    "content": "A comprehensive peace education seminar was conducted for university students across Metro Manila. The seminar covered conflict resolution, character development, and the principles of living in harmony. Over 300 students from various universities participated, learning about True Parents' vision for world peace and their role in creating a better society.",
+    "comments": []
+  },
+  {
+    "id": "6",
+    "title": "Blessing Ceremony Preparation Workshop",
+    "author": "Rev. Samuel Kim",
+    "date": "2025-08-10",
+    "image": "/placeholder.svg?height=300&width=500",
+    "tags": ["Blessing", "Marriage", "Preparation"],
+    "status": "active",
+    "views": 178,
+    "likes": 52,
+    "content": "Couples preparing for the upcoming Blessing Ceremony attended a special preparation workshop. The workshop covered the significance of the blessing, the responsibilities of blessed couples, and how to build a God-centered family. 50 couples participated in this meaningful preparation, guided by experienced blessed families who shared their testimonies and wisdom.",
+    "comments": [
+      {
+        "id": "c4",
+        "name": "Mark and Lisa Gonzales",
+        "comment": "We feel so much more prepared and excited for our blessing now!",
+        "date": "2025-08-11",
+        "replies": []
+      }
+    ]
+  }
+]
