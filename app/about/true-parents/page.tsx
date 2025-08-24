@@ -66,7 +66,6 @@ function IconBubble({ children }: { children: React.ReactNode }) {
 export default function TrueParentsPage() {
   return (
     <div className='min-h-screen flex flex-col'>
-      <Header />
 
       {/* HERO (royal dark) */}
       <SectionShell dark className='relative overflow-hidden'>
@@ -365,8 +364,6 @@ export default function TrueParentsPage() {
           </div>
         </div>
       </SectionShell>
-
-      <Footer />
     </div>
   )
 }

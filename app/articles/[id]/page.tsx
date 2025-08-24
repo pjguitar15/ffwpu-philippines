@@ -96,101 +96,103 @@ export default function ArticleDetailPage() {
 
   if (!article) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">Article Not Found</h1>
-            <Link href="/articles">
+      <div className='min-h-screen flex flex-col'>
+        <main className='flex-1 flex items-center justify-center'>
+          <div className='text-center'>
+            <h1 className='text-2xl font-bold mb-4'>Article Not Found</h1>
+            <Link href='/articles'>
               <Button>
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className='mr-2 h-4 w-4' />
                 Back to Articles
               </Button>
             </Link>
           </div>
         </main>
-        <Footer />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-
-      <main className="flex-1">
-        <div className="container py-8">
+    <div className='min-h-screen flex flex-col'>
+      <main className='flex-1'>
+        <div className='container py-8'>
           {/* Back Button */}
-          <div className="mb-6">
-            <Link href="/articles">
-              <Button variant="ghost">
-                <ArrowLeft className="mr-2 h-4 w-4" />
+          <div className='mb-6'>
+            <Link href='/articles'>
+              <Button variant='ghost'>
+                <ArrowLeft className='mr-2 h-4 w-4' />
                 Back to Articles
               </Button>
             </Link>
           </div>
 
-          <article className="max-w-4xl mx-auto">
+          <article className='max-w-4xl mx-auto'>
             {/* Article Header */}
-            <header className="space-y-6 mb-8">
-              <div className="flex flex-wrap gap-2">
+            <header className='space-y-6 mb-8'>
+              <div className='flex flex-wrap gap-2'>
                 {article.tags.map((tag) => (
-                  <Badge key={tag} variant="outline">
+                  <Badge key={tag} variant='outline'>
                     {tag}
                   </Badge>
                 ))}
               </div>
 
-              <h1 className="font-heading text-4xl font-bold leading-tight">{article.title}</h1>
+              <h1 className='font-heading text-4xl font-bold leading-tight'>
+                {article.title}
+              </h1>
 
-              <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
+              <div className='flex flex-wrap items-center gap-6 text-muted-foreground'>
+                <div className='flex items-center gap-2'>
+                  <User className='h-4 w-4' />
                   <span>{article.author}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
+                <div className='flex items-center gap-2'>
+                  <Calendar className='h-4 w-4' />
                   <span>{new Date(article.date).toLocaleDateString()}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4" />
+                <div className='flex items-center gap-2'>
+                  <Eye className='h-4 w-4' />
                   <span>{article.views} views</span>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-4 pt-4 border-t">
+              <div className='flex items-center gap-4 pt-4 border-t'>
                 <Button
-                  variant="outline"
+                  variant='outline'
                   onClick={handleLike}
-                  className={`flex items-center gap-2 ${isLiked ? "text-red-500 border-red-200" : ""}`}
+                  className={`flex items-center gap-2 ${
+                    isLiked ? 'text-red-500 border-red-200' : ''
+                  }`}
                 >
-                  <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
+                  <Heart
+                    className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`}
+                  />
                   <span>{likes}</span>
                 </Button>
-                <Button variant="outline" onClick={handleShare}>
-                  <Share2 className="h-4 w-4 mr-2" />
+                <Button variant='outline' onClick={handleShare}>
+                  <Share2 className='h-4 w-4 mr-2' />
                   Share
                 </Button>
               </div>
             </header>
 
             {/* Featured Image */}
-            <div className="mb-8">
+            <div className='mb-8'>
               <img
-                src={article.image || "/placeholder.svg"}
+                src={article.image || '/placeholder.svg'}
                 alt={article.title}
-                className="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
+                className='w-full h-64 md:h-96 object-cover rounded-lg shadow-lg'
               />
             </div>
 
             {/* Article Content */}
-            <div className="prose prose-lg max-w-none mx-auto mb-12">
-              <p className="text-lg leading-relaxed">{article.content}</p>
+            <div className='prose prose-lg max-w-none mx-auto mb-12'>
+              <p className='text-lg leading-relaxed'>{article.content}</p>
             </div>
 
             {/* Comments Section */}
-            <div className="border-t pt-8">
+            <div className='border-t pt-8'>
               <CommentsSection
                 comments={article.comments}
                 onAddComment={handleAddComment}
@@ -200,17 +202,18 @@ export default function ArticleDetailPage() {
           </article>
 
           {/* Newsletter Signup */}
-          <div className="max-w-2xl mx-auto mt-16 bg-muted/30 rounded-lg p-8 text-center">
-            <h2 className="font-heading text-2xl font-bold mb-4">Weekly Inspiration</h2>
-            <p className="text-muted-foreground mb-6">
-              Get more thoughtful articles and spiritual insights delivered to your inbox.
+          <div className='max-w-2xl mx-auto mt-16 bg-muted/30 rounded-lg p-8 text-center'>
+            <h2 className='font-heading text-2xl font-bold mb-4'>
+              Weekly Inspiration
+            </h2>
+            <p className='text-muted-foreground mb-6'>
+              Get more thoughtful articles and spiritual insights delivered to
+              your inbox.
             </p>
-            <NewsletterSignup variant="compact" className="justify-center" />
+            <NewsletterSignup variant='compact' className='justify-center' />
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   )
 }

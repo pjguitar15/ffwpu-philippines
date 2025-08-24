@@ -219,7 +219,6 @@ export default function HomePage() {
 
   return (
     <div className='min-h-screen flex flex-col'>
-      <Header />
       <main className='flex-1'>
         <HeroSection />
         <div className='container mx-auto py-12 space-y-16'>
@@ -300,7 +299,6 @@ export default function HomePage() {
         </div>
       </main>
       <NewsletterBanner />
-      <Footer />
     </div>
   )
 }

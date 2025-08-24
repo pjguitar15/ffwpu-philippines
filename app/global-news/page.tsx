@@ -55,7 +55,6 @@ export default function GlobalNewsPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
 
       <main className="flex-1">
         <div className="container py-12 mx-auto">
@@ -242,8 +241,6 @@ export default function GlobalNewsPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   )
 }

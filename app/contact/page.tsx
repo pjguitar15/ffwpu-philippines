@@ -73,7 +73,6 @@ export default function ContactPage() {
 
   return (
     <div className='min-h-screen flex flex-col'>
-      <Header />
 
       {/* HERO (dark) */}
       <SectionShell dark className='py-16 md:py-24 overflow-hidden'>
@@ -408,8 +407,6 @@ export default function ContactPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   )
 }

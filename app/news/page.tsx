@@ -7,7 +7,6 @@ import { Suspense } from 'react'
 export default function NewsPage() {
   return (
     <div className='min-h-screen flex flex-col'>
-      <Header />
       <main className='flex-1'>
         <Suspense
           fallback={
@@ -17,7 +16,6 @@ export default function NewsPage() {
           <NewsIndex items={sampleNews} />
         </Suspense>
       </main>
-      <Footer />
     </div>
   )
 }

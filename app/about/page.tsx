@@ -25,7 +25,6 @@ export default function AboutPage() {
 
   return (
     <div className='min-h-screen flex flex-col'>
-      <Header />
       <main className='flex-1 scroll-smooth'>
         <div>
           <div className='grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-4'>
@@ -70,7 +69,6 @@ export default function AboutPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

@@ -71,22 +71,23 @@ export default function ArticlesPage() {
   }, [searchQuery, selectedTags, articles])
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-
-      <main className="flex-1">
-        <div className="container py-12 mx-auto">
+    <div className='min-h-screen flex flex-col'>
+      <main className='flex-1'>
+        <div className='container py-12 mx-auto'>
           {/* Page Header */}
-          <div className="text-center space-y-4 mb-12">
-            <h1 className="font-heading text-4xl font-bold">Inspirational Articles</h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Discover insights, reflections, and spiritual guidance from our community leaders and members. Explore
-              articles that inspire growth in faith, family, and service to others.
+          <div className='text-center space-y-4 mb-12'>
+            <h1 className='font-heading text-4xl font-bold'>
+              Inspirational Articles
+            </h1>
+            <p className='text-muted-foreground max-w-2xl mx-auto'>
+              Discover insights, reflections, and spiritual guidance from our
+              community leaders and members. Explore articles that inspire
+              growth in faith, family, and service to others.
             </p>
           </div>
 
           {/* Search and Filter */}
-          <div className="mb-8">
+          <div className='mb-8'>
             <SearchAndFilter
               onSearch={setSearchQuery}
               onTagFilter={setSelectedTags}
@@ -95,35 +96,19 @@ export default function ArticlesPage() {
             />
           </div>
 
-          {/* Articles Grid */}
-          {filteredItems.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {filteredItems.map((item) => (
-                <NewsCard key={item.id} item={item} type="articles" />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">
-                {searchQuery || selectedTags.length > 0
-                  ? "No articles found matching your search criteria."
-                  : "No articles available at the moment."}
-              </p>
-            </div>
-          )}
-
           {/* Newsletter Signup */}
-          <div className="bg-muted/30 rounded-lg p-8 text-center">
-            <h2 className="font-heading text-2xl font-bold mb-4">Weekly Inspiration</h2>
-            <p className="text-muted-foreground mb-6">
-              Get thoughtful articles and spiritual insights delivered to your inbox every week.
+          <div className='bg-muted/30 rounded-lg p-8 text-center'>
+            <h2 className='font-heading text-2xl font-bold mb-4'>
+              Weekly Inspiration
+            </h2>
+            <p className='text-muted-foreground mb-6'>
+              Get thoughtful articles and spiritual insights delivered to your
+              inbox every week.
             </p>
-            <NewsletterSignup variant="compact" className="justify-center" />
+            <NewsletterSignup variant='compact' className='justify-center' />
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   )
 }

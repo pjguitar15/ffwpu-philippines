@@ -69,14 +69,12 @@ export default function NewsDetailPage() {
   if (!newsItem) {
     return (
       <div className='min-h-screen flex flex-col'>
-        <Header />
         <main className='flex-1 flex items-center justify-center'>
           <div className='text-center'>
             <h2 className='text-2xl font-bold mb-4'>Update Not Found</h2>
             <Button onClick={() => router.back()}>Go Back</Button>
           </div>
         </main>
-        <Footer />
       </div>
     )
   }
@@ -93,8 +91,6 @@ export default function NewsDetailPage() {
 
   return (
     <div className='min-h-screen flex flex-col bg-background'>
-      <Header />
-
       <main className='flex-1'>
         <div className='max-w-6xl mx-auto py-10 px-4 md:px-6'>
           {/* Back link */}
@@ -339,7 +335,6 @@ export default function NewsDetailPage() {
           </section>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

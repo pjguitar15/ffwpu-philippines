@@ -46,8 +46,6 @@ const dot: Variants = {
 export default function HistoryPage() {
   return (
     <div className='min-h-screen flex flex-col'>
-      <Header />
-
       <main className='flex-1'>
         <div className='container py-12 mx-auto'>
           {/* Page Header */}
@@ -253,8 +251,6 @@ export default function HistoryPage() {
           </motion.div>
         </div>
       </main>
-
-      <Footer />
     </div>
   )
 }
