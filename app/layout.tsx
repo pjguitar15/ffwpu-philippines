@@ -18,6 +18,9 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ffwpu-philippines.vercel.app'
+
 export const metadata: Metadata = {
   title:
     'FFWPU Philippines - Family Federation for World Peace and Unification',
@@ -59,6 +62,7 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  metadataBase: new URL(siteUrl),
   openGraph: {
     type: 'website',
     locale: 'en_PH',

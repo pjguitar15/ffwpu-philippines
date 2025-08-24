@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
@@ -27,21 +27,7 @@ import { HeaderSearch } from './header-search'
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
-  const router = useRouter()
-  const searchParams = useSearchParams()
-
-  // --- NEW: header search state synced to ?q=
-  const [searchTerm, setSearchTerm] = useState('')
-  useEffect(() => {
-    setSearchTerm(searchParams.get('q') || '')
-  }, [searchParams])
-
-  const runSearch = () => {
-    const term = searchTerm.trim()
-    const qs = term ? `?q=${encodeURIComponent(term)}` : ''
-    router.push(`/news${qs}`)
-    setIsOpen(false)
-  }
+  // Search is handled by HeaderSearch (wrapped in Suspense). No direct useSearchParams here.
 
   const mainNavItems = [
     {
@@ -251,17 +237,19 @@ export function Header() {
               </div>
 
               {/* Drawer search (also inside Suspense) */}
-              <Suspense
-                fallback={
+              {isOpen && (
+                <Suspense
+                  fallback={
+                    <div className='p-4 border-b'>
+                      <div className='h-10 rounded-xl bg-muted/60' />
+                    </div>
+                  }
+                >
                   <div className='p-4 border-b'>
-                    <div className='h-10 rounded-xl bg-muted/60' />
+                    <HeaderSearch variant='drawer' />
                   </div>
-                }
-              >
-                <div className='p-4 border-b'>
-                  <HeaderSearch variant='drawer' />
-                </div>
-              </Suspense>
+                </Suspense>
+              )}
 
               <div className='md:hidden'>
                 <DrawerList items={[...mainNavItems, ...extraNavItems]} />

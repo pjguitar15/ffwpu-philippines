@@ -1,173 +1,84 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { useToast } from "@/hooks/use-toast"
-import { Lock, Mail, Shield } from "lucide-react"
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-  const { toast } = useToast()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
 
-    if (!email) {
-      toast({
-        title: "Email Required",
-        description: "Please enter your email address.",
-        variant: "destructive",
-      })
+    // Simple demo auth – replace with real auth later
+    if (!email || !password) {
+      setError('Please enter email and password')
       return
     }
-
-    if (!password) {
-      toast({
-        title: "Password Required",
-        description: "Please enter your password.",
-        variant: "destructive",
-      })
-      return
+    const adminUser = {
+      id: 'demo',
+      email,
+      role: 'admin',
+      name: email.split('@')[0] || 'Admin',
     }
-
-    setIsLoading(true)
-
-    // Mock authentication - in a real app, this would be proper authentication
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    if (email === "superadmin@ffwpu.ph" && password === "admin123") {
-      localStorage.setItem(
-        "adminUser",
-        JSON.stringify({
-          id: "u1",
-          email: "superadmin@ffwpu.ph",
-          role: "super_admin",
-          name: "Super Admin",
-        }),
-      )
-      toast({
-        title: "Welcome back! 👋",
-        description: "Successfully logged in as Super Admin.",
-      })
-      router.push("/admin/dashboard")
-    } else if (email === "admin1@ffwpu.ph" && password === "admin123") {
-      localStorage.setItem(
-        "adminUser",
-        JSON.stringify({
-          id: "u2",
-          email: "admin1@ffwpu.ph",
-          role: "admin",
-          name: "Rev. Ronnie Sodusta",
-        }),
-      )
-      toast({
-        title: "Welcome back! 👋",
-        description: "Successfully logged in as Admin.",
-      })
-      router.push("/admin/dashboard")
-    } else {
-      toast({
-        title: "Login Failed",
-        description: "Invalid email or password. Please check your credentials and try again.",
-        variant: "destructive",
-      })
-    }
-
-    setIsLoading(false)
+    try {
+      localStorage.setItem('adminUser', JSON.stringify(adminUser))
+    } catch {}
+    router.push('/admin/dashboard')
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30">
-      <div className="container">
-        <div className="w-full max-w-md mx-auto space-y-8">
-          {/* Header */}
-          <div className="text-center space-y-4">
-            <div className="mx-auto h-16 w-16 rounded-full bg-primary flex items-center justify-center">
-              <Shield className="h-8 w-8 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="font-heading text-3xl font-bold">Admin Portal</h1>
-              <p className="text-muted-foreground">FFWPU Philippines CMS</p>
-            </div>
+    <div className='min-h-[70vh] flex items-center justify-center py-16'>
+      <form
+        onSubmit={onSubmit}
+        className='w-full max-w-sm rounded-xl border bg-white p-6 shadow-sm'
+      >
+        <h1 className='text-2xl font-bold mb-1'>Admin Login</h1>
+        <p className='text-sm text-muted-foreground mb-6'>
+          Sign in to manage news, newsletters, and more.
+        </p>
+
+        <div className='space-y-4'>
+          <div className='space-y-2'>
+            <Label htmlFor='email'>Email</Label>
+            <Input
+              id='email'
+              type='email'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete='username'
+            />
           </div>
-
-          {/* Login Form */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Sign In</CardTitle>
-              <CardDescription>Enter your credentials to access the admin dashboard</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="admin@ffwpu.ph"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
-                  {isLoading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Signing In...
-                    </>
-                  ) : (
-                    "Sign In"
-                  )}
-                </Button>
-              </form>
-
-              {/* Demo Credentials */}
-              <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-                <h4 className="font-semibold text-sm mb-2">Demo Credentials:</h4>
-                <div className="text-xs space-y-1 text-muted-foreground">
-                  <p>
-                    <strong>Super Admin:</strong> superadmin@ffwpu.ph / admin123
-                  </p>
-                  <p>
-                    <strong>Admin:</strong> admin1@ffwpu.ph / admin123
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className='space-y-2'>
+            <Label htmlFor='password'>Password</Label>
+            <Input
+              id='password'
+              type='password'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete='current-password'
+            />
+          </div>
         </div>
-      </div>
+
+        {error && (
+          <p className='mt-3 text-sm text-destructive' role='alert'>
+            {error}
+          </p>
+        )}
+
+        <Button type='submit' className='mt-6 w-full cursor-pointer'>
+          Sign In
+        </Button>
+      </form>
     </div>
   )
 }
