@@ -128,7 +128,7 @@ export default function RootLayout({
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </head>
       <body className='font-body page-transition'>
-        {process.env.IS_UNDER_CONSTRUCTION ? (
+        {process.env.IS_UNDER_CONSTRUCTION === 'true' ? (
           <UnderConstruction />
         ) : (
           <>
