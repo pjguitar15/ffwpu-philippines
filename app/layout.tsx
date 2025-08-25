@@ -4,6 +4,7 @@ import { Montserrat, Inter } from "next/font/google"
 import "./globals.css"
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import UnderConstruction from '@/components/under-construction'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -127,9 +128,15 @@ export default function RootLayout({
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </head>
       <body className='font-body page-transition'>
-        <Header />
-        {children}
-        <Footer />
+        {process.env.IS_UNDER_CONSTRUCTION ? (
+          <UnderConstruction />
+        ) : (
+          <>
+            <Header />
+            {children}
+            <Footer />
+          </>
+        )}
       </body>
     </html>
   )
