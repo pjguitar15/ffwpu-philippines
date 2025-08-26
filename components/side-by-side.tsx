@@ -56,7 +56,7 @@ export function SideBySide({
 
   return (
     <section className={`w-full ${className}`}>
-      <div className='mx-auto px-4 md:px-6 py-12'>
+      <div className='mx-auto px-4 md:px-0 py-12'>
         <div className='flex items-start gap-8 md:gap-12'>
           {withSocials && !reversed && SideRail}
 

@@ -36,24 +36,12 @@ export function Header() {
       desc: 'Learn about Holy Mother Han',
       icon: Sparkles,
     },
-    {
-      href: '/about',
-      label: 'About',
-      desc: 'Who we are & our mission',
-      icon: FiInfo,
-    },
-    {
-      href: '/news',
-      label: 'News',
-      desc: 'Latest updates & reports',
-      icon: FiFileText,
-    },
-    {
-      href: '/newsletter',
-      label: 'Newsletter',
-      desc: 'Stay connected weekly',
-      icon: FiMail,
-    },
+    // {
+    //   href: '/newsletter',
+    //   label: 'Newsletter',
+    //   desc: 'Stay connected weekly',
+    //   icon: FiMail,
+    // },
     {
       href: '/contact',
       label: 'Contact',
@@ -63,17 +51,23 @@ export function Header() {
   ]
 
   const extraNavItems = [
+    // {
+    //   href: '/global-news',
+    //   label: 'Global News',
+    //   desc: 'Watch weekly HQ video',
+    //   icon: FiVideo,
+    // },
     {
-      href: '/global-news',
-      label: 'Global News',
-      desc: 'Watch weekly HQ video',
-      icon: FiVideo,
+      href: '/news',
+      label: 'News',
+      desc: 'Latest updates & reports',
+      icon: FiFileText,
     },
     {
-      href: '/contact',
-      label: 'Contact',
-      desc: 'Reach out to our team',
-      icon: FiPhone,
+      href: '/about',
+      label: 'About',
+      desc: 'Who we are & our mission',
+      icon: FiInfo,
     },
     {
       href: '/about/history',
@@ -87,18 +81,18 @@ export function Header() {
       desc: 'Rev. Moon & Holy Mother Han',
       icon: FiHeart,
     },
-    {
-      href: '/privacy',
-      label: 'Privacy Policy',
-      desc: 'How we handle data',
-      icon: FiShield,
-    },
-    {
-      href: '/terms',
-      label: 'Terms of Service',
-      desc: 'Site use & policies',
-      icon: FiFile,
-    },
+    // {
+    //   href: '/privacy',
+    //   label: 'Privacy Policy',
+    //   desc: 'How we handle data',
+    //   icon: FiShield,
+    // },
+    // {
+    //   href: '/terms',
+    //   label: 'Terms of Service',
+    //   desc: 'Site use & policies',
+    //   icon: FiFile,
+    // },
   ]
 
   const isActive = (href: string) => pathname === href
@@ -236,21 +230,24 @@ export function Header() {
                 </button>
               </div>
 
-              {/* Drawer search (also inside Suspense) */}
+              {/* Drawer search — mobile only */}
               {isOpen && (
-                <Suspense
-                  fallback={
+                <div className='md:hidden'>
+                  <Suspense
+                    fallback={
+                      <div className='p-4 border-b'>
+                        <div className='h-10 rounded-xl bg-muted/60' />
+                      </div>
+                    }
+                  >
                     <div className='p-4 border-b'>
-                      <div className='h-10 rounded-xl bg-muted/60' />
+                      <HeaderSearch variant='drawer' />
                     </div>
-                  }
-                >
-                  <div className='p-4 border-b'>
-                    <HeaderSearch variant='drawer' />
-                  </div>
-                </Suspense>
+                  </Suspense>
+                </div>
               )}
 
+              {/* Drawer links */}
               <div className='md:hidden'>
                 <DrawerList items={[...mainNavItems, ...extraNavItems]} />
               </div>

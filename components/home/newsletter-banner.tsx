@@ -32,7 +32,7 @@ export function NewsletterBanner() {
             </div>
           </div>
         </div>
-        <div className="flex-1 flex justify-center md:justify-end mt-8 md:mt-0">
+        <div className="flex-1 md:flex justify-center hidden md:justify-end mt-8 md:mt-0">
             <img src="/white-ffwpu.png" alt="FFWPU Philippines Church Logo" className="max-w-[200px] w-full h-auto" />
         </div>
       </div>

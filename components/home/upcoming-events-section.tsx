@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import Link from 'next/link'
 import { HighlightTitle } from '../ui/highlight-title'
 import {
   Calendar,
@@ -12,6 +11,97 @@ import {
   ArrowRight,
   Sparkles,
 } from 'lucide-react'
+import dynamic from 'next/dynamic'
+
+const EventModal = dynamic(
+  () => import('@/components/events/event-modal'),
+  { ssr: false }, // <-- avoids creating an SSR client boundary placeholder
+)
+
+export const events = [
+  {
+    id: 1,
+    title: 'Community Teaching (Antipolo City)',
+    date: '2025-02-15T09:00:00',
+    end: '2025-02-15T12:00:00',
+    location: 'Sitio Upper Hinapao, Antipolo City, Rizal',
+    region: 'Region IV-A',
+    image:
+      'https://familyfedihq.org/wp-content/uploads/2025/02/ph-cm-tc-2-1024x613.jpg',
+    button: 'Read Report',
+  }, // :contentReference[oaicite:0]{index=0}
+
+  {
+    id: 2,
+    title: 'Fusion Fest 2025 — CIG Asia Pacific Youth Assembly',
+    date: '2025-07-27T09:00:00',
+    end: '2025-07-27T21:00:00',
+    location: 'Metrotent Convention Center, Pasig City',
+    region: 'NCR',
+    image: 'https://familyfedihq.org/wp-content/uploads/2025/07/3-1024x576.jpg',
+    button: 'Event Recap',
+  }, // :contentReference[oaicite:1]{index=1}
+
+  {
+    id: 3,
+    title: 'National Unified Sunday Service',
+    date: '2024-03-03T10:00:00',
+    end: '2024-03-03T12:00:00',
+    location: 'FFWPU Metro Manila Family Church, Quezon City',
+    region: 'NCR',
+    image:
+      'https://familyfedihq.org/wp-content/uploads/2024/03/ph-ss-1024x558.jpg',
+    button: 'Read Report',
+  }, // :contentReference[oaicite:2]{index=2}
+
+  {
+    id: 4,
+    title: 'HJ CheonBo Special Event (Metro Manila)',
+    date: '2024-07-20T09:00:00',
+    end: '2024-07-21T17:00:00',
+    location: 'FFWPU Metro Manila Family Church',
+    region: 'NCR',
+    image:
+      'https://familyfedihq.org/wp-content/uploads/2024/07/cwsp4-1024x544.jpg',
+    button: 'Highlights',
+  }, // :contentReference[oaicite:3]{index=3}
+
+  {
+    id: 5,
+    title: 'HJ CheonBo Special Event (La Union)',
+    date: '2024-04-07T09:00:00',
+    end: '2024-04-07T17:00:00',
+    location: 'La Union, Philippines',
+    region: 'Region I',
+    image:
+      'https://familyfedihq.org/wp-content/uploads/2024/04/cwsp1-1024x576.jpg',
+    button: 'View Report',
+  }, // :contentReference[oaicite:4]{index=4}
+
+  {
+    id: 6,
+    title: 'CARP Healing Café (Homegroup Session)',
+    date: '2024-10-06T14:00:00',
+    end: '2024-10-06T17:00:00',
+    location: 'FFWPU Philippines National HQ',
+    region: 'NCR',
+    image:
+      'https://familyfedihq.org/wp-content/uploads/2024/10/CARP-ph-1024x576.jpg',
+    button: 'See Story',
+  }, // :contentReference[oaicite:5]{index=5}
+
+  {
+    id: 7,
+    title: 'Hyojeong U-20 Youth Witnessing Festival',
+    date: '2024-10-12T09:00:00',
+    end: '2024-10-12T17:00:00',
+    location: 'Philippines (CARP / Youth)',
+    region: 'Nationwide',
+    image:
+      'https://familyfedihq.org/wp-content/uploads/2024/10/U-20-Philippines-4-1024x576.jpg',
+    button: 'See Photos',
+  }, // :contentReference[oaicite:6]{index=6}
+]
 
 type Event = {
   id: number
@@ -32,13 +122,12 @@ function fmtDate(d: Date) {
 }
 
 export function UpcomingEventsSection({
-  events,
   eyebrow = 'Community Calendar',
 }: {
-  events: Event[]
   eyebrow?: string
 }) {
   const [show, setShow] = React.useState(false)
+  const [selected, setSelected] = React.useState<Event | null>(null)
 
   const regions = React.useMemo(() => {
     const set = new Set<string>()
@@ -70,6 +159,35 @@ export function UpcomingEventsSection({
     const t = setTimeout(() => setShow(true), 30)
     return () => clearTimeout(t)
   }, [tab])
+
+  // at top of the file (or a config/constants file)
+  const DEFAULT_EVENT_IMAGE =
+    // Unsplash gradient (free to hotlink; license allows it)
+    'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1600&q=80'
+
+  // final fallback: inline SVG gradient (never 404s)
+  const FALLBACK_EVENT_IMAGE_DATA_URI =
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(`
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630' preserveAspectRatio='xMidYMid slice'>
+  <defs>
+    <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#0ea5e9'/>
+      <stop offset='50%' stop-color='#6366f1'/>
+      <stop offset='100%' stop-color='#111827'/>
+    </linearGradient>
+  </defs>
+  <rect width='1200' height='630' fill='url(#g)'/>
+</svg>`)
+
+  // helper to swap in safe fallbacks on error
+  function handleImgError(e: React.SyntheticEvent<HTMLImageElement>) {
+    const img = e.currentTarget
+    if (img.dataset.fallbackTried !== '1') {
+      img.dataset.fallbackTried = '1'
+      img.src = FALLBACK_EVENT_IMAGE_DATA_URI // last-resort, always-available
+    }
+  }
 
   return (
     <section className='relative overflow-hidden'>
@@ -149,6 +267,12 @@ export function UpcomingEventsSection({
                 return (
                   <div
                     key={event.id}
+                    role='button'
+                    tabIndex={0}
+                    onClick={() => setSelected(event)}
+                    onKeyDown={(e) =>
+                      (e.key === 'Enter' || e.key === ' ') && setSelected(event)
+                    }
                     className={[
                       'snap-start w-[290px] md:w-[300px] lg:w-[320px] flex-shrink-0 cursor-pointer group',
                       'motion-safe:transition-[opacity,transform,filter] motion-safe:duration-300 motion-safe:ease-out',
@@ -163,8 +287,11 @@ export function UpcomingEventsSection({
                       <div className='h-44 relative overflow-hidden'>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={event.image}
-                          alt={event.title}
+                          src={event.image || DEFAULT_EVENT_IMAGE}
+                          onError={handleImgError}
+                          alt={event.title || 'Event image'}
+                          loading='lazy'
+                          decoding='async'
                           className='absolute inset-0 w-full h-full object-cover'
                         />
                         {/* Region pill */}
@@ -223,19 +350,6 @@ export function UpcomingEventsSection({
               <ChevronRight className='h-5 w-5' />
             </button>
           </div>
-
-          {/* View all */}
-          <div className='mt-10 flex justify-center'>
-            <Link
-              href='/events'
-              className='group inline-flex items-center gap-2 text-amber-300 font-extrabold tracking-widest uppercase'
-            >
-              <span>View All Events</span>
-              <ArrowRight className='h-4 w-4 transition-transform duration-200 group-hover:translate-x-1' />
-              <span className='sr-only'>See the full events calendar</span>
-              <span className='block h-1 w-10 bg-amber-300 ml-3 transition-all group-hover:w-14' />
-            </Link>
-          </div>
         </div>
       </div>
 
@@ -247,6 +361,10 @@ export function UpcomingEventsSection({
       >
         <path d='M0,0 L0,160 L1440,160 Z' fill='currentColor' />
       </svg>
+
+      {selected && (
+        <EventModal isOpen event={selected} onClose={() => setSelected(null)} />
+      )}
     </section>
   )
 }

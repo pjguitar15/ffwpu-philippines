@@ -105,41 +105,6 @@ export function TrueParentsSection() {
             </p>
           </div>
         </div>
-
-        {/* Milestones */}
-        <div className='mt-10'>
-          <div className='flex items-center gap-2'>
-            <Crown className='h-5 w-5 text-amber-400' />
-            <HighlightTitle
-              text='Providential Milestones'
-              highlightedText='Milestones'
-              as='h3'
-              className='text-xl md:text-2xl'
-              uppercase
-              gradientClassName='bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 bg-clip-text text-transparent'
-            />
-          </div>
-
-          <div className='mt-4 grid grid-cols-1 md:grid-cols-4 gap-4'>
-            {[
-              { y: '1960', t: 'Holy Wedding' },
-              { y: '1992', t: 'Women’s Federation Worldwide' },
-              { y: '2013', t: 'Cheon Il Guk Foundation Day' },
-              { y: 'Today', t: 'Global Mother of Peace' },
-            ].map((s) => (
-              <div
-                key={s.y}
-                className='relative rounded-xl border border-slate-200/70 dark:border-slate-700/60 p-4 bg-white/70 dark:bg-slate-900/60'
-              >
-                <Crown className='absolute -top-3 -right-3 h-5 w-5 text-amber-400/70' />
-                <div className='text-sm font-bold text-fuchsia-700'>{s.y}</div>
-                <div className='mt-1 text-slate-700 dark:text-slate-300'>
-                  {s.t}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   )

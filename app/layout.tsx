@@ -5,6 +5,8 @@ import "./globals.css"
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import UnderConstruction from '@/components/under-construction'
+import { UpcomingEventsSection } from '@/components/home/upcoming-events-section'
+import { ConditionalUpcomingEvents } from "@/components/home/conditional-upcoming-events"
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -134,6 +136,7 @@ export default function RootLayout({
           <>
             <Header />
             {children}
+            <ConditionalUpcomingEvents />
             <Footer />
           </>
         )}

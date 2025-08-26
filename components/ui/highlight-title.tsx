@@ -9,6 +9,7 @@ type HighlightTitleProps = {
   className?: string
   uppercase?: boolean
   gradientClassName?: string
+  dark?: boolean
 }
 
 function escapeRegExp(s: string) {
@@ -47,6 +48,7 @@ export function HighlightTitle({
   className = '',
   uppercase = false,
   gradientClassName,
+  dark = false,
 }: HighlightTitleProps) {
   const Tag = (as || 'h2') as React.ElementType
   return (
@@ -55,6 +57,7 @@ export function HighlightTitle({
         'font-extrabold leading-tight tracking-wide text-slate-900',
         uppercase ? 'uppercase' : '',
         className,
+        `${dark ? 'text-white/80' : 'text-muted-foreground'}`,
       ].join(' ')}
     >
       {renderHighlighted(text, highlightedText, gradientClassName)}

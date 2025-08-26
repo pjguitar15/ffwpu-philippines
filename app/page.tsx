@@ -13,6 +13,7 @@ import { TrueParentsSection } from '@/components/home/true-parents-section'
 import { ChurchBranchesSection } from '@/components/home/church-branches-section'
 import { NewsletterBanner } from '@/components/home/newsletter-banner'
 import { SideBySide } from '@/components/side-by-side'
+import { SectionShell } from '@/components/ui/section-shell'
 
 const sampleArticles: NewsItem[] = [
   {
@@ -61,152 +62,6 @@ const sampleArticles: NewsItem[] = [
     slug: '',
   },
 ]
-
-const upcomingEvents = [
-  // 🟢 your originals
-  {
-    id: 1,
-    title: 'Together, We Build a Stronger Community',
-    date: '2024-12-02T15:00:00',
-    end: '2024-12-02T19:00:00',
-    location: '85 Preston Rd. Inglewood, Maine 980.',
-    region: 'International',
-    image: '/church-community-gathering.png',
-    button: 'Contact Us',
-  },
-  {
-    id: 2,
-    title: 'Family Worship & Fellowship',
-    date: '2024-12-10T10:00:00',
-    end: '2024-12-10T12:00:00',
-    location: 'FFWPU Manila Center, Quezon City',
-    region: 'NCR',
-    image: '/family-worship.png',
-    button: 'Join Event',
-  },
-  {
-    id: 3,
-    title: 'Youth Leadership Summit',
-    date: '2025-01-15T09:00:00',
-    end: '2025-01-15T17:00:00',
-    location: 'Cebu City Convention Hall',
-    region: 'Region VII',
-    image: '/youth-fellowship.png',
-    button: 'Learn More',
-  },
-
-  // 🟣 real/events list you added
-  {
-    id: 4,
-    title: 'HyoJeong Family Festival (National Sunday Service)',
-    date: '2024-01-21T10:00:00',
-    end: '2024-01-21T12:00:00',
-    location: 'FFWPU Metro Manila Church, Quezon City • Onsite & Online',
-    region: 'NCR',
-    image: '/events/hyojeong-family-festival-2024.jpg',
-    button: 'Watch Recap',
-  },
-  {
-    id: 5,
-    title: 'HJ CheonBo Special Event (La Union) – Purify & Heal',
-    date: '2024-04-07T09:00:00',
-    end: '2024-04-07T17:00:00',
-    location: 'La Union, Philippines • Hybrid',
-    region: 'Region I',
-    image: '/events/cheonbo-la-union-2024.jpg',
-    button: 'View Report',
-  },
-  {
-    id: 6,
-    title: 'Heavenly Asia Pacific HJ CheonBo Special Event',
-    date: '2024-07-20T09:00:00',
-    end: '2024-07-21T17:00:00',
-    location: 'FFWPU Metro Manila Family Church • Hybrid',
-    region: 'NCR',
-    image: '/events/cheonbo-metro-manila-2024.jpg',
-    button: 'Highlights',
-  },
-  {
-    id: 7,
-    title: 'Pure Water Workshop — “Live a Life Without Shadow”',
-    date: '2024-10-05T09:00:00',
-    end: '2024-10-06T17:00:00',
-    location: 'Albay Provincial Campsite, Ligao City',
-    region: 'Region V',
-    image: '/events/pure-water-albay-2024.jpg',
-    button: 'Learn More',
-  },
-  {
-    id: 8,
-    title: 'HJ CheonBo Special Event (Asia Pacific) – Antipolo',
-    date: '2024-12-20T09:00:00',
-    end: '2024-12-21T17:00:00',
-    location: 'Ynares Center, Antipolo City, Rizal',
-    region: 'Region IV-A',
-    image: '/events/cheonbo-ynares-2024.jpg',
-    button: 'Event Info',
-  },
-
-  // 🌙 devotional / vigil (online-friendly)
-  {
-    id: 9,
-    title: 'Cheon Shim Won Night Prayer Vigil (Online & Onsite)',
-    date: '2024-11-08T21:00:00',
-    end: '2024-11-09T00:00:00',
-    location: 'Metro Manila Family Church + Zoom',
-    region: 'NCR',
-    image: '/events/csw-vigil-2024.jpg',
-    button: 'Join via Zoom',
-  },
-
-  // 🧑‍🤝‍🧑 rites (with Zoom)
-  {
-    id: 10,
-    title: 'Coming of Age Festival (National)',
-    date: '2023-07-04T09:00:00',
-    end: '2023-07-04T12:00:00',
-    location: 'Philippines • Onsite + Zoom',
-    region: 'Online / Nationwide',
-    image: '/events/coming-of-age-2023.jpg',
-    button: 'See Photos',
-  },
-
-  // 💻 Zoom / online (AP region, PH audience welcome)
-  {
-    id: 11,
-    title: 'Online Community Gathering (Asia Pacific) — Zoom',
-    date: '2025-07-09T19:30:00',
-    end: '2025-07-09T21:00:00',
-    location: 'Zoom (Philippines / AP Region)',
-    region: 'Online / Nationwide',
-    image: '/events/online-community-gathering-2025.jpg',
-    button: 'Join on Zoom',
-  },
-
-  // 🕯️ annual/global vigil
-  {
-    id: 12,
-    title: 'New Year Cheon Shim Won Special Devotional Prayer Vigil',
-    date: '2023-12-30T21:00:00',
-    end: '2023-12-31T00:30:00',
-    location: 'Local Churches Nationwide + Zoom',
-    region: 'Online / Nationwide',
-    image: '/events/csw-newyear-vigil-2024.jpg',
-    button: 'Join Vigil',
-  },
-]
-
-function getCountdown(dateStr: string) {
-  const eventDate = new Date(dateStr)
-  const now = new Date()
-  const diff = eventDate.getTime() - now.getTime()
-  if (diff <= 0) return { days: 0, hours: 0, mins: 0, secs: 0 }
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
-  const mins = Math.floor((diff / (1000 * 60)) % 60)
-  const secs = Math.floor((diff / 1000) % 60)
-  return { days, hours, mins, secs }
-}
 
 export default function HomePage() {
   const [recentNews, setRecentNews] = useState<NewsItem[]>([])
@@ -280,19 +135,66 @@ export default function HomePage() {
             ]}
           />
         </div>
-        <UpcomingEventsSection events={upcomingEvents} />
+        <UpcomingEventsSection />
         <div className='container mx-auto py-12 space-y-16'>
+          {/* IAYSP Pilipinas */}
           <SideBySide
             withSocials
-            imgUrl='/church-visitation.webp' // replace with your photo
-            imgAlt='Rev. Ronnie Sodusta visiting an FFWPU Philippines church'
-            eyebrow='FFWPU Philippines • Church Visitation'
-            title='Church Visitation with Rev. Ronnie Sodusta'
-            highlightedText='Rev. Ronnie Sodusta'
-            highlightedGradientClassName='bg-gradient-to-r from-amber-900 via-yellow-700 to-amber-500 bg-clip-text text-transparent'
-            sideText='VISITATION'
-            description='As National Leader and Regional Director for FFWPU Philippines, Rev. Ronnie Sodusta has been making local church visitations to share direction for the Philippine providence, strengthen family-based ministry, and encourage youth engagement and Cheon Shim Won devotion.'
+            imgUrl='https://familyfedihq.org/wp-content/uploads/2022/03/iaysp-1-1024x683.jpg'
+            imgAlt='IAYSP Pilipinas youth activity'
+            eyebrow='IAYSP Pilipinas • Youth & Students for Peace'
+            title='Empowering Youth for Peace and Character'
+            highlightedText='Youth for Peace'
+            highlightedGradientClassName='bg-gradient-to-r from-sky-600 via-cyan-600 to-indigo-700 bg-clip-text text-transparent'
+            sideText='IAYSP Philippines'
+            description='IAYSP Pilipinas (International Association of Youth and Students for Peace) empowers Filipino youth through character education, leadership programs, and peace/service projects—cultivating global citizenship and a culture of peace in campuses and communities.'
+            bottomLinks={[
+              {
+                label: 'Follow IAYSP Pilipinas on Facebook',
+                href: 'https://www.facebook.com/iaysppilipinas/',
+              },
+            ]}
           />
+
+          {/* W-CARP Philippines */}
+          <SideBySide
+            withSocials
+            imgUrl='https://scontent.fpnh11-1.fna.fbcdn.net/v/t39.30808-6/503683692_1077241481127786_5573928803462332427_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeENNhOLyWEY7Pa2M7DpoL1jhLuYXqMYkOmEu5heoxiQ6Syhbsqhh_E4gLsT92Np0j2vrhRyXdvLdREdaLERgRNt&_nc_ohc=h8ONxUKxRPIQ7kNvwExtzme&_nc_oc=Adn1aC2mieiplnUdeYt093So3MQdMLlI2_LZT-T1jR91Ak1a5htqQvXZycp7OTsHxP0&_nc_zt=23&_nc_ht=scontent.fpnh11-1.fna&_nc_gid=VEkrqnF_Wr-_P48CpW6pMg&oh=00_AfWqjxovvTv--28uYhHeJmSQ6LKkeHeaCsXhH5nE0iGRww&oe=68B3E4F2'
+            imgAlt='W-CARP Philippines campus service project'
+            eyebrow='W-CARP Philippines • Campus Leadership'
+            title='Raising Principled Campus Leaders'
+            highlightedText='Campus Leaders'
+            highlightedGradientClassName='bg-gradient-to-r from-blue-900 via-indigo-800 to-cyan-700 bg-clip-text text-transparent'
+            sideText='W-CARP Philippines'
+            description='World CARP is an international campus-based organization that raises young leaders of character who live for the greater good; in the Philippines, chapters host leadership training, service outreach, and values-based activities with students.'
+            reversed
+            bottomLinks={[
+              {
+                label: 'Join W-CARP Philippines on Facebook',
+                href: 'https://www.facebook.com/wcarpph/',
+              },
+            ]}
+          />
+
+          {/* Universal Peace Federation (UPF) Philippines */}
+          <SideBySide
+            withSocials
+            imgUrl='https://scontent.fpnh11-1.fna.fbcdn.net/v/t39.30808-6/481038312_679169144444225_8623738338219458726_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeHZ20OVg08kRrytqmCgx-3jvuCl7H-t2o6-4KXsf63ajqDbws5RB7j1thrN_33sj0HR7NGoEWOvcBttN3pKGBZK&_nc_ohc=gFNK8nTa61cQ7kNvwGQvApk&_nc_oc=Adn8AqL7vbe7NZw1_ivYquTWNdQ3ju-wqsVToAU9Gz7wLynsyB9n2qwGyk7G24dV_P8&_nc_zt=23&_nc_ht=scontent.fpnh11-1.fna&_nc_gid=0mJDKODYML1rGP6-2zbbTg&oh=00_AfW5M8YH_XR4P6RlAk__OPQtACYQj96-YsuaMnhenzn7xQ&oe=68B3EFDB'
+            imgAlt='UPF Philippines meeting in Manila'
+            eyebrow='Universal Peace Federation • Philippines'
+            title='Interfaith & Peacebuilding Network'
+            highlightedText='Peacebuilding Network'
+            highlightedGradientClassName='bg-gradient-to-r from-teal-700 via-cyan-700 to-blue-800 bg-clip-text text-transparent'
+            sideText='UPF Philippines'
+            description='UPF is a global NGO with General Consultative Status at the UN ECOSOC that advances interfaith peacebuilding, peace education, and strong families; UPF-Philippines convenes Ambassadors for Peace and partners for initiatives in Manila and nationwide.'
+            bottomLinks={[
+              {
+                label: 'Visit UPF Philippines on Facebook',
+                href: 'https://www.facebook.com/upfphilippines/',
+              },
+            ]}
+          />
+
           <QuickLinksSection />
           <TrueParentsSection />
           <ChurchBranchesSection />

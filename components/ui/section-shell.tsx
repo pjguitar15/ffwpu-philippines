@@ -2,10 +2,12 @@ export function SectionShell({
   children,
   dark = false,
   className = '',
+  smallPy = false,
 }: {
   children: React.ReactNode
   dark?: boolean
   className?: string
+  smallPy?: boolean
 }) {
   return (
     <section
@@ -27,7 +29,13 @@ export function SectionShell({
             : 'radial-gradient(60rem 30rem at 70% 10%, rgba(56,189,248,0.15), transparent 60%), radial-gradient(50rem 30rem at 0% 100%, rgba(59,130,246,0.12), transparent 60%)',
         }}
       />
-      <div className='container mx-auto px-4 py-16 md:py-24'>{children}</div>
+      <div
+        className={`container mx-auto px-4 py-${smallPy ? '8' : '16'} md:py-${
+          smallPy ? '12' : '24'
+        }`}
+      >
+        {children}
+      </div>
     </section>
   )
 }

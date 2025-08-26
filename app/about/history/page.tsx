@@ -1,7 +1,5 @@
 'use client'
 
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Calendar, MapPin, Users, Award } from 'lucide-react'
 import { Eyebrow } from '@/components/ui/eyebrow'
@@ -12,17 +10,14 @@ import {
   type Easing,
   type Transition,
 } from 'framer-motion'
+import { TitleBlock } from '@/components/ui/title-block'
+import { HistoryHeader } from '@/components/history/history-header'
 
 const easeOut: Easing = [0.16, 1, 0.3, 1]
 
 const container: Variants = {
   hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.35,
-      delayChildren: 0.25,
-    },
-  },
+  show: { transition: { staggerChildren: 0.35, delayChildren: 0.25 } },
 }
 
 const item: Variants = {
@@ -43,44 +38,98 @@ const dot: Variants = {
   },
 }
 
+type TimelineItem = {
+  id: string
+  year: string
+  title: string
+  icon: 'calendar' | 'map' | 'users' | 'award'
+  content: string
+}
+
+const ICONS = {
+  calendar: Calendar,
+  map: MapPin,
+  users: Users,
+  award: Award,
+} as const
+
+// ——— Data-driven timeline ———
+const TIMELINE: TimelineItem[] = [
+  {
+    id: 'ph-1975',
+    year: '1975',
+    title: 'Early Mission & Beginnings in the Philippines',
+    icon: 'calendar',
+    content:
+      'Community sources mark 1975 as the beginning of the Unification Church in the Philippines, when missionaries arrived and first centers began forming in Metro Manila.',
+  },
+  {
+    id: 'ph-1980s',
+    year: '1980s',
+    title: 'Growth & Expansion',
+    icon: 'map',
+    content:
+      'Local witnessing expanded across regions as Filipino leaders emerged. New study groups and church communities opened in key cities.',
+  },
+  {
+    id: 'global-1994',
+    year: '1994',
+    title: 'HSA-UWC Renamed to FFWPU',
+    icon: 'users',
+    content:
+      'Globally, the Holy Spirit Association for the Unification of World Christianity (HSA-UWC) adopted its current name, Family Federation for World Peace and Unification (FFWPU). The Philippines community aligned with the global identity.',
+  },
+  {
+    id: 'ph-2019',
+    year: '2019',
+    title: 'Religious Freedom Victory Celebration',
+    icon: 'award',
+    content:
+      'A thanksgiving event in Manila marked the government’s dismissal of charges related to Blessing activities—celebrated with members and leaders from across Asia.',
+  },
+  {
+    id: 'ph-2024',
+    year: '2024',
+    title: 'National Unified Sunday Service',
+    icon: 'users',
+    content:
+      'Over 800 members joined onsite/online at the Metro Manila Family Church for guidance from Asia Pacific leadership and united worship.',
+  },
+  {
+    id: 'ph-2025',
+    year: '2025',
+    title: 'National Youth Leaders Convergence',
+    icon: 'users',
+    content:
+      'Youth departments and partner orgs gathered to plan education and leadership initiatives toward a unified national youth ministry.',
+  },
+]
+
 export default function HistoryPage() {
   return (
-    <div className='min-h-screen flex flex-col'>
+    <div className='min-h-screen flex flex-col bg-slate-950 text-slate-100'>
       <main className='flex-1'>
         <div className='container py-12 mx-auto'>
           {/* Page Header */}
           <div className='relative text-center space-y-4 mb-16'>
-            {/* soft gradient wash */}
+            {/* dark glow wash */}
             <div
               aria-hidden
               className='pointer-events-none absolute -inset-10 -z-10'
               style={{
                 background:
-                  'radial-gradient(60rem 30rem at 70% 10%, rgba(56,189,248,0.12), transparent 60%), radial-gradient(50rem 30rem at 0% 100%, rgba(99,102,241,0.14), transparent 60%)',
+                  'radial-gradient(60rem 30rem at 70% 10%, rgba(56,189,248,0.08), transparent 60%), radial-gradient(50rem 30rem at 0% 100%, rgba(99,102,241,0.10), transparent 60%)',
               }}
             />
-            <Eyebrow>Timeline</Eyebrow>
-            <HighlightTitle
-              as='h1'
-              text='Our History'
-              highlightedText='History'
-              className='text-4xl md:text-6xl'
-              uppercase
-              gradientClassName='bg-gradient-to-r from-indigo-900 via-blue-800 to-sky-700 bg-clip-text text-transparent'
-            />
-            <p className='text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto'>
-              The journey of FFWPU Philippines began with the vision of True
-              Parents to establish God&apos;s kingdom on earth, with the
-              Philippines as a key nation in Asia.
-            </p>
+            <HistoryHeader />
           </div>
 
           {/* Timeline */}
           <div className='space-y-8 mb-16'>
             <div className='relative max-w-[900px] mx-auto'>
-              {/* vertical line grows down on load */}
+              {/* vertical line */}
               <motion.div
-                className='absolute left-4 inset-y-0 w-px bg-primary/20'
+                className='absolute left-4 inset-y-0 w-px bg-slate-700/60'
                 initial={{ scaleY: 0 }}
                 animate={{ scaleY: 1 }}
                 transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
@@ -93,128 +142,45 @@ export default function HistoryPage() {
                 initial='hidden'
                 animate='show'
               >
-                {/* 1975 */}
-                <motion.div
-                  className='relative flex items-start gap-6'
-                  variants={item}
-                >
-                  <motion.div
-                    className='flex-shrink-0 w-8 h-8 rounded-full grid place-items-center bg-primary text-primary-foreground ring-4 ring-primary/10 shadow-sm'
-                    variants={dot}
-                  >
-                    <Calendar className='h-4 w-4' />
-                  </motion.div>
-                  <Card className='flex-1 ring-1 ring-black/10'>
-                    <CardHeader>
-                      <CardTitle className='font-heading'>
-                        1975 — Foundation
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className='text-muted-foreground'>
-                        FFWPU Philippines was established as part of True
-                        Parents&apos; global mission to spread the Divine
-                        Principle throughout Asia. The first missionaries
-                        arrived to begin building the foundation.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                {TIMELINE.map((t) => {
+                  const Icon = ICONS[t.icon]
+                  return (
+                    <motion.div
+                      key={t.id}
+                      className='relative flex items-start gap-6'
+                      variants={item}
+                    >
+                      <motion.div
+                        className='flex-shrink-0 w-8 h-8 rounded-full grid place-items-center bg-amber-500 text-slate-950 ring-4 ring-amber-500/15 shadow-sm'
+                        variants={dot}
+                      >
+                        <Icon className='h-4 w-4' />
+                      </motion.div>
 
-                {/* 1980s */}
-                <motion.div
-                  className='relative flex items-start gap-6'
-                  variants={item}
-                >
-                  <motion.div
-                    className='flex-shrink-0 w-8 h-8 rounded-full grid place-items-center bg-primary text-primary-foreground ring-4 ring-primary/10 shadow-sm'
-                    variants={dot}
-                  >
-                    <MapPin className='h-4 w-4' />
-                  </motion.div>
-                  <Card className='flex-1 ring-1 ring-black/10'>
-                    <CardHeader>
-                      <CardTitle className='font-heading'>
-                        1980s — Growth & Expansion
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className='text-muted-foreground'>
-                        The movement expanded throughout the Philippines with
-                        centers established in major cities. Local Filipino
-                        leaders emerged to guide the growing community of
-                        blessed families.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-
-                {/* 1990s */}
-                <motion.div
-                  className='relative flex items-start gap-6'
-                  variants={item}
-                >
-                  <motion.div
-                    className='flex-shrink-0 w-8 h-8 rounded-full grid place-items-center bg-primary text-primary-foreground ring-4 ring-primary/10 shadow-sm'
-                    variants={dot}
-                  >
-                    <Users className='h-4 w-4' />
-                  </motion.div>
-                  <Card className='flex-1 ring-1 ring-black/10'>
-                    <CardHeader>
-                      <CardTitle className='font-heading'>
-                        1990s — Community Building
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className='text-muted-foreground'>
-                        Focus shifted to strengthening local communities and
-                        families. Educational programs, youth initiatives, and
-                        interfaith dialogue became central to our mission.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-
-                {/* 2000s - Present */}
-                <motion.div
-                  className='relative flex items-start gap-6'
-                  variants={item}
-                >
-                  <motion.div
-                    className='flex-shrink-0 w-8 h-8 rounded-full grid place-items-center bg-primary text-primary-foreground ring-4 ring-primary/10 shadow-sm'
-                    variants={dot}
-                  >
-                    <Award className='h-4 w-4' />
-                  </motion.div>
-                  <Card className='flex-1 ring-1 ring-black/10'>
-                    <CardHeader>
-                      <CardTitle className='font-heading'>
-                        2000s — Present
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className='text-muted-foreground'>
-                        Today, FFWPU Philippines continues to grow with
-                        thousands of blessed families across the nation—focusing
-                        on peace-building, family values, and serving society.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                      <Card className='flex-1 bg-slate-900/60 border border-slate-800'>
+                        <CardHeader>
+                          <CardTitle className='font-heading text-slate-100'>
+                            {t.year} — {t.title}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className='text-slate-300'>{t.content}</p>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )
+                })}
               </motion.div>
             </div>
           </div>
-
-          {/* Current Impact (light stagger in) */}
           <motion.div
-            className='relative bg-muted/30 rounded-2xl p-8 text-center ring-1 ring-black/10'
+            className='relative rounded-2xl p-8 text-center border border-slate-800 bg-slate-900/60'
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
           >
-            <div className='absolute -inset-8 -z-10 bg-gradient-to-tr from-sky-500/10 via-blue-500/10 to-indigo-500/10 blur-2xl rounded-3xl' />
-            <h2 className='font-heading text-3xl font-bold mb-6'>
+            <div className='absolute -inset-8 -z-10 bg-[radial-gradient(30rem_16rem_at_20%_0%,rgba(56,189,248,0.10),transparent),radial-gradient(30rem_16rem_at_80%_100%,rgba(99,102,241,0.10),transparent)] blur-2xl rounded-3xl' />
+            <h2 className='font-heading text-3xl font-bold mb-6 text-slate-100'>
               Our Impact Today
             </h2>
             <motion.div
@@ -241,10 +207,10 @@ export default function HistoryPage() {
                     show: { opacity: 1, y: 0 },
                   }}
                 >
-                  <div className='text-3xl md:text-4xl font-extrabold mb-2 bg-gradient-to-r from-indigo-900 via-blue-800 to-sky-800 bg-clip-text text-transparent'>
+                  <div className='text-3xl md:text-4xl font-extrabold mb-2 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-200 bg-clip-text text-transparent'>
                     {s.value}
                   </div>
-                  <p className='text-muted-foreground'>{s.label}</p>
+                  <p className='text-slate-300'>{s.label}</p>
                 </motion.div>
               ))}
             </motion.div>

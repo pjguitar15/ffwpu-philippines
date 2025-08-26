@@ -1,22 +1,18 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { CommentsSection } from '@/components/news/comments-section'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import {
-  ArrowLeft,
-  Calendar,
-  User,
-  Eye,
-  Heart,
-  Link as LinkIcon,
-} from 'lucide-react'
+import { ArrowLeft, Calendar, User, Link as LinkIcon } from 'lucide-react'
 import { sampleNews } from '../../../data/news'
+import { QuickLinksSection } from '@/components/home/quick-links-section'
+import { UpcomingEventsSection } from '@/components/home/upcoming-events-section'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 
 type NewsItem = {
   id: string
@@ -89,10 +85,45 @@ export default function NewsDetailPage() {
     newsItem.title,
   )}&body=${encodeURIComponent(shareUrl)}`
 
+  // pool to pick from
+  const TAG_GRADIENTS: Record<string, string> = {
+    youth: 'from-sky-600 via-cyan-600 to-emerald-600',
+    leadership: 'from-indigo-600 via-violet-600 to-fuchsia-600',
+    service: 'from-emerald-600 via-teal-600 to-cyan-600',
+    community: 'from-slate-700 via-slate-800 to-slate-900',
+    'disaster-relief': 'from-amber-700 via-orange-700 to-rose-700',
+    iaysp: 'from-sky-700 via-cyan-700 to-indigo-700',
+    carp: 'from-fuchsia-700 via-pink-700 to-rose-700',
+    upf: 'from-amber-700 via-yellow-700 to-orange-700',
+  }
+
+  // optional: use only these values as the pool
+  const GRADIENT_POOL = Object.values(TAG_GRADIENTS)
+
+  /** Returns a gradient for a tag, randomly chosen once per page load */
+  function useGradientForTag() {
+    return React.useCallback((tag: string) => {
+      const key = tag.toLowerCase()
+
+      // 1) if you defined a specific gradient for this tag, use it
+      if (TAG_GRADIENTS[key]) return TAG_GRADIENTS[key]
+
+      // 2) stable hash of the tag (djb2-ish)
+      let hash = 5381
+      for (let i = 0; i < key.length; i++) {
+        hash = (hash * 33) ^ key.charCodeAt(i)
+      }
+      const idx = Math.abs(hash) % GRADIENT_POOL.length
+      return GRADIENT_POOL[idx]
+    }, [])
+  }
+
+  const gradientFor = useGradientForTag()
+
   return (
     <div className='min-h-screen flex flex-col bg-background'>
       <main className='flex-1'>
-        <div className='max-w-6xl mx-auto py-10 px-4 md:px-6'>
+        <div className='max-w-6xl mx-auto py-10 px-4 md:px-6 mb-12'>
           {/* Back link */}
           <button
             onClick={() => router.back()}
@@ -191,12 +222,12 @@ export default function NewsDetailPage() {
                   <Calendar className='h-4 w-4' />{' '}
                   {new Date(newsItem.date).toLocaleDateString()}
                 </span>
-                <span className='inline-flex items-center gap-1'>
+                {/* <span className='inline-flex items-center gap-1'>
                   <Eye className='h-4 w-4' /> {newsItem.views}
                 </span>
                 <span className='inline-flex items-center gap-1'>
                   <Heart className='h-4 w-4' /> {newsItem.likes}
-                </span>
+                </span> */}
               </div>
 
               {/* Tags */}
@@ -205,8 +236,15 @@ export default function NewsDetailPage() {
                   {newsItem.tags.map((tag) => (
                     <Badge
                       key={tag}
-                      variant='secondary'
-                      className='bg-slate-100 text-slate-800'
+                      // variant optional; gradient will override bg anyway
+                      className={cn(
+                        'bg-gradient-to-r', // enables gradient
+                        gradientFor(tag), // pick gradient per tag
+                        // badge aesthetics
+                        'text-white border-0 rounded-full',
+                        'px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase',
+                        'shadow-sm ring-1 ring-white/15 hover:ring-white/25 transition-colors',
+                      )}
                     >
                       {tag}
                     </Badge>
@@ -220,7 +258,7 @@ export default function NewsDetailPage() {
               </div>
 
               {/* Source / livestream link example (optional icon row) */}
-              <div className='mt-6 flex items-center gap-2 text-sm text-slate-600'>
+              {/* <div className='mt-6 flex items-center gap-2 text-sm text-slate-600'>
                 <LinkIcon className='h-4 w-4' />
                 <span>Share this update: </span>
                 <a
@@ -247,22 +285,21 @@ export default function NewsDetailPage() {
                 >
                   Email
                 </a>
-              </div>
+              </div> */}
 
               {/* Comments */}
-              <div className='mt-10 border-t pt-6'>
+              {/* <div className='mt-10 border-t pt-6'>
                 <CommentsSection
                   comments={newsItem.comments}
                   onAddComment={() => {}}
                   onAddReply={() => {}}
                 />
-              </div>
+              </div> */}
             </article>
-
             {/* SIDEBAR */}
             <aside className='lg:col-span-1'>
               <h3 className='text-slate-900 font-extrabold tracking-wide uppercase'>
-                Past Updates{' '}
+                Related Updates{' '}
                 <span className='text-slate-500'>in this topic</span>
               </h3>
 
@@ -292,47 +329,6 @@ export default function NewsDetailPage() {
               </div>
             </aside>
           </div>
-
-          {/* Explore other updates */}
-          <section className='mt-16'>
-            <div className='flex items-baseline justify-between'>
-              <h3 className='text-2xl md:text-3xl font-extrabold tracking-wide'>
-                <span className='text-slate-800'>Explore</span>{' '}
-                <span className='text-slate-500'>other updates</span>
-              </h3>
-              <Link
-                href='/news'
-                className='text-amber-600 font-extrabold tracking-wider uppercase text-sm hover:underline'
-              >
-                View All
-              </Link>
-            </div>
-
-            <div className='mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-              {more.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={`/news/${item.slug}`}
-                  className='group'
-                >
-                  <div className='relative rounded-xl overflow-hidden ring-1 ring-black/10 shadow bg-white'>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className='w-full h-36 object-cover group-hover:scale-[1.02] transition'
-                    />
-                  </div>
-                  <div className='mt-3 text-xs text-slate-600'>
-                    {new Date(item.date).toLocaleDateString()}
-                  </div>
-                  <h4 className='mt-1 font-extrabold tracking-wide group-hover:underline'>
-                    {item.title}
-                  </h4>
-                </Link>
-              ))}
-            </div>
-          </section>
         </div>
       </main>
     </div>

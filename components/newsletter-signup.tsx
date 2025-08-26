@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
+import { FiSend } from 'react-icons/fi'
 
 interface NewsletterSignupProps {
   variant?: 'default' | 'compact'
@@ -118,28 +119,6 @@ export function NewsletterSignup({
     setIsLoading(false)
   }
 
-  if (variant === 'compact') {
-    return (
-      <div className={`flex flex-col sm:flex-row gap-2 max-w-md ${className}`}>
-        <Input
-          type='email'
-          placeholder='Enter your email'
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className='flex-1'
-        />
-        <Button
-          onClick={handleSubmit}
-          disabled={isLoading}
-          className='whitespace-nowrap cursor-pointer'
-        >
-          {isLoading ? 'Subscribing...' : 'Subscribe'}
-        </Button>
-      </div>
-    )
-  }
-
-  // New horizontal, light input/button for dark background
   return (
     <form
       onSubmit={handleSubmit}
@@ -152,17 +131,31 @@ export function NewsletterSignup({
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
-        className='flex-1 px-6 py-6 border-0 focus:ring-0 bg-white text-gray-900 placeholder-gray-400 rounded-none rounded-l-lg'
+        className='flex-1 px-6 py-6 focus:ring-0 bg-white text-gray-900 placeholder-gray-400 rounded-none rounded-l-lg border border-transparent focus:border-blue-400'
         style={{ minWidth: 0 }}
       />
-      <Button
+
+      <button
         type='submit'
-        className='rounded-none rounded-r-lg px-6 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-base cursor-pointer min-w-[140px] h-full'
         disabled={isLoading}
-        style={{ boxShadow: 'none' }}
+        className='relative overflow-hidden rounded-none rounded-r-lg px-6 text-white font-semibold text-base cursor-pointer disabled:opacity-70 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-yellow-500 group/button'
+        style={{
+          background: 'linear-gradient(90deg, #B8860B, #DAA520)',
+          boxShadow: '0 4px 10px rgba(184, 134, 11, 0.4)',
+        }}
       >
-        {isLoading ? 'Subscribing...' : 'Subscribe'}
-      </Button>
+        {/* Text: balanced default, on hover makes just enough space */}
+        <span className='relative z-10 inline-block transition-all duration-300 ease-in-out group-hover/button:pr-2 group-hover/button:-translate-x-0.5'>
+          {isLoading ? 'Subscribing...' : 'Subscribe'}
+        </span>
+
+        {/* Icon: tucked in tighter */}
+        <FiSend
+          aria-hidden
+          size={18}
+          className='absolute right-2 top-1/2 -translate-y-1/2 opacity-0 translate-x-1 transition-all duration-300 ease-in-out group-hover/button:opacity-100 group-hover/button:translate-x-0'
+        />
+      </button>
     </form>
   )
 }

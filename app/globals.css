@@ -243,3 +243,20 @@
 .newsletter-signup-form {
   margin-top: 0.5rem;
 }
+
+@layer utilities {
+  @keyframes marquee-left {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); } /* move by half, because we render two copies */
+  }
+
+  .animate-marquee {
+    animation: marquee-left var(--marquee-duration, 30s) linear infinite;
+    will-change: transform;
+  }
+
+  /* optional pause on hover */
+  /* .animate-marquee:hover {
+    animation-play-state: paused;
+  } */
+}
