@@ -36,12 +36,6 @@ export function Header() {
       desc: 'Learn about Holy Mother Han',
       icon: Sparkles,
     },
-    // {
-    //   href: '/newsletter',
-    //   label: 'Newsletter',
-    //   desc: 'Stay connected weekly',
-    //   icon: FiMail,
-    // },
     {
       href: '/contact',
       label: 'Contact',
@@ -51,12 +45,6 @@ export function Header() {
   ]
 
   const extraNavItems = [
-    // {
-    //   href: '/global-news',
-    //   label: 'Global News',
-    //   desc: 'Watch weekly HQ video',
-    //   icon: FiVideo,
-    // },
     {
       href: '/news',
       label: 'News',
@@ -81,18 +69,6 @@ export function Header() {
       desc: 'Rev. Moon & Holy Mother Han',
       icon: FiHeart,
     },
-    // {
-    //   href: '/privacy',
-    //   label: 'Privacy Policy',
-    //   desc: 'How we handle data',
-    //   icon: FiShield,
-    // },
-    // {
-    //   href: '/terms',
-    //   label: 'Terms of Service',
-    //   desc: 'Site use & policies',
-    //   icon: FiFile,
-    // },
   ]
 
   const isActive = (href: string) => pathname === href

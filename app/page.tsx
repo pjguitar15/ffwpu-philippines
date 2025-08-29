@@ -191,8 +191,9 @@ export default function HomePage() {
               },
             ]}
           />
-
-          <QuickLinksSection />
+        </div>
+        <QuickLinksSection />
+        <div className='container mx-auto space-y-16'>
           <TrueParentsSection />
           <ChurchBranchesSection />
         </div>

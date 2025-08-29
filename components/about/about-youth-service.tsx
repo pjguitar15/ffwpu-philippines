@@ -50,7 +50,7 @@ export function AboutYouthServiceSection() {
         <div className='order-1 md:order-2 relative'>
           <div className='absolute -inset-6 rounded-3xl bg-gradient-to-tr from-emerald-500/20 via-teal-500/10 to-cyan-500/20 blur-2xl' />
           <Image
-            src='https://scontent.fpnh11-1.fna.fbcdn.net/v/t39.30808-6/481910744_1067691952053858_4297699376252289057_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeGhyp2UOs7hYll1tJDYjUqMoFvcXPitKBGgW9xc-K0oEf5vp0K_qgGLunHvqH5SC5M6pRF5w0wCL2KYcHf-qvui&_nc_ohc=_vHO6sJTSUgQ7kNvwH1UEQ6&_nc_oc=Adlyq3vSz63CqfrQKw0yfUUtT9YohAh7YafZuIEKFW6cKswZwqLtOYe0V1rQHx_Kpiw&_nc_zt=23&_nc_ht=scontent.fpnh11-1.fna&_nc_gid=yVSIe3WzSLD4_SdAQyz_IA&oh=00_AfWbxj5yM62T43fbXztzQ5VG3TAEZ6IK44uGXdYV9OmHZg&oe=68B148D4'
+            src='/ysp.jpg'
             alt='Youth service and character education in the community'
             width={900}
             height={700}
