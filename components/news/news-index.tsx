@@ -18,6 +18,7 @@ import { Eyebrow } from '@/components/ui/eyebrow'
 import { HighlightTitle } from '@/components/ui/highlight-title'
 import { SectionShell } from '@/components/ui/section-shell'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { excerptFromHtml } from '@/lib/text'
 
 export type NewsItem = {
   id: string
@@ -48,7 +49,7 @@ export function NewsIndex({
 }: Props) {
   const [q, setQ] = useState('')
   const [activeTag, setActiveTag] = useState<string>('All')
-  const [sort, setSort] = useState<'newest' | 'views' | 'likes'>('newest')
+  const [sort, setSort] = useState<'newest' | 'oldest'>('newest')
   const [view, setView] = useState<'grid' | 'list'>('grid')
   const [limit, setLimit] = useState(initialLimit)
 
@@ -94,10 +95,16 @@ export function NewsIndex({
         activeTag === 'All' ? true : (i.tags || []).includes(activeTag),
       )
 
+    const time = (d: string) => new Date(d).getTime() || 0
+
     list = list.sort((a, b) => {
-      if (sort === 'views') return (b.views ?? 0) - (a.views ?? 0)
-      if (sort === 'likes') return (b.likes ?? 0) - (a.likes ?? 0)
-      return +new Date(b.date) - +new Date(a.date) // newest
+      switch (sort) {
+        case 'oldest':
+          return time(a.date) - time(b.date) // oldest first
+        case 'newest':
+        default:
+          return time(b.date) - time(a.date) // newest first
+      }
     })
     return list
   }, [items, q, activeTag, sort])
@@ -241,18 +248,19 @@ export function NewsIndex({
                       <Calendar className='h-3.5 w-3.5' />
                       {new Date(item.date).toLocaleDateString()}
                     </span>
-                    <span className='inline-flex items-center gap-1'>
+                    {/* <span className='inline-flex items-center gap-1'>
                       <Eye className='h-3.5 w-3.5' /> {item.views ?? 0}
                     </span>
                     <span className='inline-flex items-center gap-1'>
                       <Heart className='h-3.5 w-3.5' /> {item.likes ?? 0}
-                    </span>
+                    </span> */}
                   </div>
                   <h3 className='mt-2 font-extrabold leading-snug tracking-wide group-hover:underline'>
                     {item.title}
                   </h3>
                   <p className='mt-1 text-sm text-slate-600 line-clamp-2'>
-                    {item.content || ''}
+                    {/* this too */}
+                    {excerptFromHtml(item?.content || '', 180)}
                   </p>
                 </div>
               </Link>
@@ -289,12 +297,12 @@ export function NewsIndex({
                       <Calendar className='h-3.5 w-3.5' />
                       {new Date(item.date).toLocaleDateString()}
                     </span>
-                    <span className='inline-flex items-center gap-1'>
+                    {/* <span className='inline-flex items-center gap-1'>
                       <Eye className='h-3.5 w-3.5' /> {item.views ?? 0}
                     </span>
                     <span className='inline-flex items-center gap-1'>
                       <Heart className='h-3.5 w-3.5' /> {item.likes ?? 0}
-                    </span>
+                    </span> */}
                   </div>
                   <h3 className='mt-1 font-extrabold tracking-wide group-hover:underline'>
                     {item.title}

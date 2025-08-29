@@ -39,7 +39,7 @@ export function HeaderSearch({
         placeholder='Search news…'
         className={cn(
           variant === 'desktop'
-            ? 'rounded-full border-2 bg-white pl-10 pr-9 py-2 text-sm focus:border-slate-300'
+            ? 'rounded-full border-2 bg-white pl-10 pr-9 py-2 text-sm focus:border-slate-300 font-medium'
             : 'w-full rounded-xl border-2 bg-white pl-10 pr-9 py-2.5 text-sm focus:border-slate-300',
           inputClassName,
         )}

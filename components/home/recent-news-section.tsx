@@ -8,6 +8,7 @@ import { HighlightTitle } from '../ui/highlight-title'
 import Image from 'next/image'
 import { ArrowRight, Newspaper, ChevronDown } from 'lucide-react'
 import * as React from 'react'
+import { excerptFromHtml } from '@/lib/text'
 
 type Props = {
   sampleNews: NewsItem[]
@@ -22,8 +23,8 @@ export function RecentNewsSection({ sampleNews }: Props) {
   const rest = sampleNews.slice(3, visible)
 
   return (
-    <section className='space-y-8'>
-      <div className='flex items-center justify-between'>
+    <section className='space-y-8 px-4 md:px-0'>
+      <div className='flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0'>
         <div className='space-y-2'>
           <span className='text-xs font-semibold text-white bg-gray-700 mx-auto px-4 py-1 rounded-full'>
             Local News Update
@@ -95,7 +96,7 @@ export function RecentNewsSection({ sampleNews }: Props) {
               </div>
               <div className='overflow-hidden relative'>
                 <p className='text-white/90 text-sm sm:text-base line-clamp-2 md:line-clamp-3 transition-[max-height] duration-300 md:group-hover:line-clamp-none md:group-hover:max-h-32 max-h-12'>
-                  {feature.content}
+                  {excerptFromHtml(feature.content, 180)}
                 </p>
                 <div className='absolute left-0 right-0 bottom-0 h-8 bg-gradient-to-t from-black/80 to-transparent pointer-events-none md:group-hover:opacity-0 transition-opacity duration-300' />
               </div>
@@ -138,7 +139,7 @@ export function RecentNewsSection({ sampleNews }: Props) {
               </div>
               <div className='overflow-hidden relative'>
                 <p className='text-white/90 text-xs sm:text-sm line-clamp-1'>
-                  {item.content}
+                  {excerptFromHtml(item.content, 180)}
                 </p>
                 <div className='absolute left-0 right-0 bottom-0 h-6 bg-gradient-to-t from-black/80 to-transparent pointer-events-none md:opacity-0' />
               </div>
@@ -180,7 +181,7 @@ export function RecentNewsSection({ sampleNews }: Props) {
                 {new Date(item.date).toLocaleDateString()}
               </div>
               <p className='text-white/90 text-xs sm:text-sm line-clamp-1'>
-                {item.content}
+                {excerptFromHtml(item.content, 180)}
               </p>
             </div>
           </Link>
@@ -195,7 +196,7 @@ export function RecentNewsSection({ sampleNews }: Props) {
             onClick={() =>
               setVisible((v) => Math.min(v + 3, sampleNews.length))
             }
-            className='rounded-full border-slate-300 text-slate-800 hover:bg-slate-50 hover:border-slate-400 inline-flex items-center'
+            className='rounded-full border-slate-300 text-slate-800 hover:bg-slate-50 hover:border-slate-400 inline-flex items-center cursor-pointer'
           >
             View more updates
             <ChevronDown className='ml-2 h-4 w-4' />

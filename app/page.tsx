@@ -91,14 +91,14 @@ export default function HomePage() {
               sideText='CHEON SHIM WON'
               description='Cheon Shim Won is a dedicated holy space for deep, heartfelt prayer (jeongseong)—specially designed to foster healing, renewal, and clarity. Around the world, communities gather here for night-vigil devotion to seek guidance, offer gratitude, and intercede for others. Cheon Shim Won vigils have become a living tradition within the HJ CheonBo providence, inspiring personal transformation and communal hope.'
               bottomLinks={[
-                {
-                  label: 'Join the Vigil Prayer',
-                  href: '/events/cheon-shim-won-vigil',
-                },
-                {
-                  label: 'What is Cheon Shim Won?',
-                  href: '/about/cheon-shim-won',
-                },
+                // {
+                //   label: 'Join the Vigil Prayer',
+                //   href: '/events/cheon-shim-won-vigil',
+                // },
+                // {
+                //   label: 'What is Cheon Shim Won?',
+                //   href: '/about/cheon-shim-won',
+                // },
                 {
                   label: 'CheonBo Training Center',
                   href: 'https://en.hjcbt.org/index.php',
@@ -118,21 +118,18 @@ export default function HomePage() {
             highlightedGradientClassName='bg-gradient-to-r from-sky-400 via-sky-500 to-blue-600 bg-clip-text text-transparent'
             sideText='PURE WATER'
             description='Pure Water is a current providential focus inspired by Holy Mother Dr. Hak Ja Han Moon—calling youth and families to become “pure water”: clear, life-giving, and without shadows. Through Cheon Shim Won devotion, character education, and service, Pure Water seminars and assemblies unite young people across the Philippines and worldwide to pray, learn, and advance Heaven’s mission together.'
-            bottomLinks={[
-              { label: 'Upcoming Assemblies', href: '/events/pure-water' },
-              {
-                label: 'PH: Pure Water Workshop',
-                href: 'https://familyfedihq.org/2024/10/philippines-pure-water-workshop-pure-love-2-0/',
-              },
-              {
-                label: 'Holy Mother’s Guidance',
-                href: 'https://familyfedihq.org/2025/02/the-chosen-blessed-families-attending-holy-mother-han/',
-              },
-              {
-                label: 'Regional Youth Assembly',
-                href: 'https://familyfedihq.org/2025/08/kenya-pure-water-youth-assembly/',
-              },
-            ]}
+            bottomLinks={
+              [
+                // {
+                //   label: 'Holy Mother’s Guidance',
+                //   href: 'https://familyfedihq.org/2025/02/the-chosen-blessed-families-attending-holy-mother-han/',
+                // },
+                // {
+                //   label: 'Regional Youth Assembly',
+                //   href: 'https://familyfedihq.org/2025/08/kenya-pure-water-youth-assembly/',
+                // },
+              ]
+            }
           />
         </div>
         <UpcomingEventsSection />

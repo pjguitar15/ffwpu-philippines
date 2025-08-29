@@ -199,7 +199,7 @@ export function Header() {
               type='button'
               aria-label='Open menu'
               onClick={() => setIsOpen(true)}
-              className='h-12 w-12 inline-flex items-center justify-center hover:bg-blue-100 rounded-full'
+              className='h-12 w-12 inline-flex items-center justify-center hover:bg-blue-100 rounded-full cursor-pointer'
             >
               <FiMenu className='h-5 w-5' strokeWidth={2.5} />
             </button>

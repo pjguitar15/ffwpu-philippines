@@ -17,11 +17,8 @@ type SideBySideProps = {
   bottomLinks?: BottomLink[]
   className?: string
   highlightedText?: string | string[]
-  /** gradient for highlighted text in the title */
   highlightedGradientClassName?: string
-  /** NEW: side rail label text */
   sideText?: string
-
 }
 
 export function SideBySide({
@@ -35,20 +32,15 @@ export function SideBySide({
   bottomLinks = [],
   className = '',
   highlightedText,
-  highlightedGradientClassName = 'bg-gradient-to-r from-violet-800 via-purple-800 to-fuchsia-800 bg-clip-text text-transparent', // default: dark purple
+  highlightedGradientClassName = 'bg-gradient-to-r from-violet-800 via-purple-800 to-fuchsia-800 bg-clip-text text-transparent',
   sideText = 'CHEON SHIM WON',
 }: SideBySideProps) {
   const pairDir = reversed ? 'md:flex-row-reverse' : 'md:flex-row'
 
   const SideRail = (
-    <aside className='hidden md:flex flex-col items-center gap-4 pt-6'>
-      <span
-        className={[
-          'text-sm font-extrabold tracking-[0.35em] uppercase',
-          '[writing-mode:vertical-rl] rotate-180',
-          'bg-clip-text text-black'
-        ].join(' ')}
-      >
+    <aside className='hidden lg:flex flex-col items-center gap-4 pt-6'>
+      {/* shown on lg+ only to avoid md crowding */}
+      <span className='text-sm font-extrabold tracking-[0.35em] uppercase [writing-mode:vertical-rl] rotate-180 text-slate-800'>
         {sideText}
       </span>
     </aside>
@@ -57,25 +49,27 @@ export function SideBySide({
   return (
     <section className={`w-full ${className}`}>
       <div className='mx-auto px-4 md:px-0 py-12'>
-        <div className='flex items-start gap-8 md:gap-12'>
+        <div className='flex items-start gap-8 md:gap-8 lg:gap-12'>
           {withSocials && !reversed && SideRail}
 
           <div
-            className={`flex flex-col ${pairDir} items-start gap-8 md:gap-12 flex-1`}
+            className={`flex flex-col ${pairDir} items-start md:items-stretch gap-8 md:gap-8 lg:gap-12 flex-1`}
           >
-            <div className='w-full md:max-w-[620px] lg:max-w-[640px]'>
+            {/* IMAGE */}
+            <div className='w-full md:basis-1/2 md:max-w-none lg:max-w-[640px]'>
               <div className='relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/10'>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={imgUrl}
                   alt={imgAlt}
-                  className='w-full h-full object-cover aspect-[16/9]'
+                  className='w-full h-full object-cover aspect-[16/9] md:aspect-[4/3] lg:aspect-[16/9]'
                 />
-                <div className='pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-black/0' />
+                <div className='pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent' />
               </div>
             </div>
 
-            <div className='w-full md:flex-1 max-w-2xl'>
+            {/* TEXT */}
+            <div className='w-full md:basis-1/2 md:max-w-none lg:flex-1 lg:max-w-2xl'>
               {eyebrow && (
                 <div className='text-sm font-semibold text-slate-800/90 mb-3'>
                   {eyebrow}
@@ -87,7 +81,7 @@ export function SideBySide({
                 highlightedText={highlightedText}
                 gradientClassName={highlightedGradientClassName}
                 as='h2'
-                className='text-3xl md:text-5xl'
+                className='text-3xl md:text-4xl lg:text-5xl'
                 uppercase
               />
 

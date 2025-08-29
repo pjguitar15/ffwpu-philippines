@@ -26,7 +26,7 @@ const items = [
 
 export function QuickLinksSection() {
   return (
-    <section className='py-4 bg-white'>
+    <section className='py-4 bg-white px-4 md:px-0'>
       <div className='container mx-auto'>
         {/* Header */}
         <div className='text-center space-y-4 mb-12 md:mb-16'>

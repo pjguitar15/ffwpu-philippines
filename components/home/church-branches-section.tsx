@@ -1,106 +1,146 @@
 'use client'
 
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { FiCalendar, FiClock, FiMapPin, FiArrowRight } from 'react-icons/fi'
+import { BiBuilding } from 'react-icons/bi'
 
 export function ChurchBranchesSection() {
   const branches = [
     {
       title: 'Metro Manila',
-      venue: 'FFWPU Manila Center',
-      address: '123 Quezon Ave, Quezon City, Metro Manila',
+      venue: 'FFWPU Headquarters',
+      address:
+        '32 Samar Ave, South Triangle (Diliman), Quezon City, Metro Manila, Philippines',
     },
     {
       title: 'Cebu',
-      venue: 'FFWPU Cebu Center',
-      address: '456 Colon St, Cebu City, Cebu',
+      venue: 'Visayas Peace Embassy (FFWPU Cebu Center)',
+      address: '25 Urgello St, Sambag 1, Cebu City, Cebu, Philippines',
     },
     {
       title: 'Davao',
       venue: 'FFWPU Davao Center',
-      address: '789 Rizal St, Davao City, Davao del Sur',
+      address: 'Davao City, Davao del Sur, Philippines',
+    },
+    {
+      title: 'Cavite',
+      venue: 'FFWPU Cavite Church',
+      address:
+        'Blk. 17 Lot 1, Phase III, Brgy. Cabuco, Trece Martires City, Cavite, Philippines',
+    },
+    {
+      title: 'Bicol (Legazpi)',
+      venue: 'FFWPU Legazpi Family Church',
+      address: 'Legazpi City, Albay, Philippines (contact for directions)',
+    },
+    {
+      title: 'Antipolo (Rizal)',
+      venue: 'FFWPU Antipolo Family Church',
+      address:
+        '126 M. Santos St., Brgy. San Jose, Antipolo City, Rizal, Philippines',
+    },
+    {
+      title: 'Cauayan (Isabela)',
+      venue: 'FFWPU Isabela / Cauayan Church',
+      address: 'Cauayan City, Isabela, Philippines (contact for directions)',
     },
   ]
 
+  const INITIAL_COUNT = 4
+  const [showAll, setShowAll] = useState(false)
+  const visible = showAll ? branches : branches.slice(0, INITIAL_COUNT)
+
   return (
-    <section className='relative space-y-10'>
+    <section id='branches' className='relative py-16 sm:py-20'>
       {/* soft background accent */}
       <div className='pointer-events-none absolute inset-0 -z-10'>
-        <div className='absolute inset-0 bg-gradient-to-b from-sky-50/50 via-slate-50/40 to-white' />
-        <div className='absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-sky-200/20 blur-3xl' />
+        <div className='absolute inset-0 bg-gradient-to-b from-sky-50/60 via-slate-50/40 to-white' />
+        <div className='absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-sky-200/30 blur-3xl' />
       </div>
 
-      {/* heading */}
-      <div className='text-center space-y-4'>
-        <h2 className='font-heading text-3xl md:text-4xl font-extrabold tracking-wide'>
-          <span className='bg-gradient-to-r from-sky-700 via-blue-800 to-indigo-900 bg-clip-text text-transparent'>
-            VISIT US ON SUNDAY
-          </span>
-        </h2>
-        {/* keep header bar if you like; it’s subtle and not on the cards */}
-        <div className='mx-auto h-1 w-20 rounded-full bg-slate-300' />
-        <p className='mx-auto max-w-2xl text-slate-600'>
-          Join our worship and fellowship across our Philippine branches.
-          Everyone is welcome.
-        </p>
-      </div>
+      {/* container */}
+      <div className='mx-auto max-w-7xl px-4 sm:px-6'>
+        {/* heading */}
+        <div className='text-center space-y-3'>
+          <p className='text-xs font-semibold tracking-[0.2em] text-sky-700'>
+            PHILIPPINE BRANCHES
+          </p>
+          <h2 className='font-heading text-3xl md:text-4xl font-extrabold tracking-wide'>
+            <span className='bg-gradient-to-r from-sky-700 via-blue-800 to-indigo-900 bg-clip-text text-transparent'>
+              VISIT US ON SUNDAY
+            </span>
+          </h2>
+          <p className='mx-auto max-w-2xl text-slate-600'>
+            Join our worship and fellowship. Everyone is welcome.
+          </p>
+        </div>
 
-      {/* cards */}
-      <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
-        {branches.map((b) => {
-          const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-            `${b.venue} ${b.address}`,
-          )}`
-          return (
-            <Card
-              key={b.title}
-              className='group relative overflow-hidden rounded-2xl border border-slate-200/70 bg-white/90 p-0 shadow-sm ring-1 ring-slate-900/5 transition-all hover:-translate-y-1 hover:shadow-xl'
-            >
-              {/* removed yellow/amber top bar */}
+        {/* cards */}
+        <div
+          className='mt-10 grid gap-5
+          [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]'
+        >
+          {visible.map((b) => {
+            const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+              `${b.venue} ${b.address}`,
+            )}`
+            return (
+              <Card
+                key={b.title}
+                className='group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white/90 p-0 shadow-sm ring-1 ring-slate-900/5 transition-all hover:-translate-y-0.5 hover:shadow-lg'
+              >
+                <div className='p-5 sm:p-6 flex-1'>
+                  <div className='flex items-center justify-between gap-3'>
+                    <h3 className='font-heading text-lg font-bold text-slate-900'>
+                      {b.title}
+                    </h3>
+                  </div>
 
-              <div className='p-6'>
-                <div className='flex items-center justify-between'>
-                  <h3 className='font-heading text-xl font-bold text-slate-900'>
-                    {b.title}
-                  </h3>
-                  {/* removed FFWPU PH chip */}
-                </div>
-
-                <div className='mt-4 space-y-3 text-sm'>
-                  {/* day/time chips */}
-                  <div className='flex flex-wrap gap-2'>
-                    <span className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-800 ring-1 ring-slate-200'>
-                      <CalendarIcon className='h-4 w-4 text-slate-600' />
+                  <div className='mt-3 flex flex-wrap gap-2 text-xs'>
+                    <span className='inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-800 ring-1 ring-slate-200'>
+                      <FiCalendar
+                        size={16}
+                        className='shrink-0 text-slate-600'
+                      />
                       Every Sunday
                     </span>
-                    <span className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-800 ring-1 ring-slate-200'>
-                      <ClockIcon className='h-4 w-4 text-slate-600' />
+                    <span className='inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-800 ring-1 ring-slate-200'>
+                      <FiClock size={16} className='shrink-0 text-slate-600' />
                       10:00am–12:00pm
                     </span>
                   </div>
 
-                  <div className='flex items-start gap-2 text-slate-700'>
-                    <BuildingIcon className='mt-0.5 h-4 w-4 text-slate-500' />
-                    <div>
-                      <span className='font-semibold text-slate-800'>
-                        Venue:
-                      </span>{' '}
-                      {b.venue}
+                  <div className='mt-4 space-y-2 text-sm'>
+                    <div className='flex items-start gap-2 text-slate-700'>
+                      <BiBuilding
+                        size={16}
+                        className='mt-0.5 shrink-0 text-slate-500'
+                      />
+                      <div>
+                        <span className='font-semibold text-slate-800'>
+                          Venue:
+                        </span>{' '}
+                        {b.venue}
+                      </div>
                     </div>
-                  </div>
-
-                  <div className='flex items-start gap-2 text-slate-700'>
-                    <MapPinIcon className='mt-0.5 h-4 w-4 text-slate-500' />
-                    <div>
-                      <span className='font-semibold text-slate-800'>
-                        Address:
-                      </span>{' '}
-                      {b.address}
+                    <div className='flex items-start gap-2 text-slate-700'>
+                      <FiMapPin
+                        size={16}
+                        className='mt-0.5 shrink-0 text-slate-500'
+                      />
+                      <div>
+                        <span className='font-semibold text-slate-800'>
+                          Address:
+                        </span>{' '}
+                        {b.address}
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className='mt-6'>
+                <div className='p-5 pt-0 sm:px-6 sm:pt-0'>
                   <Button
                     className='w-full cursor-pointer rounded-full bg-slate-800 text-white shadow-sm transition hover:bg-slate-900 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 focus-visible:ring-offset-2'
                     asChild
@@ -111,109 +151,32 @@ export function ChurchBranchesSection() {
                       rel='noopener noreferrer'
                       aria-label={`Get directions to ${b.venue}, ${b.title}`}
                     >
-                      <ArrowRightIcon className='mr-2 h-4 w-4' />
+                      <FiArrowRight size={16} className='mr-2' />
                       GET DIRECTIONS
                     </a>
                   </Button>
                 </div>
-              </div>
+              </Card>
+            )
+          })}
+        </div>
 
-              {/* removed amber corner glow */}
-            </Card>
-          )
-        })}
+        {/* show more / less */}
+        {branches.length > INITIAL_COUNT && (
+          <div className='mt-8 flex justify-center'>
+            <Button
+              variant='outline'
+              className='rounded-full'
+              onClick={() => setShowAll((v) => !v)}
+              aria-expanded={showAll}
+            >
+              {showAll
+                ? 'Show fewer branches'
+                : `Show all branches (${branches.length})`}
+            </Button>
+          </div>
+        )}
       </div>
     </section>
-  )
-}
-
-/* --- tiny inline icons (no extra deps) --- */
-function CalendarIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox='0 0 24 24' fill='none' {...props}>
-      <rect
-        x='3'
-        y='4'
-        width='18'
-        height='18'
-        rx='2'
-        className='stroke-current'
-        strokeWidth='1.5'
-      />
-      <path
-        d='M8 2v4M16 2v4M3 10h18'
-        className='stroke-current'
-        strokeWidth='1.5'
-        strokeLinecap='round'
-      />
-    </svg>
-  )
-}
-
-function ClockIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox='0 0 24 24' fill='none' {...props}>
-      <circle
-        cx='12'
-        cy='12'
-        r='9'
-        className='stroke-current'
-        strokeWidth='1.5'
-      />
-      <path
-        d='M12 7v5l3 2'
-        className='stroke-current'
-        strokeWidth='1.5'
-        strokeLinecap='round'
-      />
-    </svg>
-  )
-}
-
-function BuildingIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox='0 0 24 24' fill='none' {...props}>
-      <rect
-        x='4'
-        y='3'
-        width='16'
-        height='18'
-        rx='2'
-        className='stroke-current'
-        strokeWidth='1.5'
-      />
-      <path
-        d='M8 7h2M8 11h2M8 15h2M14 7h2M14 11h2M14 15h2'
-        className='stroke-current'
-        strokeWidth='1.5'
-      />
-    </svg>
-  )
-}
-
-function MapPinIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox='0 0 24 24' fill='none' {...props}>
-      <path
-        d='M12 22s7-6 7-12a7 7 0 1 0-14 0c0 6 7 12 7 12Z'
-        className='stroke-current'
-        strokeWidth='1.5'
-      />
-      <circle
-        cx='12'
-        cy='10'
-        r='2.5'
-        className='stroke-current'
-        strokeWidth='1.5'
-      />
-    </svg>
-  )
-}
-
-function ArrowRightIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox='0 0 24 24' fill='currentColor' {...props}>
-      <path d='M13.172 12 8.222 7.05l1.414-1.414L16 12l-6.364 6.364-1.414-1.414z' />
-    </svg>
   )
 }

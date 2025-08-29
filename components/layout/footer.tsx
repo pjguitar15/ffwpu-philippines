@@ -7,21 +7,14 @@ const mainNavItems = [
   { href: '/holy-mother-han', label: 'Holy Mother Han' },
   { href: '/about', label: 'About' },
   { href: '/news', label: 'News' },
-  { href: '/newsletter', label: 'Newsletter' },
   { href: '/contact', label: 'Contact' },
 ]
 
 const extraNavItems = [
-  { href: '/global-news', label: 'Global News' },
   { href: '/contact', label: 'Contact' }, // duplicate; we’ll dedupe
   { href: '/about/history', label: 'Our History' },
   { href: '/about/true-parents', label: 'True Parents' },
-  { href: '/privacy', label: 'Privacy Policy' },
-  { href: '/terms', label: 'Terms of Service' },
 ]
-
-// Optional: keep your existing non-header link(s)
-const otherItems = [{ href: '/articles', label: 'Articles' }]
 
 function dedupe(items: { href: string; label: string }[]) {
   const seen = new Set<string>()
@@ -32,89 +25,47 @@ function dedupe(items: { href: string; label: string }[]) {
 
 export function Footer() {
   const explore = dedupe(mainNavItems)
-  const more = dedupe(extraNavItems)
-  const showOther = otherItems // keep if you still want Articles in the footer
+  const more = dedupe(extraNavItems).filter(
+    (l) => !explore.some((e) => e.href === l.href),
+  )
 
   return (
     <footer className='border-t bg-muted/30'>
-      <div className='container py-12 mx-auto'>
-        <div className='grid grid-cols-1 md:grid-cols-4 gap-8'>
-          {/* Logo + blurb */}
-          <div className='space-y-4'>
-            <div className='flex items-center space-x-2'>
-              <div className='flex flex-col'>
-                <Image
-                  src='/ffwpu-ph-logo.png'
-                  alt='FFWPU Philippines Logo'
-                  width={130}
-                  height={130}
-                />
-              </div>
-            </div>
-            <p className='text-sm text-muted-foreground max-w-xs'>
+      {/* top area */}
+      <div className='container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12'>
+        <div
+          className='
+            grid gap-10
+            grid-cols-1 sm:grid-cols-2 lg:grid-cols-4
+          '
+        >
+          {/* Brand / Mission */}
+          <div className='space-y-4 max-w-md'>
+            <Link href='/' className='inline-flex items-center space-x-3'>
+              <Image
+                src='/ffwpu-ph-logo.png'
+                alt='FFWPU Philippines Logo'
+                width={130}
+                height={130}
+                className='h-auto w-[110px] sm:w-[120px] lg:w-[130px]'
+                priority={false}
+              />
+            </Link>
+            <p className='text-sm text-muted-foreground'>
               Building a world of peace, love, and unity through the teachings
               of True Parents.
             </p>
-          </div>
 
-          {/* Explore (main header links) */}
-          <div className='space-y-4'>
-            <h4 className='font-heading font-semibold'>Explore</h4>
-            <ul className='space-y-2 text-sm'>
-              {explore.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className='text-muted-foreground hover:text-foreground transition-colors'
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-              {/* Keep Articles if you want it here */}
-              {showOther.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className='text-muted-foreground hover:text-foreground transition-colors'
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* More (drawer-only header links) */}
-          <div className='space-y-4'>
-            <h4 className='font-heading font-semibold'>More</h4>
-            <ul className='space-y-2 text-sm'>
-              {more
-                .filter((l) => !explore.some((e) => e.href === l.href)) // avoid duplicates (e.g., /contact)
-                .map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className='text-muted-foreground hover:text-foreground transition-colors'
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div className='space-y-4'>
-            <h4 className='font-heading font-semibold'>Contact</h4>
-            <div className='space-y-2 text-sm text-muted-foreground'>
-              <p>Quezon City, Philippines</p>
-              <p>info@ffwpu.ph</p>
-              <div className='flex space-x-4 pt-2'>
+            {/* Socials */}
+            <div className='pt-1'>
+              <div
+                className='flex items-center gap-3'
+                aria-label='Social links'
+              >
                 <a
                   href='#'
-                  className='hover:text-foreground transition-colors'
                   aria-label='Facebook'
+                  className='inline-flex h-9 w-9 items-center justify-center rounded-full bg-background ring-1 ring-black/10 text-foreground/80 hover:text-foreground hover:ring-black/20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400'
                 >
                   <svg
                     className='h-5 w-5'
@@ -126,8 +77,8 @@ export function Footer() {
                 </a>
                 <a
                   href='#'
-                  className='hover:text-foreground transition-colors'
                   aria-label='YouTube'
+                  className='inline-flex h-9 w-9 items-center justify-center rounded-full bg-background ring-1 ring-black/10 text-foreground/80 hover:text-foreground hover:ring-black/20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400'
                 >
                   <svg
                     className='h-5 w-5'
@@ -139,8 +90,8 @@ export function Footer() {
                 </a>
                 <a
                   href='#'
-                  className='hover:text-foreground transition-colors'
                   aria-label='Instagram'
+                  className='inline-flex h-9 w-9 items-center justify-center rounded-full bg-background ring-1 ring-black/10 text-foreground/80 hover:text-foreground hover:ring-black/20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400'
                 >
                   <svg
                     className='h-5 w-5'
@@ -153,29 +104,82 @@ export function Footer() {
               </div>
             </div>
           </div>
+
+          {/* Explore */}
+          <nav className='space-y-4' aria-label='Explore'>
+            <h4 className='font-heading font-semibold'>Explore</h4>
+            <ul className='space-y-2 text-sm'>
+              {explore.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className='text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded'
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* More */}
+          <nav className='space-y-4' aria-label='More'>
+            <h4 className='font-heading font-semibold'>More</h4>
+            <ul className='space-y-2 text-sm'>
+              {more.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className='text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded'
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Contact */}
+          <address className='not-italic space-y-4'>
+            <h4 className='font-heading font-semibold'>Contact</h4>
+            <div className='space-y-2 text-sm text-muted-foreground'>
+              <p>Quezon City, Philippines</p>
+              <p>
+                <a
+                  href='mailto:info@ffwpu.ph'
+                  className='hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded'
+                >
+                  info@ffwpu.ph
+                </a>
+              </p>
+            </div>
+          </address>
         </div>
 
         <Separator className='my-8' />
 
-        <div className='flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0'>
-          <p className='text-sm text-muted-foreground'>
-            © 2025 Family Federation for World Peace and Unification
-            Philippines. All rights reserved.
+        {/* bottom bar */}
+        <div className='flex flex-col md:flex-row items-center justify-between gap-3 px-1'>
+          <p className='text-sm text-muted-foreground text-center md:text-left'>
+            © {new Date().getFullYear()} Family Federation for World Peace and
+            Unification Philippines. All rights reserved.
           </p>
-          <div className='flex space-x-4 text-sm'>
+
+          {/* Optional links (uncomment when routes exist) */}
+          {/* <div className="flex items-center gap-4 text-sm">
             <Link
-              href='/privacy'
-              className='text-muted-foreground hover:text-foreground transition-colors'
+              href="/privacy"
+              className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded"
             >
               Privacy Policy
             </Link>
             <Link
-              href='/terms'
-              className='text-muted-foreground hover:text-foreground transition-colors'
+              href="/terms"
+              className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded"
             >
               Terms of Service
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>
