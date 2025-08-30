@@ -37,15 +37,6 @@ export function Header() {
       icon: Sparkles,
     },
     {
-      href: '/contact',
-      label: 'Contact',
-      desc: 'Reach out to our team',
-      icon: FiPhone,
-    },
-  ]
-
-  const extraNavItems = [
-    {
       href: '/news',
       label: 'News',
       desc: 'Latest updates & reports',
@@ -57,6 +48,15 @@ export function Header() {
       desc: 'Who we are & our mission',
       icon: FiInfo,
     },
+    {
+      href: '/contact',
+      label: 'Contact',
+      desc: 'Reach out to our team',
+      icon: FiPhone,
+    },
+  ]
+
+  const extraNavItems = [
     {
       href: '/about/history',
       label: 'Our History',
