@@ -65,7 +65,7 @@ export function RecentNewsSection({ sampleNews }: Props) {
         {feature && (
           <Link
             href={`/news/${feature.slug}`}
-            className='relative group rounded-xl overflow-hidden ring-1 ring-black/10
+            className='relative group rounded-lg overflow-hidden ring-1 ring-black/10
                        md:col-span-2 md:row-span-2
                        aspect-[16/9] md:aspect-auto md:h-[500px] bg-black/80'
           >
@@ -109,7 +109,7 @@ export function RecentNewsSection({ sampleNews }: Props) {
           <Link
             key={item.id}
             href={`/news/${item.slug}`}
-            className='relative group rounded-xl overflow-hidden ring-1 ring-black/10
+            className='relative group rounded-lg overflow-hidden ring-1 ring-black/10
                        bg-black/80 min-h-0
                        aspect-[16/10] md:aspect-auto md:h-[240px]'
           >
@@ -152,7 +152,7 @@ export function RecentNewsSection({ sampleNews }: Props) {
           <Link
             key={item.id}
             href={`/news/${item.slug}`}
-            className='relative group rounded-xl overflow-hidden ring-1 ring-black/10
+            className='relative group rounded-lg overflow-hidden ring-1 ring-black/10
                        bg-black/80 min-h-0
                        aspect-[16/10] md:aspect-auto md:h-[240px]'
           >
