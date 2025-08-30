@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button"
 import { MovingImages } from "@/components/moving-images"
 import { HighlightTitle } from '../ui/highlight-title'
 import { EpicButton } from '../ui/epic-button'
+import Image from 'next/image'
 
 export function HeroSection() {
   return (
     <section className='relative bg-background'>
       <div className='container mx-auto px-4 py-16 text-center'>
         <div className='max-w-5xl mx-auto space-y-8'>
-          <div className='space-y-2'>
+          <div className='space-y-2 z-10 relative'>
             <p className='text-primary font-semibold tracking-wide uppercase text-sm'>
               FFWPU Philippines
             </p>
@@ -30,6 +31,13 @@ export function HeroSection() {
               Providence, and living True Parents’ vision.
             </p>
           </div>
+          <Image
+            className='absolute lg:right-20 xl:right-80 2xl:right-100 top-50 opacity-20 hidden lg:block z-0'
+            width={200}
+            height={50}
+            alt='ph'
+            src='/philippines.svg'
+          />
 
           <div className='pt-4'>
             <Link href='#cheon-shim-won' className='inline-block'>
