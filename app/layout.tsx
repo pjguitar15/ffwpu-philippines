@@ -107,7 +107,7 @@ export default function RootLayout({
       className={`${montserrat.variable} ${inter.variable} antialiased scrollbar-thin scroll-smooth`}
     >
       <head>
-        <link rel='icon' href='/favicon.png' />
+        <link rel='icon' href='/favicon.webp' />
         <link
           rel='apple-touch-icon'
           sizes='180x180'

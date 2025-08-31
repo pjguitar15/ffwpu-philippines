@@ -60,8 +60,8 @@ export function SectionNav({ sections, offset = 120 }: SectionNavProps) {
   }
 
   return (
-    <nav className="hidden lg:block sticky top-28">
-      <ul className="relative">
+    <nav className='hidden xl:block sticky top-28'>
+      <ul className='relative'>
         {sections.map((s, idx) => {
           const isActive = s.id === activeId
           return (

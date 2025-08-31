@@ -23,16 +23,10 @@ export function AboutCTA() {
           Road. Your heart and hands can bless many families.
         </p>
         <div className='pt-2 flex justify-center gap-3'>
-          <Link href='/events' className='inline-block'>
+          <Link href='/contact' className='inline-block'>
             <EpicButton className='bg-gradient-to-r from-sky-700 via-blue-700 to-indigo-800 hover:from-blue-700 hover:to-indigo-700'>
-              See Upcoming Events
+              Join Us Now
             </EpicButton>
-          </Link>
-          <Link
-            href='/donate'
-            className='inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm md:text-base hover:bg-accent/50'
-          >
-            <HeartHandshake className='h-4 w-4' /> Donate / Volunteer
           </Link>
         </div>
       </div>

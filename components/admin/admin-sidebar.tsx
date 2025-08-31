@@ -5,7 +5,19 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { LayoutDashboard, FileText, Mail, Megaphone, Globe, Users, Activity, LogOut, Shield, User } from "lucide-react"
+import {
+  Sparkles,
+  LayoutDashboard,
+  FileText,
+  Mail,
+  Megaphone,
+  Globe,
+  Users,
+  Activity,
+  LogOut,
+  Shield,
+  User,
+} from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
 
 interface AdminUser {
@@ -38,13 +50,16 @@ export function AdminSidebar() {
     })
     router.push("/admin/login")
   }
-
+ 
   const menuItems = [
-    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/admin/news", label: "News Management", icon: FileText },
-    { href: "/admin/newsletters", label: "Newsletters", icon: Mail },
-    { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
-    { href: "/admin/global-news", label: "Global News", icon: Globe },
+    { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/admin/news', label: 'News Management', icon: FileText },
+    { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
+    {
+      href: '/admin/word-of-the-day',
+      label: 'Word of the Day',
+      icon: Sparkles,
+    },
   ]
 
   const superAdminItems = [

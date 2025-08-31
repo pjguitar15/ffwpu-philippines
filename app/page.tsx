@@ -1,19 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Header } from "@/components/layout/header"
-import { Footer } from "@/components/layout/footer"
-import { AnnouncementBanner } from "@/components/announcement-banner"
-import { NewsItem, sampleNews } from "../data/news"
-import { HeroSection } from "@/components/home/hero-section"
-import { RecentNewsSection } from "@/components/home/recent-news-section"
+import { useState, useEffect } from 'react'
+import { AnnouncementBanner } from '@/components/announcement-banner'
+import { NewsItem, sampleNews } from '../data/news'
+import { HeroSection } from '@/components/home/hero-section'
+import { RecentNewsSection } from '@/components/home/recent-news-section'
 import { UpcomingEventsSection } from '@/components/home/upcoming-events-section'
 import { QuickLinksSection } from '@/components/home/quick-links-section'
-import { TrueParentsSection } from '@/components/home/true-parents-section'
 import { ChurchBranchesSection } from '@/components/home/church-branches-section'
 import { NewsletterBanner } from '@/components/home/newsletter-banner'
 import { SideBySide } from '@/components/side-by-side'
-import { SectionShell } from '@/components/ui/section-shell'
+import AffiliatedOrganizationsLogos from '@/components/home/affiliated-organizations'
+import WordOfTheDayModal from '@/components/word-of-the-day/word-of-the-day'
 
 const sampleArticles: NewsItem[] = [
   {
@@ -79,8 +77,31 @@ export default function HomePage() {
         <div className='container mx-auto py-12 space-y-16'>
           <AnnouncementBanner />
           <RecentNewsSection sampleNews={sampleNews} />
+          <SideBySide
+            withSocials
+            imgUrl='https://images.squarespace-cdn.com/content/v1/62fa4ede47f10a2311b0f84e/6ba29bab-f2ad-4451-ad7c-b194fafb60fe/6T0A5606-2.jpg'
+            imgAlt='FFWPU Philippines Blessing Ceremony'
+            eyebrow='Blessing & Matching • FFWPU Philippines'
+            title='The Blessing: Sacred Marriage for God’s Ideal Families'
+            highlightedText='The Blessing'
+            highlightedGradientClassName='bg-gradient-to-r from-pink-500 via-fuchsia-600 to-purple-700 bg-clip-text text-transparent'
+            sideText='MATCHING & BLESSING'
+            description={`The Blessing in FFWPU Philippines is the joyous culmination of a guided Matching process. Couples, rooted in God's love and supported by dedicated Matching supporters, enter into a sacred union that restores Divine family ideals. This ceremony unites partners under Heavenly Parent and True Parents, marking the birth of Blessed Central Families, with a mission of faith, harmony, and legacy.`}
+            bottomLinks={[
+              {
+                label: 'Learn About Matching Support',
+                href: 'https://bfm.familyfed.org/resources',
+              },
+              {
+                label: 'Blessing Process Guide',
+                href: 'https://bfm.familyfed.org/hj-blessing-guide',
+              },
+            ]}
+          />
+
           <div id='cheon-shim-won' className='scroll-mt-24'>
             <SideBySide
+              reversed
               withSocials
               imgUrl='/csw.webp'
               imgAlt='Cheon Shim Won prayer hall'
@@ -91,14 +112,6 @@ export default function HomePage() {
               sideText='CHEON SHIM WON'
               description='Cheon Shim Won is a dedicated holy space for deep, heartfelt prayer (jeongseong)—specially designed to foster healing, renewal, and clarity. Around the world, communities gather here for night-vigil devotion to seek guidance, offer gratitude, and intercede for others. Cheon Shim Won vigils have become a living tradition within the HJ CheonBo providence, inspiring personal transformation and communal hope.'
               bottomLinks={[
-                // {
-                //   label: 'Join the Vigil Prayer',
-                //   href: '/events/cheon-shim-won-vigil',
-                // },
-                // {
-                //   label: 'What is Cheon Shim Won?',
-                //   href: '/about/cheon-shim-won',
-                // },
                 {
                   label: 'CheonBo Training Center',
                   href: 'https://en.hjcbt.org/index.php',
@@ -106,6 +119,31 @@ export default function HomePage() {
               ]}
             />
           </div>
+        </div>
+
+        <UpcomingEventsSection />
+        <div className='container mx-auto py-12 space-y-16'>
+          <SideBySide
+            withSocials
+            imgUrl='https://familyfedihq.org/wp-content/uploads/2023/10/ph-pclc-1-1024x516.jpg'
+            imgAlt='PCLC – Pacific Christian Leadership Conference graphic'
+            eyebrow='PCLC • FFWPU Philippines'
+            title='Strengthening Faith & Families'
+            highlightedText='Faith & Families'
+            highlightedGradientClassName='bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-700 bg-clip-text text-transparent'
+            sideText='PCLC'
+            description={`The Pacific Christian Leadership Conference (PCLC) is a coalition of Christian leaders and organizations across the Asia-Pacific region. Under FFWPU Philippines, PCLC unites clergy and faith communities to strengthen marriages, families, and nation-building through seminars and conferences. Its vision is to restore communities of faith and fulfill Christianity’s destiny as One Family under God.`}
+            bottomLinks={[
+              {
+                label: 'Learn More about PCLC',
+                href: 'https://pclc-asiapacific.org/',
+              },
+              {
+                label: 'Read Field Report',
+                href: 'https://familyfedihq.org/2024/09/philippines-3-asia-pacific-clergy-nation-building-seminar/',
+              },
+            ]}
+          />
 
           <SideBySide
             withSocials
@@ -131,74 +169,68 @@ export default function HomePage() {
               ]
             }
           />
-        </div>
-        <UpcomingEventsSection />
-        <div className='container mx-auto py-12 space-y-16'>
-          {/* IAYSP Pilipinas */}
+
           <SideBySide
             withSocials
-            imgUrl='https://familyfedihq.org/wp-content/uploads/2022/03/iaysp-1-1024x683.jpg'
-            imgAlt='IAYSP Pilipinas youth activity'
-            eyebrow='IAYSP Pilipinas • Youth & Students for Peace'
-            title='Empowering Youth for Peace and Character'
-            highlightedText='Youth for Peace'
-            highlightedGradientClassName='bg-gradient-to-r from-sky-600 via-cyan-600 to-indigo-700 bg-clip-text text-transparent'
-            sideText='IAYSP Philippines'
-            description='IAYSP Pilipinas (International Association of Youth and Students for Peace) empowers Filipino youth through character education, leadership programs, and peace/service projects—cultivating global citizenship and a culture of peace in campuses and communities.'
+            imgUrl='https://familyfedihq.org/wp-content/uploads/2024/11/ph-4dws-2-1024x768.jpg'
+            imgAlt='Heavenly Top Gun missionaries with participants in the Philippines'
+            eyebrow='Heavenly Top Gun • Asia Pacific • Philippines'
+            title='Heavenly Top Gun: Leaders of Heart & Mission'
+            highlightedText='Heavenly Top Gun'
+            highlightedGradientClassName='bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-700 bg-clip-text text-transparent'
+            sideText='HEAVENLY TOP GUN'
+            description={`Heavenly Top Gun (HTG) trains youth to live God-centered lives of prayer, service, and witness. Launched in Asia Pacific with its opening at the Philippine National HQ, HTG runs intensive workshops, 40-day trainings, and on-the-ground missions that empower young leaders to teach Divine Principle, serve communities, and advance Heaven’s providence.`}
             bottomLinks={[
               {
-                label: 'Follow IAYSP Pilipinas on Facebook',
-                href: 'https://www.facebook.com/iaysppilipinas/',
+                label: 'AP Opening at PH National HQ',
+                href: 'https://m.facebook.com/100064313636496/posts/april-30-2025-the-heavenly-top-gun-htg-asia-pacific-opening-ceremony-was-held-at/1095029989317445/',
+              },
+              {
+                label: '40-Day AP Completion',
+                href: 'https://www.instagram.com/p/DNUXOLdyP6H/',
+              },
+              {
+                label: 'PH Workshop Field Report',
+                href: 'https://familyfedihq.org/2024/11/philippine-divine-principle-workshop/',
+              },
+              {
+                label: 'HTG Vision for Youth',
+                href: 'https://familyfedihq.org/2024/03/philippines-national-unified-sunday-service/',
               },
             ]}
           />
 
-          {/* W-CARP Philippines */}
           <SideBySide
-            withSocials
-            imgUrl='https://scontent.fpnh11-1.fna.fbcdn.net/v/t39.30808-6/503683692_1077241481127786_5573928803462332427_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeENNhOLyWEY7Pa2M7DpoL1jhLuYXqMYkOmEu5heoxiQ6Syhbsqhh_E4gLsT92Np0j2vrhRyXdvLdREdaLERgRNt&_nc_ohc=h8ONxUKxRPIQ7kNvwExtzme&_nc_oc=Adn1aC2mieiplnUdeYt093So3MQdMLlI2_LZT-T1jR91Ak1a5htqQvXZycp7OTsHxP0&_nc_zt=23&_nc_ht=scontent.fpnh11-1.fna&_nc_gid=VEkrqnF_Wr-_P48CpW6pMg&oh=00_AfWqjxovvTv--28uYhHeJmSQ6LKkeHeaCsXhH5nE0iGRww&oe=68B3E4F2'
-            imgAlt='W-CARP Philippines campus service project'
-            eyebrow='W-CARP Philippines • Campus Leadership'
-            title='Raising Principled Campus Leaders'
-            highlightedText='Campus Leaders'
-            highlightedGradientClassName='bg-gradient-to-r from-blue-900 via-indigo-800 to-cyan-700 bg-clip-text text-transparent'
-            sideText='W-CARP Philippines'
-            description='World CARP is an international campus-based organization that raises young leaders of character who live for the greater good; in the Philippines, chapters host leadership training, service outreach, and values-based activities with students.'
             reversed
-            bottomLinks={[
-              {
-                label: 'Join W-CARP Philippines on Facebook',
-                href: 'https://www.facebook.com/wcarpph/',
-              },
-            ]}
-          />
-
-          {/* Universal Peace Federation (UPF) Philippines */}
-          <SideBySide
             withSocials
-            imgUrl='https://scontent.fpnh11-1.fna.fbcdn.net/v/t39.30808-6/481038312_679169144444225_8623738338219458726_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeHZ20OVg08kRrytqmCgx-3jvuCl7H-t2o6-4KXsf63ajqDbws5RB7j1thrN_33sj0HR7NGoEWOvcBttN3pKGBZK&_nc_ohc=gFNK8nTa61cQ7kNvwGQvApk&_nc_oc=Adn8AqL7vbe7NZw1_ivYquTWNdQ3ju-wqsVToAU9Gz7wLynsyB9n2qwGyk7G24dV_P8&_nc_zt=23&_nc_ht=scontent.fpnh11-1.fna&_nc_gid=0mJDKODYML1rGP6-2zbbTg&oh=00_AfW5M8YH_XR4P6RlAk__OPQtACYQj96-YsuaMnhenzn7xQ&oe=68B3EFDB'
-            imgAlt='UPF Philippines meeting in Manila'
-            eyebrow='Universal Peace Federation • Philippines'
-            title='Interfaith & Peacebuilding Network'
-            highlightedText='Peacebuilding Network'
-            highlightedGradientClassName='bg-gradient-to-r from-teal-700 via-cyan-700 to-blue-800 bg-clip-text text-transparent'
-            sideText='UPF Philippines'
-            description='UPF is a global NGO with General Consultative Status at the UN ECOSOC that advances interfaith peacebuilding, peace education, and strong families; UPF-Philippines convenes Ambassadors for Peace and partners for initiatives in Manila and nationwide.'
+            imgUrl='https://i.ytimg.com/vi/FmH7xAuPzEg/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDnM9dO_16ok4IYjakFzNJbYlL38g' // Thumbnail from "Testimonies from the Philippines!"
+            imgAlt='Group of FFWPU members sharing testimonies in the Philippines'
+            eyebrow='HJ Testimonies • FFWPU Philippines'
+            title='HJ Testimonies: Stories of Faith & Family'
+            description={`An episode series from FFWPU Philippines where families, youth, and leaders share real testimonies—parenting lessons, family bonds, mission journeys, and milestone moments like Blessing 2025—offering hope-filled stories that strengthen hearts and homes.`}
+            highlightedText='HJ Testimonies'
+            highlightedGradientClassName='bg-gradient-to-r from-blue-500 via-indigo-600 to-violet-700 bg-clip-text text-transparent'
+            sideText='HJ TESTIMONIES'
             bottomLinks={[
               {
-                label: 'Visit UPF Philippines on Facebook',
-                href: 'https://www.facebook.com/upfphilippines/',
+                label: 'Watch Testimonies',
+                href: 'https://www.facebook.com/hjtestimonies/',
+              },
+              {
+                label: 'Inspiring Stories',
+                href: 'https://www.youtube.com/@hjtestimonies25',
               },
             ]}
           />
         </div>
+        <AffiliatedOrganizationsLogos />
         <QuickLinksSection />
         <div className='container mx-auto space-y-16'>
-          <TrueParentsSection />
           <ChurchBranchesSection />
         </div>
       </main>
       <NewsletterBanner />
+      <WordOfTheDayModal />
     </div>
   )
 }

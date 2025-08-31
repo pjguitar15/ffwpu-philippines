@@ -43,7 +43,7 @@ export function Footer() {
           <div className='space-y-4 max-w-md'>
             <Link href='/' className='inline-flex items-center space-x-3'>
               <Image
-                src='/ffwpu-ph-logo.png'
+                src='/ffwpu-ph-logo.webp'
                 alt='FFWPU Philippines Logo'
                 width={130}
                 height={130}
@@ -86,19 +86,6 @@ export function Footer() {
                     viewBox='0 0 24 24'
                   >
                     <path d='M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z' />
-                  </svg>
-                </a>
-                <a
-                  href='#'
-                  aria-label='Instagram'
-                  className='inline-flex h-9 w-9 items-center justify-center rounded-full bg-background ring-1 ring-black/10 text-foreground/80 hover:text-foreground hover:ring-black/20 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400'
-                >
-                  <svg
-                    className='h-5 w-5'
-                    fill='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <path d='M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987c6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.323-1.297C4.198 14.895 3.708 13.744 3.708 12.447c0-1.297.49-2.448 1.297-3.323.875-.807 2.026-1.297 3.323-1.297 1.297 0 2.448.49 3.323 1.297.807.875 1.297 2.026 1.297 3.323 0 1.297-.49 2.448-1.297 3.323-.875.807-2.026 1.297-3.323 1.297z' />
                   </svg>
                 </a>
               </div>

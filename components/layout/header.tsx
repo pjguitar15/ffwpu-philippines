@@ -31,10 +31,10 @@ export function Header() {
 
   const mainNavItems = [
     {
-      href: '/holy-mother-han',
-      label: 'Holy Mother Han',
-      desc: 'Learn about Holy Mother Han',
-      icon: Sparkles,
+      href: '/about/true-parents',
+      label: 'True Parents',
+      desc: 'Rev. Moon & Holy Mother Han',
+      icon: FiHeart,
     },
     {
       href: '/news',
@@ -58,16 +58,22 @@ export function Header() {
 
   const extraNavItems = [
     {
+      href: '/holy-mother-han',
+      label: 'Holy Mother Han',
+      desc: 'Learn about Holy Mother Han',
+      icon: Sparkles,
+    },
+    {
+      href: '/true-father',
+      label: 'True Father',
+      desc: 'Rev. Sun Myung Moon',
+      icon: FiShield,
+    },
+    {
       href: '/about/history',
       label: 'Our History',
       desc: 'Roots of our movement',
       icon: FiClock,
-    },
-    {
-      href: '/about/true-parents',
-      label: 'True Parents',
-      desc: 'Rev. Moon & Holy Mother Han',
-      icon: FiHeart,
     },
   ]
 
@@ -136,7 +142,7 @@ export function Header() {
           <Link href='/' className='flex items-center space-x-2'>
             <div className='flex flex-col'>
               <Image
-                src='/ffwpu-ph-logo.png'
+                src='/ffwpu-ph-logo.webp'
                 alt='FFWPU Philippines Logo'
                 width={130}
                 height={130}

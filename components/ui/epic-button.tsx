@@ -18,9 +18,9 @@ export function EpicButton({
         className={[
           // layout / base
           'relative inline-flex items-center justify-center select-none overflow-hidden cursor-pointer',
-          'rounded-full px-8 py-3 font-bold uppercase text-lg text-white',
+          'rounded-full px-8 py-3 font-semibold text-lg text-white',
           'transition-transform duration-300 ease-out hover:scale-105',
-          'bg-gradient-to-r from-slate-800 via-slate-700 to-blue-600',
+          'bg-gradient-to-r from-yellow-700 via-yellow-600 to-yellow-500',
           // subtle depth
           'shadow-[0_8px_30px_rgba(59,130,246,0.35)]',
           className,

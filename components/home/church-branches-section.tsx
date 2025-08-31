@@ -3,7 +3,13 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { FiCalendar, FiClock, FiMapPin, FiArrowRight } from 'react-icons/fi'
+import {
+  FiCalendar,
+  FiClock,
+  FiMapPin,
+  FiArrowRight,
+  FiPhone,
+} from 'react-icons/fi'
 import { BiBuilding } from 'react-icons/bi'
 
 export function ChurchBranchesSection() {
@@ -13,38 +19,45 @@ export function ChurchBranchesSection() {
       venue: 'FFWPU Headquarters',
       address:
         '32 Samar Ave, South Triangle (Diliman), Quezon City, Metro Manila, Philippines',
+      phone: '+63 917 111 1111',
     },
     {
       title: 'Cebu',
       venue: 'Visayas Peace Embassy (FFWPU Cebu Center)',
       address: '25 Urgello St, Sambag 1, Cebu City, Cebu, Philippines',
+      phone: '+63 917 222 2222',
     },
     {
       title: 'Davao',
       venue: 'FFWPU Davao Center',
       address: 'Davao City, Davao del Sur, Philippines',
+      phone: '+63 917 333 3333',
     },
     {
       title: 'Cavite',
       venue: 'FFWPU Cavite Church',
       address:
         'Blk. 17 Lot 1, Phase III, Brgy. Cabuco, Trece Martires City, Cavite, Philippines',
+      phone: '+63 917 444 4444',
     },
     {
       title: 'Bicol (Legazpi)',
       venue: 'FFWPU Legazpi Family Church',
       address: 'Legazpi City, Albay, Philippines (contact for directions)',
+      phone: '+63 917 555 5555',
     },
     {
       title: 'Antipolo (Rizal)',
       venue: 'FFWPU Antipolo Family Church',
       address:
         '126 M. Santos St., Brgy. San Jose, Antipolo City, Rizal, Philippines',
+      phone: '+63 917 666 6666',
     },
     {
       title: 'Cauayan (Isabela)',
       venue: 'FFWPU Isabela / Cauayan Church',
       address: 'Cauayan City, Isabela, Philippines (contact for directions)',
+      phone: '+63 917 777 7777',
     },
   ]
 
@@ -72,9 +85,6 @@ export function ChurchBranchesSection() {
               VISIT US ON SUNDAY
             </span>
           </h2>
-          <p className='mx-auto max-w-2xl text-slate-600'>
-            Join our worship and fellowship. Everyone is welcome.
-          </p>
         </div>
 
         {/* cards */}
@@ -86,6 +96,8 @@ export function ChurchBranchesSection() {
             const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
               `${b.venue} ${b.address}`,
             )}`
+            const telHref = `tel:${b.phone.replace(/[^+\d]/g, '')}`
+
             return (
               <Card
                 key={b.title}
@@ -137,6 +149,24 @@ export function ChurchBranchesSection() {
                         {b.address}
                       </div>
                     </div>
+                    <div className='flex items-start gap-2 text-slate-700'>
+                      <FiPhone
+                        size={16}
+                        className='mt-0.5 shrink-0 text-slate-500'
+                      />
+                      <div>
+                        <span className='font-semibold text-slate-800'>
+                          Contact:
+                        </span>{' '}
+                        <a
+                          href={telHref}
+                          className='text-slate-900 underline-offset-2 hover:underline'
+                          aria-label={`Call ${b.title} branch at ${b.phone}`}
+                        >
+                          {b.phone}
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -166,7 +196,7 @@ export function ChurchBranchesSection() {
           <div className='mt-8 flex justify-center'>
             <Button
               variant='outline'
-              className='rounded-full'
+              className='rounded-full cursor-pointer'
               onClick={() => setShowAll((v) => !v)}
               aria-expanded={showAll}
             >

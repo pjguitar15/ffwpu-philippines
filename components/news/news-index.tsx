@@ -196,7 +196,7 @@ export function NewsIndex({
                 setActiveTag(t)
                 setLimit(initialLimit)
               }}
-              className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-xs md:text-sm cursor-pointer hover:shadow-sm transition ${
+              className={`capitalize whitespace-nowrap rounded-full border px-3 py-1.5 text-xs md:text-sm cursor-pointer hover:shadow-sm transition ${
                 activeTag === t
                   ? 'bg-slate-900 text-white border-slate-900'
                   : 'bg-white hover:bg-slate-50'
@@ -236,7 +236,10 @@ export function NewsIndex({
                   <div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent' />
                   <div className='absolute bottom-2 left-2 flex gap-2'>
                     {(item.tags || []).slice(0, 1).map((tag) => (
-                      <Badge key={tag} className='bg-white/90 text-slate-900'>
+                      <Badge
+                        key={tag}
+                        className='bg-white/90 text-slate-900 capitalize'
+                      >
                         {tag}
                       </Badge>
                     ))}
