@@ -94,6 +94,8 @@ export async function POST(request: Request) {
   const BASE_URL =
     process.env.ENVIRONMENT === 'localhost'
       ? 'http://localhost:3003'
+      : process.env.ENVIRONMENT === 'staging'
+      ? 'https://ffwpuph-sneakpeek.vercel.app'
       : 'https://www.ffwpuph.com'
 
   // Send email via EmailJS (best-effort)
