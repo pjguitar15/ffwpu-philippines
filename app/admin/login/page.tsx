@@ -66,10 +66,12 @@ export default function AdminLoginPage() {
 
     setLoading(true)
     try {
-      // optional one-time seeding (no-op if already exists)
-      await fetch('/api/auth/init-super-admin', { method: 'POST' }).catch(
-        () => {},
-      )
+      // optional one-time seeding (dev only; avoid in production)
+      if (process.env.NODE_ENV !== 'production') {
+        await fetch('/api/auth/init-super-admin', { method: 'POST' }).catch(
+          () => {},
+        )
+      }
 
       const res = await fetch('/api/auth/login', {
         method: 'POST',
