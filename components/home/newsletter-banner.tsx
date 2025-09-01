@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NewsletterSignup } from '@/components/newsletter-signup'
 
 type Frequency = 'weekly' | 'monthly'
@@ -21,7 +21,6 @@ export function NewsletterBanner() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, frequency)
 
-    // Try to find a <form> rendered by NewsletterSignup and ensure a hidden input exists
     const host = signupHostRef.current
     if (!host) return
     const form = host.querySelector('form') as HTMLFormElement | null
@@ -39,10 +38,8 @@ export function NewsletterBanner() {
     hidden.value = frequency
   }, [frequency])
 
-  // Helpers for radio UI
   const makeRadio = (value: Frequency, label: string, checked: boolean) => (
     <label className='flex items-center gap-2 cursor-pointer'>
-      {/* Visually hidden actual radio for a11y/keyboard */}
       <input
         type='radio'
         name='newsletter-frequency'
@@ -51,12 +48,13 @@ export function NewsletterBanner() {
         onChange={() => setFrequency(value)}
         className='sr-only'
       />
-      {/* Custom radio visual */}
       <span
         aria-hidden
         className={[
           'inline-flex h-4 w-4 items-center justify-center rounded-full border-2',
-          checked ? 'border-white bg-blue-600' : 'border-white bg-transparent',
+          checked
+            ? 'border-white bg-blue-600'
+            : 'border-white/70 bg-transparent',
         ].join(' ')}
       >
         {checked && (
@@ -65,17 +63,19 @@ export function NewsletterBanner() {
           </svg>
         )}
       </span>
-      <span className='text-white text-sm'>{label}</span>
+      <span className='text-white/90 text-sm'>{label}</span>
     </label>
   )
 
   return (
     <section
       id='news-letter-banner'
-      className='newsletter-signup-gradient py-12 px-4 md:px-0 full-bleed'
+      className='newsletter-signup-gradient py-12 md:py-16 px-4 full-bleed'
     >
-      <div className='container mx-auto flex flex-col md:flex-row items-center justify-between gap-8'>
-        <div className='flex-1 min-w-[260px]'>
+      {/* Centered max width + grid for clean alignment */}
+      <div className='mx-auto w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] items-center gap-10 lg:gap-12'>
+        {/* Left: content card */}
+        <div className='flex-1'>
           <div className='mb-6'>
             <span className='inline-block bg-blue-900/80 text-white text-xs font-semibold rounded px-3 py-1 mb-3'>
               Our newsletters
@@ -90,28 +90,32 @@ export function NewsletterBanner() {
             </p>
           </div>
 
-          {/* Host div lets us find the inner <form> of NewsletterSignup */}
-          <div ref={signupHostRef}>
-            <NewsletterSignup className='newsletter-signup-form' />
-          </div>
+          {/* Glass panel around the form */}
+          <div className='rounded-xl border border-white/10 bg-white/5 backdrop-blur px-4 py-4 md:px-6 md:py-6 shadow-sm'>
+            <div ref={signupHostRef}>
+              <NewsletterSignup className='newsletter-signup-form' />
+            </div>
 
-          {/* Actual, working radio group */}
-          <div
-            className='mt-4 flex items-center gap-6'
-            role='radiogroup'
-            aria-label='Newsletter frequency'
-          >
-            {makeRadio('weekly', 'Weekly updates', frequency === 'weekly')}
-            {makeRadio('monthly', 'Monthly updates', frequency === 'monthly')}
+            <div
+              className='mt-4 flex flex-wrap items-center gap-6'
+              role='radiogroup'
+              aria-label='Newsletter frequency'
+            >
+              {makeRadio('weekly', 'Weekly updates', frequency === 'weekly')}
+              {makeRadio('monthly', 'Monthly updates', frequency === 'monthly')}
+            </div>
           </div>
         </div>
 
-        <div className='flex-1 md:flex justify-center hidden md:justify-end mt-8 md:mt-0'>
-          <img
-            src='/white-ffwpu.png'
-            alt='FFWPU Philippines Church Logo'
-            className='max-w-[200px] w-full h-auto'
-          />
+        {/* Right: logo — centered on small, right on large */}
+        <div className='hidden lg:flex w-full place-self-center lg:place-self-end'>
+          <div className='flex w-full justify-center lg:justify-end'>
+            <img
+              src='/white-ffwpu.png'
+              alt='FFWPU Philippines Church Logo'
+              className='w-[160px] md:w-[200px] lg:w-[240px] h-auto drop-shadow-lg'
+            />
+          </div>
         </div>
       </div>
     </section>

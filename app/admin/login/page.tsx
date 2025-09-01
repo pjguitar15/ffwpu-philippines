@@ -77,6 +77,8 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ email: trimmedEmail, password }),
       })
 
+      console.log('Login response:', res)
+
       if (!res.ok) {
         let message = 'Sign-in failed'
         try {

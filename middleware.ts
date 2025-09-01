@@ -1,7 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
 
-const publicAdminPaths = ['/admin/login', '/admin/set-password']
+const publicAdminPaths = [
+  '/admin/login',
+  '/admin/set-password',
+  '/admin/verify-change-password',
+]
 
 async function verify(token: string) {
   const secret = new TextEncoder().encode(process.env.AUTH_SECRET || 'dev-secret')

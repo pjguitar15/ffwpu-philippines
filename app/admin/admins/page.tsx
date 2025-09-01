@@ -13,6 +13,7 @@ import { AdminIdCard } from '@/components/admin/users/admin-id-card'
 import { CreateAdminDialog } from '@/components/admin/users/create-admin-dialog'
 // import { CredentialsDialog } from '@/components/admin/users/credentials-dialog'
 import { ChangeRoleDialog } from '@/components/admin/users/change-role.dialog'
+import AdminUserCardSkeleton from '@/components/ui/skeleton/admin-user-card-skeleton'
 
 export default function AdminUsersPage() {
   const { toast } = useToast()
@@ -167,14 +168,7 @@ export default function AdminUsersPage() {
 
           {/* Grid */}
           {loading ? (
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className='animate-pulse rounded-2xl border bg-card p-4 h-[160px]'
-                />
-              ))}
-            </div>
+            <AdminUserCardSkeleton />
           ) : (
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
               {users.map((u) => (

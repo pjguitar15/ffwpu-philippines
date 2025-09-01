@@ -78,13 +78,23 @@ export async function POST(request: Request) {
   // Create a one-time invite token (random string, not JWT) valid for 48h
   const rawToken = cryptoRandomString(48)
   const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 48)
-  await VerificationToken.create({ userId: user._id, token: rawToken, purpose: 'invite', expiresAt })
+  await VerificationToken.create({
+    userId: user._id,
+    token: rawToken,
+    purpose: 'invite',
+    expiresAt,
+  })
 
   // Build invite URL
   const baseOrigin = new URL(request.url).origin
   const url = new URL(baseOrigin)
   url.pathname = '/admin/set-password'
   url.searchParams.set('token', rawToken)
+
+  const BASE_URL =
+    process.env.ENVIRONMENT === 'localhost'
+      ? 'http://localhost:3003'
+      : 'https://www.ffwpuph.com'
 
   // Send email via EmailJS (best-effort)
   await sendEmailJs(
@@ -99,6 +109,7 @@ export async function POST(request: Request) {
       to_name: user.name,
       invite_link: url.toString(),
       app_name: 'FFWPU Philippines Admin',
+      link_to_change_pass: `${BASE_URL}/admin/verify-change-password?id=${user._id}&token=${rawToken}`,
     },
   ).catch(() => console.log('Error Sending'))
 
