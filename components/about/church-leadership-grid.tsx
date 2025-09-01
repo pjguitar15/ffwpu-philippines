@@ -179,7 +179,6 @@ export default function ChurchLeadershipGrid({
         return hay.includes(q.toLowerCase())
       })
       .sort((a, b) => {
-        // group by level priority, then order, then name
         const lp = levelPriority(a.level) - levelPriority(b.level)
         if (lp !== 0) return lp
         if ((a.order ?? 999) !== (b.order ?? 999)) {
@@ -232,7 +231,7 @@ export default function ChurchLeadershipGrid({
           </div>
         )}
 
-        {/* Portrait Cards — 4 columns on md+ */}
+        {/* Cards */}
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-7'>
           {filtered.map((p, i) => (
             <article
@@ -241,38 +240,23 @@ export default function ChurchLeadershipGrid({
             >
               <div className='absolute inset-0 pointer-events-none ring-1 ring-black/5 rounded-2xl' />
               <div className='pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500/70 opacity-70' />
+
               {/* Portrait frame */}
-              {/* Portrait frame with elegant background */}
               <div
                 className='relative aspect-[3/4] overflow-hidden rounded-xl'
                 style={{
-                  /* layer 1: soft white base */
                   backgroundColor: 'white',
-                  /* layer 2: radial glow (sky → transparent) + layer 3: faint cross-hatch grid */
                   backgroundImage: `
-      radial-gradient(ellipse at 50% -20%, rgba(56, 189, 248, 0.28), rgba(56,189,248,0) 60%),
-      linear-gradient(#e5e7eb 1px, transparent 1px),
-      linear-gradient(90deg, #e5e7eb 1px, transparent 1px)
-    `,
+                    radial-gradient(ellipse at 50% -20%, rgba(56,189,248,0.28), rgba(56,189,248,0) 60%),
+                    linear-gradient(#e5e7eb 1px, transparent 1px),
+                    linear-gradient(90deg, #e5e7eb 1px, transparent 1px)
+                  `,
                   backgroundSize: 'auto, 14px 14px, 14px 14px',
                   backgroundPosition: 'center top, 0 0, 0 0',
                 }}
               >
-                {/* image */}
-                <Image
-                  src={p.photoUrl}
-                  alt={p.name}
-                  fill
-                  sizes='220px'
-                  className='object-cover object-center'
-                  priority={false}
-                />
-
-                {/* soft top/bottom fade so text feels reverent & clean */}
-                {/* <div className='pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-white/70 to-transparent' /> */}
+                <LeaderPortrait src={p.photoUrl} name={p.name} />
                 <div className='pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white/70 to-transparent' />
-
-                {/* subtle frame */}
                 <div className='pointer-events-none absolute inset-0 ring-1 ring-black/5 rounded-xl' />
               </div>
 
@@ -292,7 +276,6 @@ export default function ChurchLeadershipGrid({
           ))}
         </div>
 
-        {/* legend / hierarchy note */}
         <p className='mt-6 text-center text-xs text-gray-500'>
           Levels: <strong>National</strong> → <strong>Departments</strong> →{' '}
           <strong>Areas</strong> → <strong>Regions</strong>.
@@ -302,7 +285,8 @@ export default function ChurchLeadershipGrid({
   )
 }
 
-/** small helper for sort priority */
+/* --- helpers ------------------------------------------------------------ */
+
 function levelPriority(level: Level) {
   switch (level) {
     case 'National':
@@ -317,3 +301,60 @@ function levelPriority(level: Level) {
       return 9
   }
 }
+
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() ?? '')
+    .join('')
+}
+
+/** Renders the photo; falls back to a half-body silhouette/avatar if it fails or is missing */
+function LeaderPortrait({ src, name }: { src?: string; name: string }) {
+  const [broken, setBroken] = useState(!src)
+  const FALLBACK_MASK = '/leaders/ronnie-sodusta.webp' // should have transparent bg
+
+  // If we have a working photo, show it normally
+  if (!broken && src) {
+    return (
+      <Image
+        src={src}
+        alt={name}
+        fill
+        sizes='220px'
+        className='object-cover object-center'
+        onError={() => setBroken(true)}
+        priority={false}
+      />
+    )
+  }
+
+  // Fallback: silhouette using the mask from ronnie-sodusta.webp (no photo detail visible)
+  return (
+    <div className='absolute inset-0'>
+      <div
+        className='absolute inset-0'
+        // The mask keeps only the subject’s shape; background stays transparent
+        style={{
+          WebkitMaskImage: `url(${FALLBACK_MASK})`,
+          maskImage: `url(${FALLBACK_MASK})`,
+          WebkitMaskRepeat: 'no-repeat',
+          maskRepeat: 'no-repeat',
+          WebkitMaskSize: 'contain',
+          maskSize: 'contain',
+          WebkitMaskPosition: 'center bottom',
+          maskPosition: 'center bottom',
+          // Solid fill for the silhouette; tweak to brand-gray if you like
+          background:
+            'linear-gradient(180deg, rgba(148,163,184,0.95), rgba(100,116,139,0.98))',
+          // A little lift so it doesn’t feel flat on light backgrounds
+          filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.18))',
+        }}
+        aria-hidden='true'
+      />
+    </div>
+  )
+}
+
