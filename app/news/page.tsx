@@ -27,7 +27,7 @@ export default function NewsPage() {
     <div className='min-h-screen flex flex-col'>
       <main className='flex-1'>
         {/* Route-level loading.tsx shows instantly; avoid double skeleton here */}
-        <Suspense fallback={null}>
+        <Suspense fallback={<NewsIndexSkeleton cards={9} />}>
           <NewsIndexServer />
         </Suspense>
       </main>
