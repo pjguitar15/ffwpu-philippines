@@ -83,7 +83,8 @@ export function NewsIndex({
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase()
     let list = items
-      .filter((i) => (i.status ?? 'published') !== 'draft')
+      // Only show active items if status provided; otherwise assume active
+      .filter((i) => (i.status ? i.status === 'active' : true))
       .filter((i) =>
         !needle
           ? true

@@ -1,135 +1,224 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
+import Image from 'next/image'
+import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import {
   Sparkles,
   LayoutDashboard,
   FileText,
-  Mail,
   Megaphone,
-  Globe,
   Users,
   Activity,
   LogOut,
   Shield,
   User,
+  KeyRound,
 } from 'lucide-react'
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from '@/hooks/use-toast'
 
 interface AdminUser {
   id: string
   email: string
-  role: string
+  role: 'super_admin' | 'content_manager' | 'news_editor'
   name: string
 }
 
+const CACHE_KEY = 'adminUserCache.v1'
+const CACHE_TTL_MS = 1000 * 60 * 60 * 8 // 8 hours
+
+function readCachedUser(): AdminUser | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as { user?: AdminUser; ts?: number }
+    if (!parsed?.user || !parsed?.ts) return null
+    if (Date.now() - parsed.ts > CACHE_TTL_MS) return null
+    return parsed.user
+  } catch {
+    return null
+  }
+}
+function writeCachedUser(user: AdminUser) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ user, ts: Date.now() }))
+  } catch {}
+}
+function clearCachedUser() {
+  try {
+    localStorage.removeItem(CACHE_KEY)
+  } catch {}
+}
+
 export function AdminSidebar() {
-  const [adminUser, setAdminUser] = useState<AdminUser | null>(null)
+  // initialize from cache to avoid flicker
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(() => {
+    if (typeof window === 'undefined') return null
+    return readCachedUser()
+  })
+
   const pathname = usePathname()
   const router = useRouter()
   const { toast } = useToast()
 
+  // background revalidation
   useEffect(() => {
-    const user = localStorage.getItem("adminUser")
-    if (user) {
-      setAdminUser(JSON.parse(user))
-    } else {
-      router.push("/admin/login")
-    }
+    const controller = new AbortController()
+    ;;(async () => {
+      try {
+        const res = await fetch('/api/auth/me', {
+          cache: 'no-store',
+          signal: controller.signal,
+        })
+        if (!res.ok) {
+          clearCachedUser()
+          router.push('/admin/login')
+          return
+        }
+        const data = await res.json()
+        const user: AdminUser = 'user' in data ? data.user : data
+        setAdminUser(user)
+        writeCachedUser(user)
+      } catch {
+        // keep cached UI
+      }
+    })()
+    return () => controller.abort()
   }, [router])
 
-  const handleLogout = () => {
-    localStorage.removeItem("adminUser")
+  // cross-tab sync
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== CACHE_KEY) return
+      const u = readCachedUser()
+      setAdminUser(u)
+      if (!u) router.push('/admin/login')
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [router])
+
+  const handleLogout = async () => {
+    clearCachedUser()
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
     toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
+      title: 'Logged Out',
+      description: 'You have been successfully logged out.',
     })
-    router.push("/admin/login")
+    router.push('/admin/login')
   }
- 
-  const menuItems = [
-    { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/admin/news', label: 'News Management', icon: FileText },
-    { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
-    {
-      href: '/admin/word-of-the-day',
-      label: 'Word of the Day',
-      icon: Sparkles,
-    },
-  ]
 
-  const superAdminItems = [
-    { href: "/admin/admins", label: "Admin Users", icon: Users },
-    { href: "/admin/audit-log", label: "Audit Log", icon: Activity },
-  ]
+  const menuItems = useMemo(
+    () => [
+      { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/admin/news', label: 'News Management', icon: FileText },
+      { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
+      {
+        href: '/admin/word-of-the-day',
+        label: 'Word of the Day',
+        icon: Sparkles,
+      },
+      {
+        href: '/admin/change-password',
+        label: 'Change Password',
+        icon: KeyRound,
+      },
+    ],
+    [],
+  )
+  const superAdminItems = useMemo(
+    () => [
+      { href: '/admin/admins', label: 'Admin Users', icon: Users },
+      { href: '/admin/audit-log', label: 'Audit Log', icon: Activity },
+    ],
+    [],
+  )
 
-  if (!adminUser) return null
+  const roleLabel =
+    adminUser?.role === 'super_admin' ? 'super admin' : adminUser?.role || ''
 
   return (
-    <div className="w-64 bg-card border-r h-screen flex flex-col">
-      {/* Header */}
-      <div className="p-6 border-b">
-        <div className="flex items-center space-x-2">
-          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">A</span>
-          </div>
-          <div>
-            <h2 className="font-heading font-bold">Admin Portal</h2>
-            <p className="text-xs text-muted-foreground">FFWPU Philippines</p>
-          </div>
-        </div>
+    <div className='w-64 bg-card border-r h-screen flex flex-col'>
+      {/* Brand bar (logo lockup: round emblem + text) */}
+      <div className='ps-8 pt-5 pb-4 border-b flex justify-start items-center'>
+        <Link href='/' className='flex items-center gap-3 group'>
+          <Image
+            src='/ffwpu-ph-logo.webp'
+            alt='FFWPU Philippines'
+            width={100}
+            height={24}
+            priority
+            className='h-7 w-auto object-contain select-none'
+          />
+          {/* Optional label if you want extra text—remove if your image already has text */}
+          {/* <span className="text-sm font-semibold tracking-wide text-foreground/90 group-hover:text-foreground">
+            FFWPU Philippines
+          </span> */}
+        </Link>
       </div>
 
-      {/* User Info */}
-      <div className="p-4 border-b">
-        <div className="flex items-center space-x-3">
-          <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-            {adminUser.role === "super_admin" ? (
-              <Shield className="h-5 w-5 text-primary" />
+      {/* Account panel */}
+      <div className='px-6 py-4 border-b'>
+        <div className='flex items-center space-x-3'>
+          <div className='h-10 w-10 rounded-full bg-muted flex items-center justify-center'>
+            {adminUser?.role === 'super_admin' ? (
+              <Shield className='h-5 w-5 text-primary' />
             ) : (
-              <User className="h-5 w-5 text-muted-foreground" />
+              <User className='h-5 w-5 text-muted-foreground' />
             )}
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm truncate">{adminUser.name}</p>
-            <p className="text-xs text-muted-foreground capitalize">{adminUser.role.replace("_", " ")}</p>
+          <div className='flex-1 min-w-0'>
+            <p className='font-medium text-sm truncate'>
+              {adminUser?.name || 'Admin'}
+            </p>
+            <p className='text-xs text-muted-foreground capitalize'>
+              {roleLabel.replace('_', ' ')}
+            </p>
           </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className='flex-1 p-4 space-y-2'>
         {menuItems.map((item) => {
-          const Icon = item.icon
-          const isActive = pathname === item.href
-
+          const Icon = item.icon as any
+          const isActive =
+            pathname === item.href || pathname?.startsWith(item.href + '/')
           return (
             <Link key={item.href} href={item.href}>
-              <Button variant={isActive ? "secondary" : "ghost"} className="w-full justify-start">
-                <Icon className="mr-3 h-4 w-4" />
+              <Button
+                variant={isActive ? 'default' : 'ghost'}
+                className='w-full justify-start cursor-pointer'
+              >
+                <Icon className='mr-3 h-4 w-4' />
                 {item.label}
               </Button>
             </Link>
           )
         })}
 
-        {adminUser.role === "super_admin" && (
+        {adminUser?.role === 'super_admin' && (
           <>
-            <Separator className="my-4" />
-            <div className="space-y-2">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3">Super Admin</p>
+            <Separator className='my-4' />
+            <div className='space-y-2'>
+              <p className='text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3'>
+                Super Admin
+              </p>
               {superAdminItems.map((item) => {
-                const Icon = item.icon
-                const isActive = pathname === item.href
-
+                const Icon = item.icon as any
+                const isActive =
+                  pathname === item.href ||
+                  pathname?.startsWith(item.href + '/')
                 return (
                   <Link key={item.href} href={item.href}>
-                    <Button variant={isActive ? "secondary" : "ghost"} className="w-full justify-start">
-                      <Icon className="mr-3 h-4 w-4" />
+                    <Button
+                      variant={isActive ? 'secondary' : 'ghost'}
+                      className='w-full justify-start'
+                    >
+                      <Icon className='mr-3 h-4 w-4' />
                       {item.label}
                     </Button>
                   </Link>
@@ -141,9 +230,13 @@ export function AdminSidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="p-4 border-t">
-        <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
-          <LogOut className="mr-3 h-4 w-4" />
+      <div className='p-4 border-t'>
+        <Button
+          variant='ghost'
+          className='w-full justify-start'
+          onClick={handleLogout}
+        >
+          <LogOut className='mr-3 h-4 w-4' />
           Logout
         </Button>
       </div>

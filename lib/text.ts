@@ -18,3 +18,26 @@ export function excerptFromHtml(html: string, maxChars = 180) {
   const cut = text.slice(0, maxChars)
   return cut.slice(0, cut.lastIndexOf(' ')) + '…'
 }
+
+// Create a URL-friendly slug from a title
+export function slugify(input: string) {
+  return (input || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
+
+// Turn a multiline string into HTML paragraphs if not already HTML
+export function toParagraphHtml(input: string) {
+  const s = (input || '').trim()
+  if (!s) return ''
+  if (/<p[\s>]/i.test(s)) return s
+  return s
+    .split(/\n\s*\n/g)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p>${p.replace(/\n/g, '<br/>')}</p>`)
+    .join('\n')
+}

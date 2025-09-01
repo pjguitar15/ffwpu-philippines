@@ -1,12 +1,10 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Montserrat, Inter } from "next/font/google"
-import "./globals.css"
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
+import './globals.css'
 import UnderConstruction from '@/components/under-construction'
-import { UpcomingEventsSection } from '@/components/home/upcoming-events-section'
-import { ConditionalUpcomingEvents } from "@/components/home/conditional-upcoming-events"
+import { SiteShell } from '@/components/layout/site-shell'
+import { Toaster } from "@/components/ui/toaster"
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -130,16 +128,12 @@ export default function RootLayout({
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </head>
       <body className='font-body page-transition'>
-        {process.env.IS_UNDER_CONSTRUCTION === 'true' ? (
-          <UnderConstruction />
-        ) : (
-          <>
-            <Header />
-            {children}
-            <ConditionalUpcomingEvents />
-            <Footer />
-          </>
-        )}
+        <SiteShell
+          isUnderConstruction={process.env.IS_UNDER_CONSTRUCTION === 'true'}
+        >
+          {children}
+        </SiteShell>
+        <Toaster />
       </body>
     </html>
   )
