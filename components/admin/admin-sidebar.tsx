@@ -115,7 +115,7 @@ export function AdminSidebar() {
     () => [
       { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { href: '/admin/news', label: 'News Management', icon: FileText },
-      { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
+      { href: '/admin/events', label: 'Events', icon: Megaphone },
       {
         href: '/admin/word-of-the-day',
         label: 'Word of the Day',
@@ -143,7 +143,7 @@ export function AdminSidebar() {
   return (
     <div className='w-64 bg-card border-r h-screen flex flex-col'>
       {/* Brand bar (logo lockup: round emblem + text) */}
-      <div className='ps-8 pt-5 pb-4 border-b flex justify-start items-center'>
+      <div className='ps-8 pt-7 pb-6 border-b flex justify-start items-center'>
         <Link href='/' className='flex items-center gap-3 group'>
           <Image
             src='/ffwpu-ph-logo.webp'
@@ -161,7 +161,7 @@ export function AdminSidebar() {
       </div>
 
       {/* Account panel */}
-      <div className='px-6 py-4 border-b'>
+      <div className='px-7 py-6 border-b'>
         <div className='flex items-center space-x-3'>
           <div className='h-10 w-10 rounded-full bg-muted flex items-center justify-center'>
             {adminUser?.role === 'super_admin' ? (
@@ -182,7 +182,7 @@ export function AdminSidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className='flex-1 p-4 space-y-2'>
+      <nav className='flex-1 p-6 space-y-3'>
         {menuItems.map((item) => {
           const Icon = item.icon as any
           const isActive =
@@ -191,7 +191,7 @@ export function AdminSidebar() {
             <Link key={item.href} href={item.href}>
               <Button
                 variant={isActive ? 'default' : 'ghost'}
-                className='w-full justify-start cursor-pointer'
+                className='w-full justify-start h-10 px-4 cursor-pointer'
               >
                 <Icon className='mr-3 h-4 w-4' />
                 {item.label}
@@ -203,8 +203,8 @@ export function AdminSidebar() {
         {adminUser?.role === 'super_admin' && (
           <>
             <Separator className='my-4' />
-            <div className='space-y-2'>
-              <p className='text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3'>
+            <div className='space-y-3'>
+              <p className='text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4'>
                 Super Admin
               </p>
               {superAdminItems.map((item) => {
@@ -216,7 +216,7 @@ export function AdminSidebar() {
                   <Link key={item.href} href={item.href}>
                     <Button
                       variant={isActive ? 'secondary' : 'ghost'}
-                      className='w-full justify-start'
+                      className='w-full justify-start h-10 px-4'
                     >
                       <Icon className='mr-3 h-4 w-4' />
                       {item.label}
@@ -230,10 +230,10 @@ export function AdminSidebar() {
       </nav>
 
       {/* Logout */}
-      <div className='p-4 border-t'>
+      <div className='p-6 border-t'>
         <Button
           variant='ghost'
-          className='w-full justify-start'
+          className='w-full justify-start h-10 px-4'
           onClick={handleLogout}
         >
           <LogOut className='mr-3 h-4 w-4' />

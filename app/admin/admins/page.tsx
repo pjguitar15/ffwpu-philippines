@@ -151,19 +151,21 @@ export default function AdminUsersPage() {
           <RolesGuide />
 
           {/* Header */}
-          <div className='flex items-center justify-between mb-6'>
-            <div>
-              <h1 className='text-2xl font-bold'>Admin Users</h1>
-              <p className='text-sm text-muted-foreground'>
-                Manage admin accounts and roles.
-              </p>
+          <div className='mb-6 rounded-xl border bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/20 dark:to-indigo-950/20'>
+            <div className='px-5 py-5 flex items-center justify-between'>
+              <div>
+                <h1 className='text-2xl font-bold'>Admin Users</h1>
+                <p className='text-sm text-muted-foreground'>
+                  Manage admin accounts and roles.
+                </p>
+              </div>
+              <Button
+                className='cursor-pointer bg-indigo-600 hover:bg-indigo-700'
+                onClick={() => setShowCreate(true)}
+              >
+                <Plus className='h-4 w-4 mr-2' /> New Admin
+              </Button>
             </div>
-            <Button
-              className='cursor-pointer'
-              onClick={() => setShowCreate(true)}
-            >
-              <Plus className='h-4 w-4 mr-2' /> New Admin
-            </Button>
           </div>
 
           {/* Grid */}

@@ -6,7 +6,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { toParagraphHtml, slugify } from '@/lib/text'
+import { toParagraphHtml, slugify, htmlToText } from '@/lib/text'
+import RichTextEditor from '@/components/admin/rich-text-editor'
+import { Calendar, ImageIcon, Tag, Type, User, FileText } from 'lucide-react'
 
 type NewsFormValues = {
   _id?: string
@@ -49,7 +51,8 @@ export function NewsForm({
         ...v,
         title: initial?.title || '',
         author: initial?.author || '',
-        date: (initial?.date as string) || new Date().toISOString().slice(0, 10),
+        date:
+          (initial?.date as string) || new Date().toISOString().slice(0, 10),
         image: (initial as any)?.image || '',
         tags: Array.isArray((initial as any)?.tags)
           ? ((initial as any)?.tags || []).join(', ')
@@ -72,6 +75,15 @@ export function NewsForm({
     [values.tags],
   )
 
+  const canSubmit = useMemo(() => {
+    const titleOk = values.title.trim().length > 0
+    const authorOk = values.author.trim().length > 0
+    const dateOk = (values.date || '').trim().length > 0
+    const imageOk = values.image.trim().length > 0
+    const contentOk = htmlToText(values.content).trim().length > 0
+    return titleOk && authorOk && dateOk && imageOk && contentOk
+  }, [values.title, values.author, values.date, values.image, values.content])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -86,11 +98,14 @@ export function NewsForm({
         content: toParagraphHtml(values.content),
         slug: values.slug || slugify(values.title),
       }
-      const res = await fetch(isEdit ? `/api/news/${values._id || values.slug}` : '/api/news', {
-        method: isEdit ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
+      const res = await fetch(
+        isEdit ? `/api/news/${values._id || values.slug}` : '/api/news',
+        {
+          method: isEdit ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        },
+      )
       if (!res.ok) throw new Error(await res.text())
       onSaved?.()
       onOpenChange(false)
@@ -104,61 +119,158 @@ export function NewsForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-2xl'>
-        <DialogHeader>
-          <DialogTitle>{isEdit ? 'Edit News' : 'Create News'}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className='space-y-4'>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            <div>
-              <label className='text-sm font-medium'>Title</label>
-              <Input value={values.title} onChange={(e) => setValues({ ...values, title: e.target.value })} required />
+      <DialogContent className='w-[95vw] sm:max-w-3xl md:max-w-4xl h-[90vh] sm:h-[85vh] p-0 overflow-hidden'>
+        <div className='flex flex-col h-full min-h-0'>
+          {/* Themed header: thin indigo bar + subtle sky→indigo gradient */}
+          <div className='mb-5'>
+            <div className='h-1 w-full bg-indigo-500' />
+            <div className='px-6 pt-6 pb-4 bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/20 dark:to-indigo-950/20 border-b'>
+              <DialogHeader>
+                <DialogTitle className='text-foreground'>
+                  {isEdit ? 'Edit News' : 'Create News'}
+                </DialogTitle>
+              </DialogHeader>
             </div>
-            <div>
-              <label className='text-sm font-medium'>Author</label>
-              <Input value={values.author} onChange={(e) => setValues({ ...values, author: e.target.value })} required />
-            </div>
-            <div>
-              <label className='text-sm font-medium'>Date</label>
-              <Input type='date' value={values.date} onChange={(e) => setValues({ ...values, date: e.target.value })} required />
-            </div>
-            <div>
-              <label className='text-sm font-medium'>Image URL</label>
-              <Input value={values.image} onChange={(e) => setValues({ ...values, image: e.target.value })} required />
-            </div>
-            <div className='md:col-span-2'>
-              <label className='text-sm font-medium'>Tags (comma separated)</label>
-              <Input value={values.tags} onChange={(e) => setValues({ ...values, tags: e.target.value })} />
-              {tagList.length > 0 && (
-                <div className='mt-2 flex gap-2 flex-wrap'>
-                  {tagList.map((t) => (
-                    <Badge key={t} variant='outline' className='capitalize'>
-                      {t}
-                    </Badge>
-                  ))}
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
+            className='flex-1 flex flex-col min-h-0'
+          >
+            {/* Scrollable content area; bottom padding ensures content not hidden behind footer */}
+            <div className='flex-1 min-h-0 overflow-y-auto px-6 pb-6 pr-7'>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                <div>
+                  <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
+                    <Type className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
+                    Title
+                  </label>
+                  <Input
+                    placeholder='Enter article title'
+                    value={values.title}
+                    onChange={(e) =>
+                      setValues({ ...values, title: e.target.value })
+                    }
+                    required
+                    className='bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+                  />
                 </div>
-              )}
+                <div>
+                  <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
+                    <User className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
+                    Author
+                  </label>
+                  <Input
+                    placeholder='Author name'
+                    value={values.author}
+                    onChange={(e) =>
+                      setValues({ ...values, author: e.target.value })
+                    }
+                    required
+                    className='bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+                  />
+                </div>
+                <div>
+                  <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
+                    <Calendar className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
+                    Date
+                  </label>
+                  <Input
+                    type='date'
+                    placeholder='YYYY-MM-DD'
+                    value={values.date}
+                    onChange={(e) =>
+                      setValues({ ...values, date: e.target.value })
+                    }
+                    required
+                    className='bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+                  />
+                </div>
+                <div>
+                  <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
+                    <ImageIcon className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
+                    Image URL
+                  </label>
+                  <Input
+                    placeholder='https://example.com/image.jpg'
+                    value={values.image}
+                    onChange={(e) =>
+                      setValues({ ...values, image: e.target.value })
+                    }
+                    required
+                    className='bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+                  />
+                </div>
+                <div className='md:col-span-2'>
+                  <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
+                    <Tag className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
+                    Tags (comma separated)
+                  </label>
+                  <Input
+                    placeholder='family, community, service'
+                    value={values.tags}
+                    onChange={(e) =>
+                      setValues({ ...values, tags: e.target.value })
+                    }
+                    className='bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+                  />
+                  {tagList.length > 0 && (
+                    <div className='mt-2 flex gap-2 flex-wrap'>
+                      {tagList.map((t) => (
+                        <Badge
+                          key={t}
+                          variant='secondary'
+                          className='capitalize text-[11px] rounded-full border border-sky-200 bg-sky-50 text-sky-700 px-2 py-0.5'
+                        >
+                          {t}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className='md:col-span-2'>
+                  <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
+                    <FileText className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
+                    Content
+                  </label>
+                  <div className='mt-1 rounded-md border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950'>
+                    <RichTextEditor
+                      value={values.content}
+                      onChange={(html) =>
+                        setValues({ ...values, content: html })
+                      }
+                      placeholder='Write the article…'
+                    />
+                  </div>
+                  <p className='text-xs text-muted-foreground mt-2'>
+                    Use the toolbar to format text (bold, italic, underline,
+                    lists, headings, links).
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className='md:col-span-2'>
-              <label className='text-sm font-medium'>Content</label>
-              <Textarea
-                rows={10}
-                placeholder={'Type or paste content. Blank line = new paragraph.'}
-                value={values.content}
-                onChange={(e) => setValues({ ...values, content: e.target.value })}
-              />
-              <p className='text-xs text-muted-foreground mt-1'>Paragraphs are detected automatically. HTML with &lt;p&gt; tags is also supported.</p>
+            {/* Footer anchored at the bottom via flex layout */}
+            <div className='flex-shrink-0 w-full px-6 py-3 bg-white dark:bg-slate-900 border-t flex justify-end gap-2'>
+              <Button
+                type='button'
+                variant='secondary'
+                onClick={() => onOpenChange(false)}
+                disabled={saving}
+                className='cursor-pointer'
+              >
+                Cancel
+              </Button>
+              <Button
+                type='submit'
+                disabled={saving || !canSubmit}
+                aria-disabled={saving || !canSubmit}
+                className='cursor-pointer bg-indigo-600 hover:bg-indigo-700'
+              >
+                {saving ? 'Saving…' : isEdit ? 'Update' : 'Create'}
+              </Button>
             </div>
-          </div>
-          <div className='flex justify-end gap-2'>
-            <Button type='button' variant='secondary' onClick={() => onOpenChange(false)} disabled={saving}>
-              Cancel
-            </Button>
-            <Button type='submit' disabled={saving}>
-              {saving ? 'Saving…' : isEdit ? 'Update' : 'Create'}
-            </Button>
-          </div>
-        </form>
+          </form>
+        </div>
       </DialogContent>
     </Dialog>
   )

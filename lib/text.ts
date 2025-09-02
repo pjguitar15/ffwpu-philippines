@@ -33,7 +33,13 @@ export function slugify(input: string) {
 export function toParagraphHtml(input: string) {
   const s = (input || '').trim()
   if (!s) return ''
-  if (/<p[\s>]/i.test(s)) return s
+  // If content already contains common block-level tags from a rich editor, return as-is
+  if (
+    /(<p[\s>]|<h[1-6][\s>]|<ul[\s>]|<ol[\s>]|<li[\s>]|<blockquote[\s>])/i.test(
+      s,
+    )
+  )
+    return s
   return s
     .split(/\n\s*\n/g)
     .map((p) => p.trim())

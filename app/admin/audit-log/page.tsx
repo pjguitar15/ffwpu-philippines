@@ -62,78 +62,100 @@ export default function AdminAuditLogPage() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className='flex h-screen bg-background'>
       <AdminSidebar />
 
-      <main className="flex-1 overflow-auto">
-        <div className="p-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="font-heading text-3xl font-bold">Audit Log</h1>
-            <p className="text-muted-foreground">Track all administrative actions and changes</p>
+      <main className='flex-1 overflow-auto'>
+        <div className='p-8'>
+          {/* Header with subtle gradient */}
+          <div className='mb-8 rounded-xl border bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/20 dark:to-indigo-950/20'>
+            <div className='px-6 py-6'>
+              <h1 className='font-heading text-3xl font-bold'>Audit Log</h1>
+              <p className='text-muted-foreground'>
+                Track all administrative actions and changes
+              </p>
+            </div>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <Card>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-6'>
+            <Card className='overflow-hidden border-0 shadow-sm bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/30 dark:to-background'>
+              <div className='h-1 w-full bg-indigo-500' />
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Activity className="h-5 w-5" />
+                <CardTitle className='text-lg flex items-center gap-2'>
+                  <Activity className='h-5 w-5' />
                   Total Actions
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{auditLog.length}</div>
-                <p className="text-xs text-muted-foreground">All recorded actions</p>
+                <div className='text-2xl font-bold'>{auditLog.length}</div>
+                <p className='text-xs text-muted-foreground'>
+                  All recorded actions
+                </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className='overflow-hidden border-0 shadow-sm bg-gradient-to-br from-sky-50 to-white dark:from-sky-950/30 dark:to-background'>
+              <div className='h-1 w-full bg-sky-500' />
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <User className="h-5 w-5" />
+                <CardTitle className='text-lg flex items-center gap-2'>
+                  <User className='h-5 w-5' />
                   Active Admins
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{admins.filter((a) => a.role === "admin").length}</div>
-                <p className="text-xs text-muted-foreground">Regular administrators</p>
+                <div className='text-2xl font-bold'>
+                  {admins.filter((a) => a.role === 'admin').length}
+                </div>
+                <p className='text-xs text-muted-foreground'>
+                  Regular administrators
+                </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className='overflow-hidden border-0 shadow-sm bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/30 dark:to-background'>
+              <div className='h-1 w-full bg-emerald-500' />
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
+                <CardTitle className='text-lg flex items-center gap-2'>
+                  <Clock className='h-5 w-5' />
                   Recent Activity
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
+                <div className='text-2xl font-bold'>
                   {
                     auditLog.filter((entry) => {
                       const entryDate = new Date(entry.timestamp)
                       const today = new Date()
-                      const diffTime = Math.abs(today.getTime() - entryDate.getTime())
-                      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                      const diffTime = Math.abs(
+                        today.getTime() - entryDate.getTime(),
+                      )
+                      const diffDays = Math.ceil(
+                        diffTime / (1000 * 60 * 60 * 24),
+                      )
                       return diffDays <= 7
                     }).length
                   }
                 </div>
-                <p className="text-xs text-muted-foreground">Actions this week</p>
+                <p className='text-xs text-muted-foreground'>
+                  Actions this week
+                </p>
               </CardContent>
             </Card>
           </div>
 
           {/* Audit Log Table */}
-          <Card>
+          <Card className='overflow-hidden border-0 shadow-sm bg-gradient-to-br from-white to-slate-50 dark:from-background dark:to-slate-950/20'>
+            <div className='h-1 w-full bg-indigo-500' />
             <CardHeader>
               <CardTitle>Activity Log</CardTitle>
-              <CardDescription>Complete history of administrative actions</CardDescription>
+              <CardDescription>
+                Complete history of administrative actions
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
-                <TableHeader>
+                <TableHeader className='bg-gradient-to-r from-slate-50 to-sky-50 dark:from-slate-900/60 dark:to-sky-950/40'>
                   <TableRow>
                     <TableHead>Admin</TableHead>
                     <TableHead>Action</TableHead>
@@ -143,23 +165,34 @@ export default function AdminAuditLogPage() {
                 </TableHeader>
                 <TableBody>
                   {auditLog.map((entry) => (
-                    <TableRow key={entry.id}>
+                    <TableRow
+                      key={entry.id}
+                      className='hover:bg-sky-50/60 dark:hover:bg-sky-950/20'
+                    >
                       <TableCell>
                         <div>
-                          <p className="font-medium">{getAdminName(entry.adminId)}</p>
-                          <Badge variant="outline" className="text-xs mt-1">
-                            {getAdminRole(entry.adminId).replace("_", " ")}
+                          <p className='font-medium'>
+                            {getAdminName(entry.adminId)}
+                          </p>
+                          <Badge variant='outline' className='text-xs mt-1'>
+                            {getAdminRole(entry.adminId).replace('_', ' ')}
                           </Badge>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={getActionColor(entry.action) as any}>{entry.action}</Badge>
+                        <Badge variant={getActionColor(entry.action) as any}>
+                          {entry.action}
+                        </Badge>
                       </TableCell>
                       <TableCell>
-                        <p className="text-sm text-muted-foreground">{entry.details}</p>
+                        <p className='text-sm text-muted-foreground'>
+                          {entry.details}
+                        </p>
                       </TableCell>
                       <TableCell>
-                        <p className="text-sm">{new Date(entry.timestamp).toLocaleString()}</p>
+                        <p className='text-sm'>
+                          {new Date(entry.timestamp).toLocaleString()}
+                        </p>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -167,9 +200,11 @@ export default function AdminAuditLogPage() {
               </Table>
 
               {auditLog.length === 0 && (
-                <div className="text-center py-8">
-                  <Activity className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                  <p className="text-muted-foreground">No audit log entries found</p>
+                <div className='text-center py-8'>
+                  <Activity className='h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50' />
+                  <p className='text-muted-foreground'>
+                    No audit log entries found
+                  </p>
                 </div>
               )}
             </CardContent>

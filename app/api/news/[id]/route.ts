@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { dbConnect } from '@/lib/db'
 import { News } from '@/models/News'
 import { slugify, toParagraphHtml } from '@/lib/text'
+import mongoose from 'mongoose'
 
 async function findByIdOrSlug(idOrSlug: string) {
-  const byId = await News.findById(idOrSlug)
-  if (byId) return byId
+  // Only try ObjectId lookup if the value is a valid ObjectId to avoid CastError
+  if (mongoose.Types.ObjectId.isValid(idOrSlug)) {
+    const byId = await News.findById(idOrSlug)
+    if (byId) return byId
+  }
   return News.findOne({ slug: idOrSlug })
 }
 

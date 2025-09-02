@@ -65,18 +65,24 @@ export function ChangeRoleDialog({
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            Change role{user ? ` for ${user.name}` : ''}
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className='p-0 overflow-hidden'>
+        {/* Themed header */}
+        <div className='h-1 w-full bg-indigo-500' />
+        <div className='px-6 pt-5 pb-3 bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/20 dark:to-indigo-950/20 border-b'>
+          <DialogHeader>
+            <DialogTitle>
+              Change role{user ? ` for ${user.name}` : ''}
+            </DialogTitle>
+          </DialogHeader>
+        </div>
 
-        <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
+        <div className='px-6 py-4 grid grid-cols-1 sm:grid-cols-3 gap-3'>
           <button
             onClick={() => setSelectedRole('news_editor')}
-            className={`cursor-pointer rounded-xl border p-3 text-left transition hover:bg-muted ${
-              selectedRole === 'news_editor' ? 'ring-2 ring-sky-400' : ''
+            className={`cursor-pointer rounded-xl border p-3 text-left transition ${
+              selectedRole === 'news_editor'
+                ? 'ring-2 ring-sky-400 border-sky-200 bg-sky-50/40'
+                : 'hover:bg-muted/60'
             }`}
           >
             <FileText className='h-5 w-5 text-sky-600 mb-1' />
@@ -88,10 +94,10 @@ export function ChangeRoleDialog({
 
           <button
             onClick={() => setSelectedRole('content_manager')}
-            className={`cursor-pointer rounded-xl border p-3 text-left transition hover:bg-muted ${
+            className={`cursor-pointer rounded-xl border p-3 text-left transition ${
               selectedRole === 'content_manager'
-                ? 'ring-2 ring-emerald-400'
-                : ''
+                ? 'ring-2 ring-emerald-400 border-emerald-200 bg-emerald-50/40'
+                : 'hover:bg-muted/60'
             }`}
           >
             <Settings2 className='h-5 w-5 text-emerald-600 mb-1' />
@@ -103,8 +109,10 @@ export function ChangeRoleDialog({
 
           <button
             onClick={() => setSelectedRole('super_admin')}
-            className={`cursor-pointer rounded-xl border p-3 text-left transition hover:bg-muted ${
-              selectedRole === 'super_admin' ? 'ring-2 ring-indigo-400' : ''
+            className={`cursor-pointer rounded-xl border p-3 text-left transition ${
+              selectedRole === 'super_admin'
+                ? 'ring-2 ring-indigo-400 border-indigo-200 bg-indigo-50/40'
+                : 'hover:bg-muted/60'
             }`}
           >
             <ShieldCheck className='h-5 w-5 text-indigo-600 mb-1' />
@@ -115,7 +123,7 @@ export function ChangeRoleDialog({
           </button>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className='px-6 pb-4 border-t bg-white dark:bg-slate-900'>
           <Button
             variant='outline'
             onClick={onClose}

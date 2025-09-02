@@ -1,15 +1,36 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { AdminSidebar } from "@/components/admin/admin-sidebar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Edit, Trash2, Eye } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useState, useEffect } from 'react'
+import { AdminSidebar } from '@/components/admin/admin-sidebar'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Plus, Search, Edit, Trash2, Eye } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
 import { NewsForm } from '@/components/admin/news-form'
+import NewsPreviewDialog from '../../../components/admin/news-preview'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface NewsItem {
   id: string
@@ -18,27 +39,60 @@ interface NewsItem {
   date: string
   tags: string[]
   status: string
-  views: number
-  likes: number
+  image?: string
+  slug?: string
+  content?: string
+}
+
+// Deterministic color palette for tag badges to add a subtle, friendly splash of color
+const TAG_PALETTES = [
+  { bg: 'bg-sky-100', text: 'text-sky-700', border: 'border-sky-200' },
+  { bg: 'bg-indigo-100', text: 'text-indigo-700', border: 'border-indigo-200' },
+  { bg: 'bg-violet-100', text: 'text-violet-700', border: 'border-violet-200' },
+  {
+    bg: 'bg-emerald-100',
+    text: 'text-emerald-700',
+    border: 'border-emerald-200',
+  },
+  { bg: 'bg-rose-100', text: 'text-rose-700', border: 'border-rose-200' },
+  { bg: 'bg-amber-100', text: 'text-amber-800', border: 'border-amber-200' },
+  { bg: 'bg-teal-100', text: 'text-teal-700', border: 'border-teal-200' },
+  { bg: 'bg-cyan-100', text: 'text-cyan-700', border: 'border-cyan-200' },
+]
+function tagClasses(tag: string) {
+  let hash = 0
+  for (let i = 0; i < tag.length; i++)
+    hash = (hash * 31 + tag.charCodeAt(i)) | 0
+  const idx = Math.abs(hash) % TAG_PALETTES.length
+  const c = TAG_PALETTES[idx]
+  return `${c.bg} ${c.text} ${c.border}`
 }
 
 export default function AdminNewsPage() {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([])
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState('')
   const [filteredItems, setFilteredItems] = useState<NewsItem[]>([])
   const [createOpen, setCreateOpen] = useState(false)
   const [editItem, setEditItem] = useState<any | null>(null)
+  const [previewItem, setPreviewItem] = useState<any | null>(null)
+  const [deleteItem, setDeleteItem] = useState<any | null>(null)
+  const [loading, setLoading] = useState(true)
+  const PAGE_SIZE = 5
+  const [page, setPage] = useState(1)
   const { toast } = useToast()
 
   useEffect(() => {
     const loadNews = async () => {
+      setLoading(true)
       try {
         const response = await fetch('/api/news')
         const data: any[] = await response.json()
         setNewsItems(data)
         setFilteredItems(data)
       } catch (error) {
-        console.error("Failed to load news:", error)
+        console.error('Failed to load news:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -50,9 +104,12 @@ export default function AdminNewsPage() {
       (item) =>
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase())),
+        item.tags.some((tag) =>
+          tag.toLowerCase().includes(searchQuery.toLowerCase()),
+        ),
     )
     setFilteredItems(filtered)
+    setPage(1)
   }, [searchQuery, newsItems])
 
   const handleDelete = async (id: string) => {
@@ -106,56 +163,69 @@ export default function AdminNewsPage() {
     }
   }
 
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / PAGE_SIZE))
+  const paged = filteredItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
   return (
     <div className='flex h-screen bg-background'>
       <AdminSidebar />
 
       <main className='flex-1 overflow-auto'>
         <div className='p-8'>
-          {/* Header */}
-          <div className='flex items-center justify-between mb-8'>
-            <div>
-              <h1 className='font-heading text-3xl font-bold'>
-                News Management
-              </h1>
-              <p className='text-muted-foreground'>
-                Manage community news and articles
-              </p>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Button
-                variant='outline'
-                onClick={async () => {
-                  try {
-                    await fetch('/api/news/seed', { method: 'POST' })
-                    const res = await fetch('/api/news')
-                    const data = await res.json()
-                    setNewsItems(data)
-                    setFilteredItems(data)
-                    toast({ title: 'Seeded sample news' })
-                  } catch (e) {
-                    console.error(e)
-                  }
-                }}
-              >
-                Seed
-              </Button>
-              <Button onClick={() => setCreateOpen(true)}>
-                <Plus className='mr-2 h-4 w-4' />
-                Create News Article
-              </Button>
+          {/* Header with subtle FFWPU-themed gradient */}
+          <div className='mb-8 rounded-xl border bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/20 dark:to-indigo-950/20'>
+            <div className='px-6 py-6 flex items-center justify-between'>
+              <div>
+                <h1 className='font-heading text-3xl font-bold'>
+                  News Management
+                </h1>
+                <p className='text-muted-foreground'>
+                  Manage community news and articles
+                </p>
+              </div>
+              <div className='flex items-center gap-2'>
+                <Button
+                  variant='outline'
+                  onClick={async () => {
+                    try {
+                      setLoading(true)
+                      await fetch('/api/news/seed', { method: 'POST' })
+                      const res = await fetch('/api/news')
+                      const data = await res.json()
+                      setNewsItems(data)
+                      setFilteredItems(data)
+                      toast({ title: 'Seeded sample news' })
+                    } catch (e) {
+                      console.error(e)
+                    } finally {
+                      setLoading(false)
+                    }
+                  }}
+                >
+                  Seed
+                </Button>
+                <Button
+                  onClick={() => setCreateOpen(true)}
+                  className='bg-indigo-600 hover:bg-indigo-700'
+                >
+                  <Plus className='mr-2 h-4 w-4' />
+                  Create News Article
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Search and Stats */}
           <div className='grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6'>
-            <Card className='lg:col-span-2'>
+            {/* Search */}
+            <Card className='lg:col-span-2 overflow-hidden border-0 shadow-sm bg-gradient-to-br from-sky-50 to-white dark:from-sky-950/30 dark:to-background'>
+              <div className='h-1 w-full bg-sky-500' />
               <CardHeader>
                 <CardTitle className='text-lg'>Search News</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className='relative'>
-                  <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                  <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sky-600 dark:text-sky-300' />
                   <Input
                     placeholder='Search by title, author, or tags...'
                     value={searchQuery}
@@ -166,24 +236,30 @@ export default function AdminNewsPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            {/* Total Articles */}
+            <Card className='overflow-hidden border-0 shadow-sm bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/30 dark:to-background'>
+              <div className='h-1 w-full bg-indigo-500' />
               <CardHeader>
                 <CardTitle className='text-lg'>Total Articles</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>{newsItems.length}</div>
+                <div className='text-2xl font-bold text-indigo-700 dark:text-indigo-100'>
+                  {newsItems.length}
+                </div>
                 <p className='text-xs text-muted-foreground'>
                   All news articles
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            {/* Active Articles */}
+            <Card className='overflow-hidden border-0 shadow-sm bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/30 dark:to-background'>
+              <div className='h-1 w-full bg-emerald-500' />
               <CardHeader>
                 <CardTitle className='text-lg'>Active Articles</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>
+                <div className='text-2xl font-bold text-emerald-700 dark:text-emerald-100'>
                   {newsItems.filter((item) => item.status === 'active').length}
                 </div>
                 <p className='text-xs text-muted-foreground'>
@@ -194,7 +270,8 @@ export default function AdminNewsPage() {
           </div>
 
           {/* News Table */}
-          <Card>
+          <Card className='shadow-sm overflow-hidden border-0 bg-gradient-to-br from-white to-slate-50 dark:from-background dark:to-slate-950/20'>
+            <div className='h-1 w-full bg-indigo-500' />
             <CardHeader>
               <CardTitle>All News Articles</CardTitle>
               <CardDescription>
@@ -202,90 +279,256 @@ export default function AdminNewsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Author</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Views</TableHead>
-                    <TableHead>Likes</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredItems.map((item: any) => (
-                    <TableRow key={(item as any)._id || item.id}>
-                      <TableCell>
-                        <div>
-                          <p className='font-medium'>{item.title}</p>
-                          <div className='flex gap-1 mt-1'>
-                            {item.tags.slice(0, 2).map((tag: string) => (
-                              <Badge
-                                key={tag}
-                                variant='outline'
-                                className='text-xs'
-                              >
-                                {tag}
-                              </Badge>
-                            ))}
-                            {item.tags.length > 2 && (
-                              <Badge variant='outline' className='text-xs'>
-                                +{item.tags.length - 2}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{item.author}</TableCell>
-                      <TableCell>
-                        {new Date(item.date).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            item.status === 'active' ? 'default' : 'secondary'
-                          }
-                          className='cursor-pointer'
-                          onClick={() =>
-                            handleStatusToggle((item as any)._id || item.id)
-                          }
-                        >
-                          {item.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{item.views}</TableCell>
-                      <TableCell>{item.likes}</TableCell>
-                      <TableCell>
-                        <div className='flex items-center gap-2'>
-                          <Button variant='ghost' size='sm'>
-                            <Eye className='h-4 w-4' />
-                          </Button>
-                          <Button
-                            variant='ghost'
-                            size='sm'
-                            onClick={() => setEditItem(item)}
-                          >
-                            <Edit className='h-4 w-4' />
-                          </Button>
-                          <Button
-                            variant='ghost'
-                            size='sm'
-                            onClick={() =>
-                              handleDelete((item as any)._id || item.id)
-                            }
-                          >
-                            <Trash2 className='h-4 w-4' />
-                          </Button>
-                        </div>
-                      </TableCell>
+              <div className='relative -mx-2 md:mx-0 overflow-auto rounded-xl border border-border/60'>
+                <Table className='min-w-[980px]'>
+                  <TableHeader className='sticky top-0 z-[1] bg-gradient-to-r from-slate-50 to-sky-50 dark:from-slate-900/60 dark:to-sky-950/40 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
+                    <TableRow>
+                      <TableHead className='text-slate-700 py-3'>
+                        Title
+                      </TableHead>
+                      <TableHead className='text-slate-700 py-3'>
+                        Author
+                      </TableHead>
+                      <TableHead className='text-slate-700 py-3'>
+                        Date
+                      </TableHead>
+                      <TableHead className='text-slate-700 py-3'>
+                        Status
+                      </TableHead>
+                      <TableHead className='text-slate-700 py-3'>
+                        Actions
+                      </TableHead>
                     </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {loading
+                      ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
+                          <TableRow key={`skeleton-${i}`}>
+                            <TableCell className='py-4'>
+                              <div className='min-w-[320px] max-w-[560px]'>
+                                <Skeleton className='h-4 w-64' />
+                                <div className='flex flex-wrap gap-1 mt-2'>
+                                  <Skeleton className='h-5 w-12 rounded-full' />
+                                  <Skeleton className='h-5 w-14 rounded-full' />
+                                  <Skeleton className='h-5 w-10 rounded-full' />
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell className='py-4'>
+                              <Skeleton className='h-4 w-28' />
+                            </TableCell>
+                            <TableCell className='py-4'>
+                              <Skeleton className='h-4 w-20' />
+                            </TableCell>
+                            <TableCell className='py-4'>
+                              <Skeleton className='h-6 w-16 rounded-full' />
+                            </TableCell>
+                            <TableCell className='py-4'>
+                              <div className='flex items-center gap-2'>
+                                <Skeleton className='h-8 w-16 rounded-full' />
+                                <Skeleton className='h-8 w-8 rounded-full' />
+                                <Skeleton className='h-8 w-8 rounded-full' />
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      : paged.map((item: any) => (
+                          <TableRow
+                            key={(item as any)._id || item.id}
+                            className='hover:bg-sky-50/60 dark:hover:bg-sky-950/20 transition-colors'
+                          >
+                            <TableCell className='py-4'>
+                              <div className='min-w-[320px] max-w-[560px]'>
+                                <p className='font-medium text-foreground truncate'>
+                                  {item.title}
+                                </p>
+                                <div className='flex flex-wrap gap-1 mt-1'>
+                                  {item.tags.slice(0, 3).map((tag: string) => (
+                                    <Badge
+                                      key={tag}
+                                      variant='secondary'
+                                      className={`text-[10px] rounded-full border px-2 py-0.5 capitalize ${tagClasses(
+                                        tag,
+                                      )}`}
+                                    >
+                                      {tag}
+                                    </Badge>
+                                  ))}
+                                  {item.tags.length > 3 && (
+                                    <Badge
+                                      variant='outline'
+                                      className='text-[10px] rounded-full'
+                                    >
+                                      +{item.tags.length - 3}
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell className='max-w-[240px] truncate'>
+                              {item.author}
+                            </TableCell>
+                            <TableCell className='py-4'>
+                              {new Date(item.date).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell className='py-4'>
+                              <Badge
+                                variant='secondary'
+                                className={`cursor-pointer border rounded-full px-2.5 py-0.5 capitalize ${
+                                  item.status === 'active'
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                                    : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+                                }`}
+                                onClick={() =>
+                                  handleStatusToggle(
+                                    (item as any)._id || item.id,
+                                  )
+                                }
+                              >
+                                {item.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className='py-4'>
+                              <div className='flex items-center gap-2'>
+                                <Button
+                                  variant='secondary'
+                                  size='sm'
+                                  className='gap-2 rounded-full border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+                                  onClick={() => setPreviewItem(item)}
+                                  aria-label={`Preview ${item.title}`}
+                                >
+                                  <Eye className='h-4 w-4' />
+                                  <span className='hidden sm:inline'>View</span>
+                                </Button>
+                                <Button
+                                  variant='ghost'
+                                  size='sm'
+                                  className='text-amber-700 hover:text-amber-800 hover:bg-amber-50'
+                                  onClick={() => setEditItem(item)}
+                                >
+                                  <Edit className='h-4 w-4' />
+                                </Button>
+                                <Button
+                                  variant='ghost'
+                                  size='sm'
+                                  className='text-rose-600 hover:text-rose-700 hover:bg-rose-50'
+                                  onClick={() => setDeleteItem(item)}
+                                  aria-label={`Delete ${item.title}`}
+                                >
+                                  <Trash2 className='h-4 w-4' />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination */}
+              <div className='mt-4 flex items-center justify-between'>
+                <div className='text-sm text-muted-foreground'>
+                  {loading ? (
+                    'Loading…'
+                  ) : (
+                    <>
+                      Showing{' '}
+                      {filteredItems.length === 0
+                        ? 0
+                        : (page - 1) * PAGE_SIZE + 1}
+                      –{Math.min(page * PAGE_SIZE, filteredItems.length)} of{' '}
+                      {filteredItems.length}
+                    </>
+                  )}
+                </div>
+                <div className='flex items-center gap-2'>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1 || loading}
+                  >
+                    Prev
+                  </Button>
+                  {Array.from({ length: totalPages }).map((_, i) => (
+                    <Button
+                      key={i}
+                      size='sm'
+                      variant={page === i + 1 ? 'default' : 'outline'}
+                      onClick={() => setPage(i + 1)}
+                      disabled={loading}
+                    >
+                      {i + 1}
+                    </Button>
                   ))}
-                </TableBody>
-              </Table>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page >= totalPages || loading}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
+
+          {/* Preview Dialog */}
+          <NewsPreviewDialog
+            open={Boolean(previewItem)}
+            item={previewItem as any}
+            onOpenChange={(v: boolean) => {
+              if (!v) setPreviewItem(null)
+            }}
+          />
+
+          {/* Delete Confirm Dialog */}
+          <Dialog
+            open={Boolean(deleteItem)}
+            onOpenChange={(v: boolean) => {
+              if (!v) setDeleteItem(null)
+            }}
+          >
+            <DialogContent className='max-w-sm p-0 overflow-hidden'>
+              <div className='h-1 w-full bg-rose-500' />
+              <div className='px-6 pt-5 pb-3 bg-gradient-to-r from-rose-50 to-rose-100 dark:from-rose-950/20 dark:to-rose-900/10 border-b'>
+                <DialogHeader>
+                  <DialogTitle>Delete this article?</DialogTitle>
+                </DialogHeader>
+              </div>
+              <div className='px-6 py-4 text-sm text-muted-foreground'>
+                This action cannot be undone. You are about to delete:
+                <div className='mt-2 rounded border p-3 bg-muted/30'>
+                  <div className='font-medium text-foreground'>
+                    {deleteItem?.title}
+                  </div>
+                  <div className='text-xs'>
+                    by {deleteItem?.author} •{' '}
+                    {deleteItem?.date
+                      ? new Date(deleteItem.date).toLocaleDateString()
+                      : ''}
+                  </div>
+                </div>
+              </div>
+              <div className='px-6 pb-4 flex justify-end gap-2'>
+                <Button variant='secondary' onClick={() => setDeleteItem(null)}>
+                  Cancel
+                </Button>
+                <Button
+                  variant='destructive'
+                  onClick={async () => {
+                    if (!deleteItem) return
+                    await handleDelete((deleteItem as any)._id || deleteItem.id)
+                    setDeleteItem(null)
+                  }}
+                >
+                  Delete
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           <NewsForm
             open={createOpen || Boolean(editItem)}
             onOpenChange={(v) => {
@@ -298,10 +541,12 @@ export default function AdminNewsPage() {
             }}
             initial={editItem || undefined}
             onSaved={async () => {
+              setLoading(true)
               const res = await fetch('/api/news')
               const data = await res.json()
               setNewsItems(data)
               setFilteredItems(data)
+              setLoading(false)
             }}
           />
         </div>

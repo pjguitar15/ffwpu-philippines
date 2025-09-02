@@ -31,6 +31,15 @@ function gradientFor(tag: string) {
   return GRADIENT_POOL[idx]
 }
 
+function pickRandom<T>(arr: T[], n: number) {
+  const copy = arr.slice()
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[copy[i], copy[j]] = [copy[j], copy[i]]
+  }
+  return copy.slice(0, n)
+}
+
 // Simple skeleton block
 function SkeletonBlock({ className = '' }: { className?: string }) {
   return (
@@ -108,6 +117,13 @@ export default function NewsDetailClient() {
     if (!newsItem) return []
     const ids = new Set([newsItem.slug, ...related.map((r) => r.slug)])
     return sampleNews.filter((n) => !ids.has(n.slug)).slice(0, 8) as NewsItem[]
+  }, [newsItem, related])
+
+  const moreRandomBelow = useMemo(() => {
+    if (!newsItem) return []
+    const ids = new Set([newsItem.slug, ...related.map((r) => r.slug)])
+    const pool = sampleNews.filter((n) => !ids.has(n.slug))
+    return pickRandom(pool, 3) as NewsItem[]
   }, [newsItem, related])
 
   if (loading) {
@@ -320,6 +336,39 @@ export default function NewsDetailClient() {
                   </Link>
                 ))}
               </div>
+
+              {related.length < 2 && (
+                <div className='mt-8 border-t pt-6'>
+                  <h4 className='text-slate-900 font-extrabold tracking-wide uppercase text-sm'>
+                    More updates
+                  </h4>
+                  <div className='mt-4 space-y-6'>
+                    {moreRandomBelow.map((item) => (
+                      <Link
+                        key={item.slug}
+                        href={`/news/${item.slug}`}
+                        className='block group'
+                      >
+                        <div className='relative rounded-lg overflow-hidden ring-1 ring-black/10 shadow bg-white'>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className='w-full h-32 object-cover group-hover:scale-[1.02] transition'
+                          />
+                        </div>
+                        <div className='mt-2 text-xs text-slate-600'>
+                          {item.author} •{' '}
+                          {new Date(item.date).toLocaleDateString()}
+                        </div>
+                        <h4 className='mt-1 font-bold leading-snug group-hover:underline'>
+                          {item.title}
+                        </h4>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
             </aside>
           </div>
         </div>

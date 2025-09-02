@@ -180,21 +180,28 @@ export function CreateAdminDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-lg' onKeyDown={onKeyDown}>
-        <DialogHeader className='space-y-1'>
-          <DialogTitle>Create Admin</DialogTitle>
-          <DialogDescription>
-            Invite a new admin by email and choose their role. Press{' '}
-            <kbd className='px-1 py-0.5 rounded border'>⌘</kbd>/
-            <kbd className='px-1 py-0.5 rounded border'>Ctrl</kbd> +{' '}
-            <kbd className='px-1 py-0.5 rounded border'>Enter</kbd> to submit.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent
+        className='sm:max-w-lg p-0 overflow-hidden'
+        onKeyDown={onKeyDown}
+      >
+        {/* Themed header */}
+        <div className='h-1 w-full bg-indigo-500' />
+        <div className='px-6 pt-5 pb-3 bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/20 dark:to-indigo-950/20 border-b'>
+          <DialogHeader className='space-y-1'>
+            <DialogTitle>Create Admin</DialogTitle>
+            <DialogDescription>
+              Invite a new admin by email and choose their role. Press{' '}
+              <kbd className='px-1 py-0.5 rounded border'>⌘</kbd>/
+              <kbd className='px-1 py-0.5 rounded border'>Ctrl</kbd> +{' '}
+              <kbd className='px-1 py-0.5 rounded border'>Enter</kbd> to submit.
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
         {/* Form */}
-        <div className='space-y-5'>
+        <div className='space-y-5 px-6 py-5'>
           <div className='grid grid-cols-1 gap-4'>
-            <div className='space-y-2'>
+            <div className='space-y-1.5'>
               <Label htmlFor='name'>Name</Label>
               <Input
                 id='name'
@@ -202,11 +209,11 @@ export function CreateAdminDialog({
                 onChange={(e) => setName(e.target.value)}
                 placeholder='Juan Dela Cruz'
                 disabled={creating}
-                className='h-10'
+                className='h-10 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
               />
             </div>
 
-            <div className='space-y-2'>
+            <div className='space-y-1.5'>
               <Label htmlFor='email'>Email</Label>
               <Input
                 id='email'
@@ -215,7 +222,7 @@ export function CreateAdminDialog({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder='admin@example.com'
                 disabled={creating}
-                className='h-10'
+                className='h-10 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
               />
               <p className='text-xs text-muted-foreground'>
                 An invite with a set-password link will be emailed to this
@@ -228,7 +235,7 @@ export function CreateAdminDialog({
           <div className='h-px bg-border' />
 
           {/* Role picker (segmented cards) */}
-          <div className='space-y-2'>
+          <div className='space-y-1.5'>
             <Label>Role</Label>
             <div className='grid grid-cols-1 sm:grid-cols-3 gap-2'>
               {roleButton(
@@ -253,7 +260,7 @@ export function CreateAdminDialog({
           </div>
         </div>
 
-        <DialogFooter className='gap-2'>
+        <DialogFooter className='gap-2 px-6 py-4 border-t bg-white dark:bg-slate-900'>
           <Button
             type='button'
             variant='outline'
