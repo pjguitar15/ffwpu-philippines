@@ -103,20 +103,39 @@ export function NewsletterSignup({
 
     setIsLoading(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      // Find hidden frequency input injected by banner; default weekly
+      const form = e.target as HTMLFormElement
+      const freqInput = form.querySelector(
+        'input[name="frequency"]',
+      ) as HTMLInputElement | null
+      const frequency = (freqInput?.value as 'weekly' | 'monthly') || 'weekly'
 
-    toast({
-      title: 'Welcome to our community! 🎉',
-      description:
-        "You've successfully subscribed to our newsletter. Check your inbox for a confirmation email.",
-    })
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, frequency }),
+      })
+      if (!res.ok) {
+        const msg = await res.text()
+        throw new Error(msg)
+      }
 
-    // Trigger enhanced confetti effect
-    triggerConfetti()
+      toast({
+        title: 'Welcome to our community! 🎉',
+        description:
+          "You've successfully subscribed to our newsletter. Check your inbox for a confirmation email.",
+      })
 
-    setEmail('')
-    setIsLoading(false)
+      // Trigger enhanced confetti effect
+      triggerConfetti()
+
+      setEmail('')
+    } catch (_) {
+      toast({ title: 'Subscription failed', variant: 'destructive' })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

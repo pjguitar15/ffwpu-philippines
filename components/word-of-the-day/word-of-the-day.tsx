@@ -7,57 +7,75 @@ import clsx from 'clsx'
 /** =========================
  *  CONFIG (edit as needed)
  *  ========================= */
-// ID is loaded dynamically from the API; fallback used if fetch fails
-const FALLBACK_ID = 'fallback-2025-09-01'
 const SHOW_INTERVAL_HOURS = 5 // cooldown before auto-show again
 const STORAGE_KEY = 'wotd_seen_meta_v1'
 const SHOW_LAUNCHER = true // toggle floating launcher visibility
 
-// Hardcoded content for now (can be swapped to backend later)
 type WotdData = { id: string; title: string; text: string; attribution?: string }
-const FALLBACK_WOTD: WotdData = {
-  id: FALLBACK_ID,
-  title: 'Word of the Day',
-  text: '“Live for the sake of others, and your life will overflow with purpose.”',
-  attribution: '— True Parents',
-}
 
 /** Utility */
 const hoursToMs = (h: number) => Math.max(0, h) * 60 * 60 * 1000
 
 export default function WordOfTheDayModal() {
   const [open, setOpen] = useState(false)
-  const [wotd, setWotd] = useState<WotdData>(FALLBACK_WOTD)
+  const [wotd, setWotd] = useState<WotdData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [revealed, setRevealed] = useState(false)
 
   // Compute once
   const intervalMs = useMemo(() => hoursToMs(SHOW_INTERVAL_HOURS), [])
 
   useEffect(() => {
+    let cancelled = false
     try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      const meta = raw ? (JSON.parse(raw) as { id: string; ts: number }) : null
+      const now = Date.now()
+      const expired = !meta || now - meta.ts > intervalMs
+      if (expired) {
+        // Open immediately with a blurred placeholder; reveal real text when fetched
+        handleOpen()
+      }
+
       // Load current WOTD
       fetch('/api/wotd/current')
         .then((r) => r.json())
         .then((data: any) => {
+          if (cancelled) return
           if (data && data.id && data.text) {
-            setWotd({ id: String(data.id), title: data.title || 'Word of the Day', text: data.text, attribution: data.attribution || '' })
+            setWotd({
+              id: String(data.id),
+              title: data.title || 'Word of the Day',
+              text: data.text,
+              attribution: data.attribution || '',
+            })
+            // If not already open (not expired), open only if content changed
+            if (!expired && (!meta || meta.id !== String(data.id))) {
+              handleOpen()
+            }
+            // Slight delay so blur transition is visible
+            requestAnimationFrame(() => setRevealed(true))
           }
         })
         .catch(() => {})
-
-      const raw = localStorage.getItem(STORAGE_KEY)
-      const meta = raw ? (JSON.parse(raw) as { id: string; ts: number }) : null
-      const now = Date.now()
-
-      const shouldShow =
-        !meta || // never seen
-        meta.id !== wotd.id || // new message, show again
-        now - meta.ts > intervalMs // last seen expired
-
-      if (shouldShow) {
-        handleOpen()
-      }
+        .finally(() => {
+          if (!cancelled) setLoading(false)
+        })
     } catch {
-      handleOpen() // Fallback: show once if parsing fails
+      // Parsing error: open once; still try to fetch
+      handleOpen()
+      fetch('/api/wotd/current')
+        .then((r) => r.json())
+        .then((data: any) => {
+          if (cancelled) return
+          if (data && data.id && data.text) {
+            setWotd({ id: String(data.id), title: data.title || 'Word of the Day', text: data.text, attribution: data.attribution || '' })
+            requestAnimationFrame(() => setRevealed(true))
+          }
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false)
+        })
     }
 
     // ESC to close
@@ -66,6 +84,7 @@ export default function WordOfTheDayModal() {
     }
     window.addEventListener('keydown', onKey)
     return () => {
+      cancelled = true
       window.removeEventListener('keydown', onKey)
       // ensure scroll restored if unmounted while open
       document.documentElement.style.overflow = ''
@@ -81,10 +100,8 @@ export default function WordOfTheDayModal() {
 
   const handleClose = () => {
     try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ id: wotd.id, ts: Date.now() }),
-      )
+  const idToSave = wotd?.id || 'unknown'
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ id: idToSave, ts: Date.now() }))
     } catch {}
     setOpen(false)
     // release scroll
@@ -132,7 +149,7 @@ export default function WordOfTheDayModal() {
                 <div className='flex items-center gap-2 text-sky-700/90'>
                   <Sparkles className='h-5 w-5' />
                   <p className='text-xs tracking-[0.2em] uppercase'>
-                    {wotd.title}
+                    {wotd?.title || 'Word of the Day'}
                   </p>
                 </div>
 
@@ -143,12 +160,24 @@ export default function WordOfTheDayModal() {
                   Today’s Inspiration
                 </h3>
 
-                <p className='mt-4 text-base sm:text-lg leading-relaxed text-slate-700'>
-                  {wotd.text}
-                </p>
-                <p className='mt-2 text-sm text-slate-500'>
-                  {wotd.attribution}
-                </p>
+                {/* Content area: blur -> clear reveal */}
+                {(!wotd || loading) ? (
+                  <div className='mt-4 space-y-2 animate-pulse'>
+                    <div className='h-[22px] rounded bg-slate-200/80 blur-[2px]' />
+                    <div className='h-[22px] rounded bg-slate-200/80 blur-[2px] w-11/12' />
+                    <div className='h-[22px] rounded bg-slate-200/70 blur-[2px] w-9/12' />
+                    <div className='h-[14px] rounded bg-slate-200/70 blur-[2px] w-4/12 mt-3' />
+                  </div>
+                ) : (
+                  <div className={clsx('transition-all duration-500 ease-out', revealed ? 'blur-0 opacity-100' : 'blur-[6px] opacity-60')}> 
+                    <p className='mt-4 text-base sm:text-lg leading-relaxed text-slate-700'>
+                      {wotd.text}
+                    </p>
+                    <p className='mt-2 text-sm text-slate-500'>
+                      {wotd.attribution}
+                    </p>
+                  </div>
+                )}
 
                 {/* actions */}
                 <div className='mt-6 flex flex-wrap gap-3'>

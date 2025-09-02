@@ -116,6 +116,7 @@ export function AdminSidebar() {
       { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { href: '/admin/news', label: 'News Management', icon: FileText },
       { href: '/admin/events', label: 'Events', icon: Megaphone },
+      { href: '/admin/newsletter', label: 'Newsletter', icon: Megaphone },
       {
         href: '/admin/word-of-the-day',
         label: 'Word of the Day',
@@ -165,7 +166,7 @@ export function AdminSidebar() {
         <div className='flex items-center space-x-3'>
           <div className='h-10 w-10 rounded-full bg-muted flex items-center justify-center'>
             {adminUser?.role === 'super_admin' ? (
-              <Shield className='h-5 w-5 text-primary' />
+              <Shield className='h-5 w-5' />
             ) : (
               <User className='h-5 w-5 text-muted-foreground' />
             )}
