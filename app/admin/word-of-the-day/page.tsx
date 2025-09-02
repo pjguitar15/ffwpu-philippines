@@ -1,4 +1,4 @@
-// app/admin/words-of-the-day/page.tsx
+// app/admin/word-of-the-day/page.tsx
 import WotdAdmin from '@/components/admin/wotd/wotd'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 
@@ -38,12 +38,19 @@ export default function Page() {
       <AdminSidebar />
       <main className='flex-1 overflow-y-auto'>
         <div className='p-8 mx-auto max-w-screen-2xl'>
-          <h1 className='font-heading text-3xl font-bold mb-2'>
-            Words of the Day
-          </h1>
-          <p className='text-muted-foreground mb-6'>
-            Manage daily quotes (static demo; no API yet).
-          </p>
+          {/* Themed header */}
+          <div className='mb-8 rounded-xl border bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/20 dark:to-indigo-950/20'>
+            <div className='px-6 py-6 flex items-center justify-between'>
+              <div>
+                <h1 className='font-heading text-3xl font-bold'>
+                  Word of the Day
+                </h1>
+                <p className='text-muted-foreground'>
+                  Manage daily quotes, set today’s word, and schedule changes
+                </p>
+              </div>
+            </div>
+          </div>
 
           <WotdAdmin initialList={initialList} />
         </div>

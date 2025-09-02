@@ -7,13 +7,16 @@ import clsx from 'clsx'
 /** =========================
  *  CONFIG (edit as needed)
  *  ========================= */
-const WOTD_ID = '2025-09-01' // change when the message changes
+// ID is loaded dynamically from the API; fallback used if fetch fails
+const FALLBACK_ID = 'fallback-2025-09-01'
 const SHOW_INTERVAL_HOURS = 5 // cooldown before auto-show again
 const STORAGE_KEY = 'wotd_seen_meta_v1'
 const SHOW_LAUNCHER = true // toggle floating launcher visibility
 
 // Hardcoded content for now (can be swapped to backend later)
-const WORD_OF_THE_DAY = {
+type WotdData = { id: string; title: string; text: string; attribution?: string }
+const FALLBACK_WOTD: WotdData = {
+  id: FALLBACK_ID,
   title: 'Word of the Day',
   text: '“Live for the sake of others, and your life will overflow with purpose.”',
   attribution: '— True Parents',
@@ -24,19 +27,30 @@ const hoursToMs = (h: number) => Math.max(0, h) * 60 * 60 * 1000
 
 export default function WordOfTheDayModal() {
   const [open, setOpen] = useState(false)
+  const [wotd, setWotd] = useState<WotdData>(FALLBACK_WOTD)
 
   // Compute once
   const intervalMs = useMemo(() => hoursToMs(SHOW_INTERVAL_HOURS), [])
 
   useEffect(() => {
     try {
+      // Load current WOTD
+      fetch('/api/wotd/current')
+        .then((r) => r.json())
+        .then((data: any) => {
+          if (data && data.id && data.text) {
+            setWotd({ id: String(data.id), title: data.title || 'Word of the Day', text: data.text, attribution: data.attribution || '' })
+          }
+        })
+        .catch(() => {})
+
       const raw = localStorage.getItem(STORAGE_KEY)
       const meta = raw ? (JSON.parse(raw) as { id: string; ts: number }) : null
       const now = Date.now()
 
       const shouldShow =
         !meta || // never seen
-        meta.id !== WOTD_ID || // new day/message, show again
+        meta.id !== wotd.id || // new message, show again
         now - meta.ts > intervalMs // last seen expired
 
       if (shouldShow) {
@@ -69,7 +83,7 @@ export default function WordOfTheDayModal() {
     try {
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ id: WOTD_ID, ts: Date.now() }),
+        JSON.stringify({ id: wotd.id, ts: Date.now() }),
       )
     } catch {}
     setOpen(false)
@@ -118,7 +132,7 @@ export default function WordOfTheDayModal() {
                 <div className='flex items-center gap-2 text-sky-700/90'>
                   <Sparkles className='h-5 w-5' />
                   <p className='text-xs tracking-[0.2em] uppercase'>
-                    {WORD_OF_THE_DAY.title}
+                    {wotd.title}
                   </p>
                 </div>
 
@@ -130,10 +144,10 @@ export default function WordOfTheDayModal() {
                 </h3>
 
                 <p className='mt-4 text-base sm:text-lg leading-relaxed text-slate-700'>
-                  {WORD_OF_THE_DAY.text}
+                  {wotd.text}
                 </p>
                 <p className='mt-2 text-sm text-slate-500'>
-                  {WORD_OF_THE_DAY.attribution}
+                  {wotd.attribution}
                 </p>
 
                 {/* actions */}
