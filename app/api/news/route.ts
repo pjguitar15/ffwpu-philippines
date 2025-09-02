@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { dbConnect } from '@/lib/db'
 import { News } from '@/models/News'
 import { slugify, toParagraphHtml } from '@/lib/text'
+import { recordAudit } from '@/lib/audit'
 
 export async function GET() {
   await dbConnect()
-  const items = await News.find().sort({ date: -1 }).lean()
+  const items = await News.find().sort({ createdAt: -1 }).lean()
   const withId = items.map((d: any) => ({ ...d, id: String(d._id) }))
+  console.log('withId', withId[0])
   return NextResponse.json(withId)
 }
 
@@ -33,10 +35,7 @@ export async function POST(req: NextRequest) {
   const slug = body.slug || slugify(title)
   const exists = await News.findOne({ slug })
   if (exists) {
-    return NextResponse.json(
-      { error: 'Slug already exists' },
-      { status: 409 },
-    )
+    return NextResponse.json({ error: 'Slug already exists' }, { status: 409 })
   }
 
   const doc = await News.create({
@@ -51,5 +50,12 @@ export async function POST(req: NextRequest) {
   })
   const asJson: any = doc.toObject()
   asJson.id = String(asJson._id)
+  // Audit log
+  recordAudit({
+    action: 'Created',
+    resourceType: 'news',
+    resourceId: asJson.id,
+    details: `Created news: ${title}`,
+  })
   return NextResponse.json(asJson)
 }

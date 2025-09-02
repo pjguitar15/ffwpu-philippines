@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server'
 import { dbConnect } from '@/lib/db'
 import { AdminUser } from '@/models/AdminUser'
-import { verifyPassword, hashPassword, createToken } from '@/lib/auth'
+import {
+  verifyPassword,
+  hashPassword,
+  createToken,
+  verifyToken,
+} from '@/lib/auth'
 import { cookies } from 'next/headers'
 import mongoose from 'mongoose'
 import { VerificationToken } from '@/models/VerificationToken'
@@ -56,6 +61,20 @@ export async function POST(req: Request) {
     if (!user)
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
+    // Disallow reusing the existing password if it already exists
+    try {
+      // If user already has a password, prevent setting the same one
+      if (
+        (user as any).passwordHash &&
+        (await verifyPassword(newPassword, (user as any).passwordHash))
+      ) {
+        return NextResponse.json(
+          { error: 'New password must be different from current password' },
+          { status: 400 },
+        )
+      }
+    } catch {}
+
     user.passwordHash = await hashPassword(newPassword)
     user.emailVerified = true
     await user.save()
@@ -80,15 +99,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true })
   }
 
-  // Fallback: authenticated change via id + currentPassword
-  if (!id || !currentPassword) {
+  // Fallback: authenticated change via current session (cookie) or provided id
+  const cookieStore2 = await cookies()
+  const sessionToken = cookieStore2.get('admin_token')?.value
+  let authId = id
+  if (!authId && sessionToken) {
+    try {
+      const payload = await verifyToken(sessionToken)
+      authId = String(payload.sub)
+    } catch {}
+  }
+
+  if (!authId || !currentPassword) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId.isValid(authId)) {
     return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
   }
 
-  const user = await AdminUser.findById(id)
+  const user = await AdminUser.findById(authId)
   if (!user)
     return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
@@ -98,6 +127,14 @@ export async function POST(req: Request) {
       { error: 'Current password is incorrect' },
       { status: 401 },
     )
+
+  // Prevent setting the same password as current
+  if (await verifyPassword(newPassword, user.passwordHash)) {
+    return NextResponse.json(
+      { error: 'New password must be different from current password' },
+      { status: 400 },
+    )
+  }
 
   user.passwordHash = await hashPassword(newPassword)
   if (!user.emailVerified) user.emailVerified = true

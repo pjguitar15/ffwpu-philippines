@@ -54,11 +54,12 @@ function clearCachedUser() {
 }
 
 export function AdminSidebar() {
-  // initialize from cache to avoid flicker
-  const [adminUser, setAdminUser] = useState<AdminUser | null>(() => {
-    if (typeof window === 'undefined') return null
-    return readCachedUser()
-  })
+  // Start with a consistent SSR-safe state, then hydrate from cache on mount
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null)
+  useEffect(() => {
+    const cached = readCachedUser()
+    if (cached) setAdminUser(cached)
+  }, [])
 
   const pathname = usePathname()
   const router = useRouter()
@@ -67,7 +68,7 @@ export function AdminSidebar() {
   // background revalidation
   useEffect(() => {
     const controller = new AbortController()
-    ;;(async () => {
+    ;(async () => {
       try {
         const res = await fetch('/api/auth/me', {
           cache: 'no-store',
@@ -138,8 +139,11 @@ export function AdminSidebar() {
     [],
   )
 
-  const roleLabel =
-    adminUser?.role === 'super_admin' ? 'super admin' : adminUser?.role || ''
+  const roleLabel = adminUser
+    ? adminUser.role === 'super_admin'
+      ? 'super admin'
+      : adminUser.role
+    : ''
 
   return (
     <div className='w-64 bg-card border-r h-screen flex flex-col'>
@@ -165,8 +169,12 @@ export function AdminSidebar() {
       <div className='px-7 py-6 border-b'>
         <div className='flex items-center space-x-3'>
           <div className='h-10 w-10 rounded-full bg-muted flex items-center justify-center'>
-            {adminUser?.role === 'super_admin' ? (
-              <Shield className='h-5 w-5' />
+            {adminUser ? (
+              adminUser.role === 'super_admin' ? (
+                <Shield className='h-5 w-5' />
+              ) : (
+                <User className='h-5 w-5 text-muted-foreground' />
+              )
             ) : (
               <User className='h-5 w-5 text-muted-foreground' />
             )}

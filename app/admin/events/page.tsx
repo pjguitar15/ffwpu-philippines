@@ -1,16 +1,64 @@
 "use client"
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Calendar, Clock, MapPin, Edit, Trash2, Plus, Building2, Image as ImageIcon, Link as LinkIcon, CheckCircle2, XCircle } from 'lucide-react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Edit,
+  Trash2,
+  Plus,
+  Building2,
+  Image as ImageIcon,
+  Link as LinkIcon,
+  CheckCircle2,
+  XCircle,
+  MoreVertical,
+  Upload,
+  RefreshCcw,
+} from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Progress } from '@/components/ui/progress'
 
 type EventItem = {
   _id?: string
@@ -26,7 +74,14 @@ type EventItem = {
   href?: string
 }
 
-const AREAS: EventItem['area'][] = ['Area 1', 'Area 2', 'Area 3', 'Area 4', 'Area 5', 'Nationwide']
+const AREAS: EventItem['area'][] = [
+  'Area 1',
+  'Area 2',
+  'Area 3',
+  'Area 4',
+  'Area 5',
+  'Nationwide',
+]
 
 function Empty() {
   return (
@@ -61,6 +116,11 @@ function EventForm({
   })
   const { toast } = useToast()
   const isEdit = Boolean(initial && (initial as any)._id)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [uploadPct, setUploadPct] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   // lightweight fallback thumbnail for broken image URLs
   const FALLBACK_IMG =
@@ -122,6 +182,53 @@ function EventForm({
     } catch (e) {
       console.error(e)
       toast({ title: 'Save failed', variant: 'destructive' as any })
+    }
+  }
+
+  async function uploadFile(file: File) {
+    const MAX_BYTES = 10 * 1024 * 1024 // 10MB
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select an image file')
+      return
+    }
+    if (file.size > MAX_BYTES) {
+      setUploadError('File too large (max 10MB)')
+      return
+    }
+    setUploadError(null)
+    setUploading(true)
+    setUploadPct(0)
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const fd = new FormData()
+        fd.append('file', file)
+        const xhr = new XMLHttpRequest()
+        xhr.open('POST', '/api/cloudinary-upload')
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) setUploadPct((e.loaded / e.total) * 100)
+        }
+        xhr.onload = () => {
+          try {
+            const data = JSON.parse(xhr.responseText || '{}')
+            if (xhr.status >= 200 && xhr.status < 300) {
+              setValues((v) => ({ ...v, image: data.url }))
+              setUploadPct(100)
+              resolve()
+            } else {
+              reject(new Error(data?.error || 'Upload failed'))
+            }
+          } catch (err) {
+            reject(new Error('Upload failed'))
+          }
+        }
+        xhr.onerror = () => reject(new Error('Network error during upload'))
+        xhr.send(fd)
+      })
+    } catch (err: any) {
+      console.error(err)
+      setUploadError(err?.message || 'Upload failed')
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -282,25 +389,75 @@ function EventForm({
                   </div>
                 </div>
 
-                {/* Image URL + Preview */}
+                {/* Image Upload (dropzone + preview) */}
                 <div className='col-span-12'>
                   <label className='block text-[11px] font-semibold tracking-wider uppercase text-muted-foreground mb-1.5'>
-                    Image URL
+                    Upload Image
                   </label>
-                  <div className='relative'>
-                    <ImageIcon className='h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-sky-600 dark:text-sky-300 pointer-events-none' />
-                    <Input
-                      placeholder='https://example.com/image.jpg'
-                      value={values.image}
-                      onChange={(e) =>
-                        setValues({ ...values, image: e.target.value })
+                  {!values.image ? (
+                    <div
+                      className={
+                        'relative rounded-xl border-2 border-dashed transition-colors p-6 text-center select-none ' +
+                        (isDragging
+                          ? 'border-sky-500 bg-sky-50/50 dark:bg-sky-950/20'
+                          : 'border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-sky-400')
                       }
-                      required
-                      className='h-10 pl-9 pr-28 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
-                    />
-                  </div>
-                  {values.image && (
-                    <div className='mt-2.5 flex items-center gap-3'>
+                      onDragOver={(e) => {
+                        e.preventDefault()
+                        setIsDragging(true)
+                      }}
+                      onDragLeave={() => setIsDragging(false)}
+                      onDrop={async (e) => {
+                        e.preventDefault()
+                        setIsDragging(false)
+                        const f = e.dataTransfer.files?.[0]
+                        if (f) await uploadFile(f)
+                      }}
+                    >
+                      <div className='flex flex-col items-center gap-2'>
+                        <div className='h-12 w-12 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center dark:bg-sky-900/40 dark:text-sky-200'>
+                          <Upload className='h-6 w-6' />
+                        </div>
+                        <div className='text-sm font-medium'>
+                          Drag & drop an image
+                        </div>
+                        <div className='text-xs text-muted-foreground'>or</div>
+                        <Button
+                          type='button'
+                          variant='secondary'
+                          size='sm'
+                          className='cursor-pointer'
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          Choose image
+                        </Button>
+                        <input
+                          ref={fileInputRef}
+                          type='file'
+                          accept='image/*'
+                          className='hidden'
+                          onChange={async (e) => {
+                            const f = e.target.files?.[0]
+                            if (f) await uploadFile(f)
+                          }}
+                        />
+                        {uploading && (
+                          <div className='mt-3 w-full max-w-xs mx-auto'>
+                            <Progress value={uploadPct} />
+                            <p className='text-xs text-muted-foreground mt-1'>
+                              Uploading… {Math.round(uploadPct)}%
+                            </p>
+                          </div>
+                        )}
+                        {uploadError && (
+                          <p className='text-xs text-rose-600 mt-2'>
+                            {uploadError}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className='relative mt-2 overflow-hidden rounded-xl border bg-white dark:bg-slate-950'>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={values.image}
@@ -308,16 +465,48 @@ function EventForm({
                           if (
                             (e.currentTarget as HTMLImageElement).src !==
                             FALLBACK_IMG
-                          )
-                            (e.currentTarget as HTMLImageElement).src =
+                          ) {
+                            ;(e.currentTarget as HTMLImageElement).src =
                               FALLBACK_IMG
+                          }
                         }}
-                        alt='Preview'
-                        className='h-24 w-40 object-cover rounded-md border'
+                        alt='Uploaded image'
+                        className='w-full max-h-56 object-cover'
                       />
-                      <span className='text-xs text-muted-foreground'>
-                        Preview
-                      </span>
+                      <div className='absolute top-2 right-2 flex gap-2'>
+                        <Button
+                          type='button'
+                          size='sm'
+                          variant='secondary'
+                          className='cursor-pointer'
+                          onClick={() => fileInputRef.current?.click()}
+                          title='Replace image'
+                        >
+                          <RefreshCcw className='h-4 w-4' />
+                        </Button>
+                        <Button
+                          type='button'
+                          size='sm'
+                          variant='destructive'
+                          className='cursor-pointer'
+                          onClick={() =>
+                            setValues((v) => ({ ...v, image: '' }))
+                          }
+                          title='Remove image'
+                        >
+                          <Trash2 className='h-4 w-4' />
+                        </Button>
+                      </div>
+                      <input
+                        ref={fileInputRef}
+                        type='file'
+                        accept='image/*'
+                        className='hidden'
+                        onChange={async (e) => {
+                          const f = e.target.files?.[0]
+                          if (f) await uploadFile(f)
+                        }}
+                      />
                     </div>
                   )}
                 </div>
@@ -464,19 +653,15 @@ export default function AdminEventsPage() {
             </div>
           </div>
 
-          <Card className='mb-6 overflow-hidden border-0 shadow-sm bg-gradient-to-br from-sky-50 to-white dark:from-sky-950/30 dark:to-background'>
-            <div className='h-1 w-full bg-sky-500' />
-            <CardHeader>
-              <CardTitle className='text-lg'>Search</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Input
-                placeholder='Search title, location, region, area…'
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-              />
-            </CardContent>
-          </Card>
+          {/* Inline search above table (left-aligned, bordered) */}
+          <div className='mb-4'>
+            <Input
+              placeholder='Search title, location, region, area…'
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              className='h-10 w-full max-w-sm bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+            />
+          </div>
 
           <Card className='shadow-sm overflow-hidden border-0 bg-gradient-to-br from-white to-slate-50 dark:from-background dark:to-slate-950/20'>
             <div className='h-1 w-full bg-indigo-500' />
@@ -489,12 +674,22 @@ export default function AdminEventsPage() {
                 <Table className='min-w-[980px]'>
                   <TableHeader className='sticky top-0 z-[1] bg-gradient-to-r from-slate-50 to-sky-50 dark:from-slate-900/60 dark:to-sky-950/40 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
                     <TableRow className='h-14'>
-                      <TableHead className='text-base'>Title</TableHead>
-                      <TableHead className='text-base'>Date</TableHead>
-                      <TableHead className='text-base'>Location</TableHead>
-                      <TableHead className='text-base'>Area</TableHead>
-                      <TableHead className='text-base'>Region</TableHead>
-                      <TableHead className='text-base'>Actions</TableHead>
+                      <TableHead className='text-slate-700 py-3'>
+                        Title
+                      </TableHead>
+                      <TableHead className='text-slate-700 py-3'>
+                        Date
+                      </TableHead>
+                      <TableHead className='text-slate-700 py-3'>
+                        Location
+                      </TableHead>
+                      <TableHead className='text-slate-700 py-3'>
+                        Area
+                      </TableHead>
+                      <TableHead className='text-slate-700 py-3'>
+                        Region
+                      </TableHead>
+                      <TableHead className='py-3 w-0'></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -507,87 +702,101 @@ export default function AdminEventsPage() {
                     )}
                     {loading
                       ? Array.from({ length: pageSize }).map((_, i) => (
-                          <TableRow key={`sk-${i}`} className='h-16'>
-                            <TableCell>
-                              <div className='h-4 w-64 bg-slate-200 animate-pulse rounded' />
+                          <TableRow key={`sk-${i}`}>
+                            <TableCell className='py-4'>
+                              <div className='min-w-[280px] max-w-[480px]'>
+                                <Skeleton className='h-4 w-64' />
+                                <div className='mt-2'>
+                                  <Skeleton className='h-3 w-40' />
+                                </div>
+                              </div>
                             </TableCell>
-                            <TableCell>
-                              <div className='h-4 w-40 bg-slate-200 animate-pulse rounded' />
+                            <TableCell className='py-4'>
+                              <Skeleton className='h-4 w-40' />
                             </TableCell>
-                            <TableCell>
-                              <div className='h-4 w-48 bg-slate-200 animate-pulse rounded' />
+                            <TableCell className='py-4'>
+                              <Skeleton className='h-4 w-48' />
                             </TableCell>
-                            <TableCell>
-                              <div className='h-6 w-20 bg-slate-200 animate-pulse rounded-full' />
+                            <TableCell className='py-4'>
+                              <Skeleton className='h-6 w-20 rounded-full' />
                             </TableCell>
-                            <TableCell>
-                              <div className='h-4 w-28 bg-slate-200 animate-pulse rounded' />
+                            <TableCell className='py-4'>
+                              <Skeleton className='h-4 w-28' />
                             </TableCell>
-                            <TableCell>
-                              <div className='h-8 w-24 bg-slate-200 animate-pulse rounded-full' />
+                            <TableCell className='py-4'>
+                              <div className='flex items-center gap-2'>
+                                <Skeleton className='h-8 w-16 rounded-full' />
+                                <Skeleton className='h-8 w-8 rounded-full' />
+                                <Skeleton className='h-8 w-8 rounded-full' />
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))
                       : pageItems.map((e) => (
                           <TableRow
                             key={e._id}
-                            className='h-16 hover:bg-sky-50/60 dark:hover:bg-sky-950/20'
+                            className='h-16 hover:bg-sky-50/60 dark:hover:bg-sky-950/20 transition-colors'
                           >
-                            <TableCell>
-                              <div className='font-medium text-base'>
-                                {e.title}
-                              </div>
-                              <div className='text-sm text-muted-foreground line-clamp-1'>
-                                {e.church}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className='flex items-center gap-2 text-base'>
-                                <Calendar className='h-4 w-4' />{' '}
-                                {new Date(e.date).toLocaleString()}
-                              </div>
-                              {e.end && (
-                                <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-                                  <Clock className='h-4 w-4' />{' '}
-                                  {new Date(e.end).toLocaleString()}
+                            <TableCell className='py-4'>
+                              <div className='font-medium'>{e.title}</div>
+                              {e.church && (
+                                <div className='text-sm text-muted-foreground line-clamp-1'>
+                                  {e.church}
                                 </div>
                               )}
                             </TableCell>
-                            <TableCell>
-                              <div className='flex items-center gap-2 text-base'>
+                            <TableCell className='py-4'>
+                              <div className='flex items-center gap-2'>
+                                <Calendar className='h-4 w-4' />{' '}
+                                {new Date(e.date).toLocaleString()}
+                              </div>
+                            </TableCell>
+                            <TableCell className='py-4'>
+                              <div className='flex items-center gap-2'>
                                 <MapPin className='h-4 w-4' /> {e.location}
                               </div>
                             </TableCell>
-                            <TableCell>
-                              <Badge className='rounded-full border border-indigo-200 bg-indigo-50 text-indigo-700 text-base px-3 py-1'>
+                            <TableCell className='py-4'>
+                              <Badge className='rounded-full text-white border border-indigo-300 bg-gradient-to-r from-sky-500 to-indigo-500 px-3 py-1 shadow-sm'>
                                 {e.area}
                               </Badge>
                             </TableCell>
-                            <TableCell className='text-base'>
-                              {e.region}
-                            </TableCell>
-                            <TableCell>
-                              <div className='flex items-center gap-2'>
-                                <Button
-                                  variant='secondary'
-                                  size='sm'
-                                  onClick={() => {
-                                    setEditItem(e)
-                                    setOpen(true)
-                                  }}
-                                  className='cursor-pointer text-amber-700 hover:text-amber-800 hover:bg-amber-50'
+                            <TableCell className='py-4'>{e.region}</TableCell>
+                            <TableCell className='py-4 text-right'>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant='ghost'
+                                    size='icon'
+                                    className='h-8 w-8 p-0'
+                                    aria-label='Actions'
+                                  >
+                                    <MoreVertical className='h-4 w-4' />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                  align='end'
+                                  className='w-40'
                                 >
-                                  <Edit className='h-4 w-4' /> Edit
-                                </Button>
-                                <Button
-                                  variant='ghost'
-                                  size='sm'
-                                  onClick={() => setDeleteItem(e)}
-                                  className='text-rose-600 hover:text-rose-700 hover:bg-rose-50 cursor-pointer'
-                                >
-                                  <Trash2 className='h-4 w-4' />
-                                </Button>
-                              </div>
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setEditItem(e)
+                                      setOpen(true)
+                                    }}
+                                    className='cursor-pointer'
+                                  >
+                                    <Edit className='h-4 w-4' /> Edit
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    variant='destructive'
+                                    onClick={() => setDeleteItem(e)}
+                                    className='cursor-pointer'
+                                  >
+                                    <Trash2 className='h-4 w-4' /> Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -596,20 +805,42 @@ export default function AdminEventsPage() {
               </div>
               <div className='mt-4 flex items-center justify-between'>
                 <div className='text-sm text-muted-foreground'>
-                  Page {page} of {totalPages}
+                  {loading ? (
+                    'Loading…'
+                  ) : (
+                    <>
+                      Showing{' '}
+                      {filtered.length === 0 ? 0 : (page - 1) * pageSize + 1}–
+                      {Math.min(page * pageSize, filtered.length)} of{' '}
+                      {filtered.length}
+                    </>
+                  )}
                 </div>
-                <div className='flex gap-2'>
+                <div className='flex items-center gap-2'>
                   <Button
-                    variant='secondary'
-                    disabled={page <= 1}
+                    variant='outline'
+                    size='sm'
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1 || loading}
                   >
-                    Previous
+                    Prev
                   </Button>
+                  {Array.from({ length: totalPages }).map((_, i) => (
+                    <Button
+                      key={i}
+                      size='sm'
+                      variant={page === i + 1 ? 'default' : 'outline'}
+                      onClick={() => setPage(i + 1)}
+                      disabled={loading}
+                    >
+                      {i + 1}
+                    </Button>
+                  ))}
                   <Button
-                    disabled={page >= totalPages}
+                    variant='outline'
+                    size='sm'
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    className='bg-indigo-600 hover:bg-indigo-700'
+                    disabled={page >= totalPages || loading}
                   >
                     Next
                   </Button>

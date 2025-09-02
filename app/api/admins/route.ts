@@ -5,6 +5,7 @@ import { AdminUser } from '@/models/AdminUser'
 import { verifyToken, hashPassword, createToken } from '@/lib/auth'
 import { VerificationToken } from '@/models/VerificationToken'
 import { sendEmailJs } from '@/lib/email'
+import { recordAudit } from '@/lib/audit'
 
 async function requireSuperAdmin() {
   const cookieStore = await cookies()
@@ -47,7 +48,8 @@ export async function GET() {
 }
 
 function generatePassword(length = 12) {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*'
+  const chars =
+    'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*'
   let pwd = ''
   const cryptoObj = globalThis.crypto || (require('crypto') as any).webcrypto
   const arr = new Uint32Array(length)
@@ -69,11 +71,18 @@ export async function POST(request: Request) {
   if (!email || !name || !role)
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   const exists = await AdminUser.findOne({ email })
-  if (exists) return NextResponse.json({ error: 'Email already exists' }, { status: 409 })
+  if (exists)
+    return NextResponse.json({ error: 'Email already exists' }, { status: 409 })
   // Create a temporary random password (will be replaced upon set-password)
   const tempPassword = generatePassword()
   const passwordHash = await hashPassword(tempPassword)
-  const user = await AdminUser.create({ email, name, role, passwordHash, emailVerified: false })
+  const user = await AdminUser.create({
+    email,
+    name,
+    role,
+    passwordHash,
+    emailVerified: false,
+  })
 
   // Create a one-time invite token (random string, not JWT) valid for 48h
   const rawToken = cryptoRandomString(48)
@@ -93,7 +102,7 @@ export async function POST(request: Request) {
 
   const BASE_URL =
     process.env.ENVIRONMENT === 'localhost'
-      ? 'http://localhost:3003'
+      ? 'http://localhost:3000'
       : process.env.ENVIRONMENT === 'staging'
       ? 'https://ffwpuph-sneakpeek.vercel.app'
       : 'https://www.ffwpuph.com'
@@ -115,8 +124,23 @@ export async function POST(request: Request) {
     },
   ).catch(() => console.log('Error Sending'))
 
+  // Audit log
+  try {
+    recordAudit({
+      action: 'Created',
+      resourceType: 'admin',
+      resourceId: String(user._id),
+      details: `Invited admin: ${user.email} (${user.role})`,
+    })
+  } catch {}
+
   return NextResponse.json({
-  user: { id: String(user._id), email: user.email, name: user.name, role: user.role },
+    user: {
+      id: String(user._id),
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    },
     invite: { sent: true },
   })
 }

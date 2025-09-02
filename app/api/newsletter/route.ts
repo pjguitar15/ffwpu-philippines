@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { dbConnect } from '@/lib/db'
 import { Newsletter } from '@/models/Newsletter'
+import { recordAudit } from '@/lib/audit'
 
 // GET /api/newsletter?page=1&pageSize=20
 export async function GET(req: Request) {
@@ -14,7 +15,11 @@ export async function GET(req: Request) {
 
   const skip = (page - 1) * pageSize
   const [items, total] = await Promise.all([
-    Newsletter.find({}).sort({ createdAt: -1 }).skip(skip).limit(pageSize).lean(),
+    Newsletter.find({})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(pageSize)
+      .lean(),
     Newsletter.countDocuments({}),
   ])
 
@@ -26,7 +31,9 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   await dbConnect()
   const body = await req.json()
-  const email = String(body.email || '').trim().toLowerCase()
+  const email = String(body.email || '')
+    .trim()
+    .toLowerCase()
   const frequency = body.frequency === 'monthly' ? 'monthly' : 'weekly'
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
@@ -38,6 +45,16 @@ export async function POST(req: Request) {
     { $set: { email, frequency } },
     { new: true, upsert: true },
   ).lean()
+
+  // Audit log (subscription upsert)
+  try {
+    recordAudit({
+      action: 'Subscribed',
+      resourceType: 'newsletter',
+      resourceId: String(doc?._id || email),
+      details: `Upsert subscriber: ${email} (${frequency})`,
+    })
+  } catch {}
 
   return NextResponse.json(doc, { status: 201 })
 }

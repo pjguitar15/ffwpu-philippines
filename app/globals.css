@@ -12,11 +12,13 @@
   --popover-foreground: oklch(0.3 0 0);
   --primary: oklch(0.55 0.15 240); /* Church blue */
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.85 0.08 85); /* Subtle yellow accent */
+  /* Neutralize secondary to soft gray */
+  --secondary: oklch(0.94 0 0);
   --secondary-foreground: oklch(0.3 0 0);
   --muted: oklch(0.96 0 0);
   --muted-foreground: oklch(0.5 0 0);
-  --accent: oklch(0.85 0.08 85); /* Subtle yellow for accents */
+  /* Neutralize accent to soft gray as well */
+  --accent: oklch(0.94 0 0);
   --accent-foreground: oklch(0.3 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(1 0 0);
@@ -53,8 +55,9 @@
   --secondary-foreground: oklch(0.95 0 0);
   --muted: oklch(0.25 0 0);
   --muted-foreground: oklch(0.7 0 0);
-  --accent: oklch(0.75 0.08 85);
-  --accent-foreground: oklch(0.1 0 0);
+  /* Neutral accent in dark mode */
+  --accent: oklch(0.35 0 0);
+  --accent-foreground: oklch(0.95 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.95 0 0);
   --border: oklch(0.25 0 0);

@@ -57,15 +57,30 @@ export default function AdminNewsletterPage() {
             <div className='px-6 py-6 flex items-center justify-between'>
               <div>
                 <h1 className='font-heading text-3xl font-bold'>Newsletter</h1>
-                <p className='text-muted-foreground'>Subscriber emails and frequency</p>
+                <p className='text-muted-foreground'>
+                  Subscriber emails and frequency
+                </p>
               </div>
             </div>
           </div>
 
-          <Card className='mb-6 overflow-hidden border-0 shadow-sm bg-gradient-to-br from-sky-50 to-white dark:from-sky-950/30 dark:to-background'>
-            <div className='h-1 w-full bg-sky-500' />
+          {/* Inline toolbar: search only (left-aligned, bordered) */}
+          <div className='mb-4'>
+            <Input
+              placeholder='Filter by email…'
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              className='h-10 w-full max-w-sm bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+            />
+          </div>
+
+          <Card className='shadow-sm overflow-hidden border-0 bg-gradient-to-br from-white to-slate-50 dark:from-background dark:to-slate-950/20'>
+            <div className='h-1 w-full bg-indigo-500' />
             <CardHeader className='flex flex-row items-center justify-between'>
-              <CardTitle className='text-lg'>Search</CardTitle>
+              <div>
+                <CardTitle>Subscribers</CardTitle>
+                <CardDescription>View all newsletter signups</CardDescription>
+              </div>
               <Button
                 onClick={async () => {
                   try {
@@ -111,11 +126,16 @@ export default function AdminNewsletterPage() {
                       )
                       .join('\n')
 
-                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+                    const blob = new Blob([csv], {
+                      type: 'text/csv;charset=utf-8;',
+                    })
                     const url = URL.createObjectURL(blob)
                     const a = document.createElement('a')
                     a.href = url
-                    const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')
+                    const ts = new Date()
+                      .toISOString()
+                      .slice(0, 19)
+                      .replace(/[:T]/g, '-')
                     a.download = `subscribers-${ts}.csv`
                     document.body.appendChild(a)
                     a.click()
@@ -133,28 +153,19 @@ export default function AdminNewsletterPage() {
               </Button>
             </CardHeader>
             <CardContent>
-              <Input
-                placeholder='Filter by email…'
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-              />
-            </CardContent>
-          </Card>
-
-          <Card className='shadow-sm overflow-hidden border-0 bg-gradient-to-br from-white to-slate-50 dark:from-background dark:to-slate-950/20'>
-            <div className='h-1 w-full bg-indigo-500' />
-            <CardHeader>
-              <CardTitle>Subscribers</CardTitle>
-              <CardDescription>View all newsletter signups</CardDescription>
-            </CardHeader>
-            <CardContent>
               <div className='relative -mx-2 md:mx-0 overflow-auto rounded-xl border border-border/60'>
                 <Table className='min-w-[760px]'>
                   <TableHeader className='sticky top-0 z-[1] bg-gradient-to-r from-slate-50 to-sky-50 dark:from-slate-900/60 dark:to-sky-950/40 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
                     <TableRow className='h-14'>
-                      <TableHead className='text-base'>Email</TableHead>
-                      <TableHead className='text-base'>Frequency</TableHead>
-                      <TableHead className='text-base'>Joined</TableHead>
+                      <TableHead className='text-slate-700 py-3'>
+                        Email
+                      </TableHead>
+                      <TableHead className='text-slate-700 py-3'>
+                        Frequency
+                      </TableHead>
+                      <TableHead className='text-slate-700 py-3'>
+                        Joined
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -173,9 +184,12 @@ export default function AdminNewsletterPage() {
                           </TableRow>
                         ))
                       : filtered.map((s) => (
-                          <TableRow key={s._id} className='h-16 hover:bg-sky-50/60 dark:hover:bg-sky-950/20'>
+                          <TableRow
+                            key={s._id}
+                            className='h-16 hover:bg-sky-50/60 dark:hover:bg-sky-950/20'
+                          >
                             <TableCell>
-                              <div className='flex items-center gap-2 text-base'>
+                              <div className='flex items-center gap-2'>
                                 <Mail className='h-4 w-4' /> {s.email}
                               </div>
                             </TableCell>
@@ -185,7 +199,7 @@ export default function AdminNewsletterPage() {
                                   'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-white text-xs font-medium border shadow-sm ' +
                                   (s.frequency === 'weekly'
                                     ? 'bg-gradient-to-r from-sky-500 to-indigo-500 border-indigo-300'
-                                    : 'bg-gradient-to-r from-amber-400 to-rose-500 border-amber-200')
+                                    : 'bg-gradient-to-r from-violet-500 to-rose-500 border-violet-300')
                                 }
                               >
                                 {s.frequency === 'weekly' ? (
@@ -193,11 +207,13 @@ export default function AdminNewsletterPage() {
                                 ) : (
                                   <CalendarRange className='h-3.5 w-3.5' />
                                 )}
-                                <span className='capitalize'>{s.frequency}</span>
+                                <span className='capitalize'>
+                                  {s.frequency}
+                                </span>
                               </span>
                             </TableCell>
                             <TableCell>
-                              <div className='flex items-center gap-2 text-base'>
+                              <div className='flex items-center gap-2'>
                                 <CalendarClock className='h-4 w-4' />
                                 {new Date(s.createdAt).toLocaleString()}
                               </div>

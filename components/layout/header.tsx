@@ -196,7 +196,7 @@ export function Header() {
               className='fixed inset-0 z-40 bg-black/40'
             />
             <div
-              className='fixed right-0 top-0 z-50 h-dvh w-[300px] sm:w-[400px] bg-background shadow-xl'
+              className='fixed right-0 top-0 z-50 h-dvh w-[300px] sm:w-[400px] bg-background shadow-xl flex flex-col'
               role='dialog'
               aria-modal='true'
             >
@@ -212,29 +212,32 @@ export function Header() {
                 </button>
               </div>
 
-              {/* Drawer search — mobile only */}
-              {isOpen && (
-                <div className='md:hidden'>
-                  <Suspense
-                    fallback={
+              {/* Scrollable content */}
+              <div className='flex-1 overflow-y-auto overscroll-contain'>
+                {/* Drawer search — mobile only */}
+                {isOpen && (
+                  <div className='md:hidden'>
+                    <Suspense
+                      fallback={
+                        <div className='p-4 border-b'>
+                          <div className='h-10 rounded-xl bg-muted/60' />
+                        </div>
+                      }
+                    >
                       <div className='p-4 border-b'>
-                        <div className='h-10 rounded-xl bg-muted/60' />
+                        <HeaderSearch variant='drawer' />
                       </div>
-                    }
-                  >
-                    <div className='p-4 border-b'>
-                      <HeaderSearch variant='drawer' />
-                    </div>
-                  </Suspense>
-                </div>
-              )}
+                    </Suspense>
+                  </div>
+                )}
 
-              {/* Drawer links */}
-              <div className='md:hidden'>
-                <DrawerList items={[...mainNavItems, ...extraNavItems]} />
-              </div>
-              <div className='hidden md:block'>
-                <DrawerList items={extraNavItems as any} />
+                {/* Drawer links */}
+                <div className='md:hidden'>
+                  <DrawerList items={[...mainNavItems, ...extraNavItems]} />
+                </div>
+                <div className='hidden md:block'>
+                  <DrawerList items={extraNavItems as any} />
+                </div>
               </div>
             </div>
           </>

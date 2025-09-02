@@ -113,6 +113,22 @@ export function NewsIndex({
   const visible = filtered.slice(0, limit)
   const canLoadMore = visible.length < filtered.length
 
+  // Deterministic gradient per tag (matches homepage)
+  const gradients = [
+    'from-indigo-600 via-blue-500 to-sky-500',
+    'from-violet-600 via-purple-500 to-fuchsia-500',
+    'from-emerald-600 via-green-500 to-teal-500',
+    'from-rose-500 via-pink-500 to-fuchsia-500',
+    'from-amber-500 via-orange-500 to-rose-500',
+    'from-cyan-600 via-sky-500 to-indigo-500',
+  ]
+  const hash = (s: string) =>
+    Array.from(s).reduce((h, ch) => ((h << 5) - h + ch.charCodeAt(0)) | 0, 0)
+  const tagGradient = (t?: string) =>
+    `bg-gradient-to-r ${
+      gradients[Math.abs(hash(t || '')) % gradients.length]
+    } text-white`
+
   return (
     <SectionShell className='overflow-hidden'>
       {/* Header */}
@@ -239,7 +255,7 @@ export function NewsIndex({
                     {(item.tags || []).slice(0, 1).map((tag) => (
                       <Badge
                         key={tag}
-                        className='bg-white/90 text-slate-900 capitalize'
+                        className={`capitalize border-0 ${tagGradient(tag)}`}
                       >
                         {tag}
                       </Badge>
@@ -289,7 +305,10 @@ export function NewsIndex({
                   />
                   <div className='absolute bottom-2 left-2 flex gap-2'>
                     {(item.tags || []).slice(0, 2).map((tag) => (
-                      <Badge key={tag} className='bg-white/90 text-slate-900'>
+                      <Badge
+                        key={tag}
+                        className={`capitalize border-0 ${tagGradient(tag)}`}
+                      >
                         {tag}
                       </Badge>
                     ))}

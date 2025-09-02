@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { dbConnect } from '@/lib/db'
 import { Wotd } from '@/models/Wotd'
+import { recordAudit } from '@/lib/audit'
 
 export async function GET() {
   await dbConnect()
@@ -22,5 +23,14 @@ export async function POST(req: Request) {
     tags: Array.isArray(body.tags) ? body.tags : [],
     date: body.date || '',
   })
+  // Audit log
+  try {
+    recordAudit({
+      action: 'Created',
+      resourceType: 'wotd',
+      resourceId: String((created as any)?._id),
+      details: `Created WOTD: ${(body.title || '').slice(0, 50)}`,
+    })
+  } catch {}
   return NextResponse.json(created, { status: 201 })
 }

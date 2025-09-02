@@ -12,6 +12,7 @@ import {
   Building2,
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import { Skeleton } from '@/components/ui/skeleton'
 
 // lazy modal
 const EventModal = dynamic(() => import('@/components/events/event-modal'), {
@@ -50,7 +51,8 @@ const AREA_PILL_CLASS: Record<string, string> = {
 }
 
 export type Event = {
-  id: number
+  id: number | string
+  _id?: string
   title: string
   date: string
   end?: string
@@ -66,6 +68,7 @@ export type Event = {
 /* ──────────────────────────────────────────────────────────────────────────
    Sample events (now include area + church)
    ────────────────────────────────────────────────────────────────────────── */
+// Fallback sample events used only if API is unavailable
 export const events: Event[] = [
   {
     id: 1,
@@ -176,10 +179,13 @@ export function UpcomingEventsSection({
 }) {
   const [show, setShow] = React.useState(false)
   const [selected, setSelected] = React.useState<Event | null>(null)
+  const [items, setItems] = React.useState<Event[]>(events)
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
 
   // Build AREA tabs in numeric order + 'Nationwide'
   const AREAS = React.useMemo(() => {
-    const uniq = new Set(events.map((e) => e.area))
+    const uniq = new Set(items.map((e) => e.area))
     const list = Array.from(uniq)
     const num = list
       .filter((a) => a.startsWith('Area '))
@@ -189,11 +195,11 @@ export function UpcomingEventsSection({
       )
     const rest = list.filter((a) => !a.startsWith('Area ')).sort()
     return ['All', ...num, ...rest] as const
-  }, [])
+  }, [items])
 
   const [tab, setTab] = React.useState<(typeof AREAS)[number]>(AREAS[0])
 
-  const filtered = tab === 'All' ? events : events.filter((e) => e.area === tab)
+  const filtered = tab === 'All' ? items : items.filter((e) => e.area === tab)
 
   const railRef = React.useRef<HTMLDivElement>(null)
   const scroll = (dir: 'left' | 'right') => {
@@ -209,6 +215,41 @@ export function UpcomingEventsSection({
     const t = setTimeout(() => setShow(true), 30)
     return () => clearTimeout(t)
   }, [tab])
+
+  // Load events dynamically
+  const load = React.useCallback(async () => {
+    let cancelled = false
+    try {
+      setLoading(true)
+      setError(null)
+      const res = await fetch('/api/events', { cache: 'no-store' })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = (await res.json()) as any[]
+      if (!cancelled && Array.isArray(data) && data.length) {
+        // normalize _id -> id for stable keys (fallback to title+date)
+        const normalized: Event[] = data.map((d, i) => ({
+          ...d,
+          id: d._id ?? d.id ?? `${d.title}-${d.date}-${i}`,
+        }))
+        setItems(normalized)
+      }
+    } catch (e: any) {
+      console.error('[home] failed to load /api/events', e)
+      if (!cancelled) setError(e?.message || 'Failed to load events')
+    } finally {
+      if (!cancelled) setLoading(false)
+    }
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  React.useEffect(() => {
+    const cancel = load()
+    return () => {
+      if (typeof cancel === 'function') (cancel as any)()
+    }
+  }, [load])
 
   // Fallback image data URI (guaranteed)
   const FALLBACK_EVENT_IMAGE_DATA_URI =
@@ -254,14 +295,16 @@ export function UpcomingEventsSection({
             </span>
           </div>
 
-          <HighlightTitle
-            text="Events you don't want to miss"
-            highlightedText="don't want to miss"
-            as='h2'
-            className='text-2xl md:text-4xl text-white text-center mb-2 tracking-wider'
-            uppercase
-            gradientClassName='bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 bg-clip-text text-transparent'
-          />
+          <div className='flex items-center justify-center gap-3 mb-2'>
+            <HighlightTitle
+              text="Events you don't want to miss"
+              highlightedText="don't want to miss"
+              as='h2'
+              className='text-2xl md:text-4xl text-white text-center tracking-wider'
+              uppercase
+              gradientClassName='bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 bg-clip-text text-transparent'
+            />
+          </div>
           <p className='text-center text-teal-100/90 max-w-2xl mx-auto mb-8'>
             Filter by area to find gatherings near you.
           </p>
@@ -296,18 +339,40 @@ export function UpcomingEventsSection({
             <div
               key={tab as string}
               ref={railRef}
-              className='flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory
-                         [scrollbar-width:none] [-ms-overflow-style:none] 
-                         [&::-webkit-scrollbar]:hidden px-2'
+              className={`flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-2`}
             >
+              {/* Loading skeletons when no data yet */}
+              {loading && items.length === 0 && (
+                <>
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className='snap-start w-[290px] md:w-[300px] lg:w-[320px] flex-shrink-0'
+                    >
+                      <div className='rounded-xl overflow-hidden ring-1 ring-black/10'>
+                        <Skeleton className='h-44 w-full' />
+                        <div className='p-4'>
+                          <Skeleton className='h-4 w-40 mb-2' />
+                          <Skeleton className='h-3 w-64 mb-1' />
+                          <Skeleton className='h-3 w-52' />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
               {filtered.map((event, idx) => {
                 const start = new Date(event.date)
                 const end = event.end ? new Date(event.end) : null
                 const areaClass =
                   AREA_PILL_CLASS[event.area] || 'bg-black/80 text-white'
+                const key =
+                  (event as any)._id ??
+                  (event as any).id ??
+                  `${event.title}-${event.date}-${idx}`
                 return (
                   <div
-                    key={event.id}
+                    key={key}
                     role='button'
                     tabIndex={0}
                     onClick={() => setSelected(event)}
@@ -394,20 +459,32 @@ export function UpcomingEventsSection({
               })}
             </div>
 
+            {/* Error banner */}
+            {error && !loading && (
+              <div className='mt-4 mx-2 rounded-lg bg-red-50 text-red-800 border border-red-200 px-4 py-3 flex items-center justify-between'>
+                <p className='text-sm'>Failed to load events. {error}</p>
+                <button
+                  className='cursor-pointer text-xs font-bold px-3 py-1.5 rounded-full border border-red-300 hover:bg-red-100'
+                  onClick={() => load()}
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+
             {/* Arrows */}
             <button
               aria-label='Previous'
               onClick={() => scroll('left')}
-              className='hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 h-9 w-9 items-center justify-center
-                         rounded-full bg-white/85 text-slate-800 shadow hover:bg-white cursor-pointer'
+              className='hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 h-9 w-9 items-center justify-center rounded-full bg-white/85 text-slate-800 shadow hover:bg-white cursor-pointer'
             >
               <ChevronLeft className='h-5 w-5' />
             </button>
+
             <button
               aria-label='Next'
               onClick={() => scroll('right')}
-              className='hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 h-9 w-9 items-center justify-center
-                         rounded-full bg-white/85 text-slate-800 shadow hover:bg-white cursor-pointer'
+              className='hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 h-9 w-9 items-center justify-center rounded-full bg-white/85 text-slate-800 shadow hover:bg-white cursor-pointer'
             >
               <ChevronRight className='h-5 w-5' />
             </button>
@@ -427,6 +504,22 @@ export function UpcomingEventsSection({
       {selected && (
         <EventModal isOpen event={selected} onClose={() => setSelected(null)} />
       )}
+      <style jsx>{`
+        .owl-float {
+          animation: owlFloat 5.5s ease-in-out infinite;
+        }
+        @keyframes owlFloat {
+          0% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-4px);
+          }
+          100% {
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </section>
   )
 }

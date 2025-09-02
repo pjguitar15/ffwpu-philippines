@@ -10,6 +10,7 @@ import { Activity, User, Clock } from "lucide-react"
 interface AuditLogEntry {
   id: string
   adminId: string
+  adminEmail?: string
   action: string
   details: string
   timestamp: string
@@ -29,14 +30,34 @@ export default function AdminAuditLogPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [auditRes, adminsRes] = await Promise.all([fetch("/data/auditLog.json"), fetch("/data/admins.json")])
+        const auditRes = await fetch('/api/audit-log?page=1&pageSize=200', {
+          cache: 'no-store',
+        })
+        const auditPayload = await auditRes.json()
+        setAuditLog((auditPayload?.items || []) as AuditLogEntry[])
 
-        const [auditData, adminsData] = await Promise.all([auditRes.json(), adminsRes.json()])
-
-        setAuditLog(auditData.reverse()) // Show newest first
-        setAdmins(adminsData)
+        // Try live admins API first; fallback to static JSON
+        try {
+          const adminLive = await fetch('/api/admins', { cache: 'no-store' })
+          if (adminLive.ok) {
+            const arr = await adminLive.json()
+            setAdmins(arr)
+          } else {
+            const adminsRes = await fetch('/data/admins.json', {
+              cache: 'no-store',
+            })
+            const adminsData = await adminsRes.json()
+            setAdmins(adminsData)
+          }
+        } catch {
+          const adminsRes = await fetch('/data/admins.json', {
+            cache: 'no-store',
+          })
+          const adminsData = await adminsRes.json()
+          setAdmins(adminsData)
+        }
       } catch (error) {
-        console.error("Failed to load audit log:", error)
+        console.error('Failed to load audit log:', error)
       }
     }
 
@@ -45,20 +66,20 @@ export default function AdminAuditLogPage() {
 
   const getAdminName = (adminId: string) => {
     const admin = admins.find((a) => a.id === adminId)
-    return admin ? admin.name : "Unknown Admin"
+    return admin ? admin.name : 'Unknown Admin'
   }
 
   const getAdminRole = (adminId: string) => {
     const admin = admins.find((a) => a.id === adminId)
-    return admin ? admin.role : "unknown"
+    return admin ? admin.role : 'unknown'
   }
 
   const getActionColor = (action: string) => {
-    if (action.includes("Created")) return "default"
-    if (action.includes("Updated")) return "secondary"
-    if (action.includes("Deleted")) return "destructive"
-    if (action.includes("Published")) return "default"
-    return "outline"
+    if (action.includes('Created')) return 'default'
+    if (action.includes('Updated')) return 'secondary'
+    if (action.includes('Deleted')) return 'destructive'
+    if (action.includes('Published')) return 'default'
+    return 'outline'
   }
 
   return (
@@ -154,50 +175,54 @@ export default function AdminAuditLogPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader className='bg-gradient-to-r from-slate-50 to-sky-50 dark:from-slate-900/60 dark:to-sky-950/40'>
-                  <TableRow>
-                    <TableHead>Admin</TableHead>
-                    <TableHead>Action</TableHead>
-                    <TableHead>Details</TableHead>
-                    <TableHead>Timestamp</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {auditLog.map((entry) => (
-                    <TableRow
-                      key={entry.id}
-                      className='hover:bg-sky-50/60 dark:hover:bg-sky-950/20'
-                    >
-                      <TableCell>
-                        <div>
-                          <p className='font-medium'>
-                            {getAdminName(entry.adminId)}
-                          </p>
-                          <Badge variant='outline' className='text-xs mt-1'>
-                            {getAdminRole(entry.adminId).replace('_', ' ')}
-                          </Badge>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={getActionColor(entry.action) as any}>
-                          {entry.action}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <p className='text-sm text-muted-foreground'>
-                          {entry.details}
-                        </p>
-                      </TableCell>
-                      <TableCell>
-                        <p className='text-sm'>
-                          {new Date(entry.timestamp).toLocaleString()}
-                        </p>
-                      </TableCell>
+              <div className='relative -mx-2 md:mx-0 overflow-auto rounded-xl border border-border/60'>
+                <Table className='min-w-[760px]'>
+                  <TableHeader className='sticky top-0 z-[1] bg-gradient-to-r from-slate-50 to-sky-50 dark:from-slate-900/60 dark:to-sky-950/40 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
+                    <TableRow className='h-14'>
+                      <TableHead className='text-base'>Admin</TableHead>
+                      <TableHead className='text-base'>Action</TableHead>
+                      <TableHead className='text-base'>Details</TableHead>
+                      <TableHead className='text-base'>Timestamp</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {auditLog.map((entry) => (
+                      <TableRow
+                        key={entry.id}
+                        className='h-16 hover:bg-sky-50/60 dark:hover:bg-sky-950/20'
+                      >
+                        <TableCell>
+                          <div>
+                            <p className='font-medium'>
+                              {getAdminName(entry.adminId) ||
+                                entry.adminEmail ||
+                                'Unknown Admin'}
+                            </p>
+                            <Badge variant='outline' className='text-xs mt-1'>
+                              {getAdminRole(entry.adminId).replace('_', ' ')}
+                            </Badge>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={getActionColor(entry.action) as any}>
+                            {entry.action}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <p className='text-sm text-muted-foreground'>
+                            {entry.details}
+                          </p>
+                        </TableCell>
+                        <TableCell>
+                          <p className='text-sm'>
+                            {new Date(entry.timestamp).toLocaleString()}
+                          </p>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
 
               {auditLog.length === 0 && (
                 <div className='text-center py-8'>

@@ -4,6 +4,7 @@ import { dbConnect } from '@/lib/db'
 import { AdminUser } from '@/models/AdminUser'
 import { verifyToken, hashPassword } from '@/lib/auth'
 import mongoose from 'mongoose'
+import { recordAudit } from '@/lib/audit'
 
 const VALID_ROLES = new Set([
   'super_admin',
@@ -90,6 +91,23 @@ export async function PUT(
     const user = await AdminUser.findByIdAndUpdate(id, update, { new: true })
     if (!user) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
+    try {
+      const changes = [
+        update.name ? `name->${update.name}` : '',
+        update.role ? `role->${update.role}` : '',
+        update.email ? `email->${update.email}` : '',
+        update.passwordHash ? 'password-reset' : '',
+      ]
+        .filter(Boolean)
+        .join(', ')
+      recordAudit({
+        action: 'Updated',
+        resourceType: 'admin',
+        resourceId: String(user._id),
+        details: `Updated admin: ${user.email} (${changes})`,
+      })
+    } catch {}
+
     return NextResponse.json({
       user: {
         id: String(user._id),
@@ -125,6 +143,14 @@ export async function DELETE(
   if (res.deletedCount === 0) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
+  try {
+    recordAudit({
+      action: 'Deleted',
+      resourceType: 'admin',
+      resourceId: id,
+      details: `Deleted admin: ${id}`,
+    })
+  } catch {}
   return NextResponse.json({ ok: true })
 }
 

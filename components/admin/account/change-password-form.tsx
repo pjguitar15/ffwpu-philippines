@@ -53,12 +53,14 @@ export default function ChangePasswordForm() {
 
   const meets = useMemo(() => {
     return {
-      len: newPassword.length >= 10,
+      len: newPassword.length >= 8,
       lower: /[a-z]/.test(newPassword),
       upper: /[A-Z]/.test(newPassword),
       num: /[0-9]/.test(newPassword),
       sym: /[^A-Za-z0-9]/.test(newPassword),
       match: newPassword.length > 0 && newPassword === confirmPassword,
+      diffFromCurrent:
+        newPassword.length > 0 && newPassword !== currentPassword,
     }
   }, [newPassword, confirmPassword])
 
@@ -69,6 +71,7 @@ export default function ChangePasswordForm() {
     meets.num &&
     meets.sym &&
     meets.match &&
+    meets.diffFromCurrent &&
     currentPassword.length > 0
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -106,8 +109,24 @@ export default function ChangePasswordForm() {
     }
   }
 
-  const Bar = ({ filled }: { filled: boolean }) => (
-    <div className={`h-1 rounded ${filled ? 'bg-primary' : 'bg-muted'}`} />
+  const Bar = ({
+    filled,
+    tone = 'primary',
+  }: {
+    filled: boolean
+    tone?: 'primary' | 'warning' | 'success'
+  }) => (
+    <div
+      className={`h-1 rounded transition-colors ${
+        filled
+          ? tone === 'success'
+            ? 'bg-emerald-500'
+            : tone === 'warning'
+            ? 'bg-amber-500'
+            : 'bg-primary'
+          : 'bg-muted'
+      }`}
+    />
   )
 
   const Req = ({ ok, label }: { ok: boolean; label: string }) => (
@@ -124,8 +143,8 @@ export default function ChangePasswordForm() {
   )
 
   return (
-    <div className='max-w-xl'>
-      <Card className='border-primary/10'>
+    <div className='max-w-2xl'>
+      <Card className='border-0 shadow-sm'>
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
             <KeyRound className='h-5 w-5 text-primary' />
@@ -155,7 +174,8 @@ export default function ChangePasswordForm() {
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   required
                   autoComplete='current-password'
-                  className='pr-10'
+                  className='pr-10 border-slate-300 dark:border-slate-600 placeholder:text-slate-500 dark:placeholder:text-slate-400 bg-white/95 dark:bg-background/40 focus-visible:border-sky-500 focus-visible:ring-sky-500/30'
+                  placeholder='Enter your current password'
                 />
                 <button
                   type='button'
@@ -170,6 +190,14 @@ export default function ChangePasswordForm() {
                   )}
                 </button>
               </div>
+              {newPassword.length > 0 &&
+                currentPassword.length > 0 &&
+                !meets.diffFromCurrent && (
+                  <p className='text-xs text-amber-600 inline-flex items-center gap-1 mt-1'>
+                    <ShieldAlert className='h-3.5 w-3.5' />
+                    New password must be different from your current password.
+                  </p>
+                )}
             </div>
 
             {/* New */}
@@ -186,7 +214,8 @@ export default function ChangePasswordForm() {
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
                   autoComplete='new-password'
-                  className='pr-10'
+                  className='pr-10 border-slate-300 dark:border-slate-600 placeholder:text-slate-500 dark:placeholder:text-slate-400 bg-white/95 dark:bg-background/40 focus-visible:border-sky-500 focus-visible:ring-sky-500/30'
+                  placeholder='8+ chars • upper/lower • number • symbol'
                 />
                 <button
                   type='button'
@@ -203,21 +232,31 @@ export default function ChangePasswordForm() {
               </div>
 
               {/* Strength meter */}
-              <div className='mt-2 space-y-1'>
+              <div className='mt-2 space-y-2'>
                 <div className='grid grid-cols-5 gap-1'>
-                  <Bar filled={newScore >= 1} />
-                  <Bar filled={newScore >= 2} />
-                  <Bar filled={newScore >= 3} />
-                  <Bar filled={newScore >= 4} />
-                  <Bar filled={newScore >= 5} />
+                  <Bar filled={newScore >= 1} tone='warning' />
+                  <Bar filled={newScore >= 2} tone='warning' />
+                  <Bar
+                    filled={newScore >= 3}
+                    tone={newScore >= 4 ? 'primary' : 'warning'}
+                  />
+                  <Bar
+                    filled={newScore >= 4}
+                    tone={newScore >= 5 ? 'success' : 'primary'}
+                  />
+                  <Bar filled={newScore >= 5} tone='success' />
                 </div>
-                <div className='flex flex-wrap gap-3 mt-2'>
-                  <Req ok={meets.len} label='10+ characters' />
+                <div className='flex flex-wrap gap-3 mt-1'>
+                  <Req ok={meets.len} label='8+ characters' />
                   <Req ok={meets.lower} label='lowercase' />
                   <Req ok={meets.upper} label='uppercase' />
                   <Req ok={meets.num} label='number' />
                   <Req ok={meets.sym} label='symbol' />
                 </div>
+                <p className='text-xs text-muted-foreground'>
+                  Tip: Use a passphrase with two or three random words and a
+                  symbol.
+                </p>
               </div>
             </div>
 
@@ -238,7 +277,8 @@ export default function ChangePasswordForm() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   autoComplete='new-password'
-                  className='pr-10'
+                  className='pr-10 border-slate-300 dark:border-slate-600 placeholder:text-slate-500 dark:placeholder:text-slate-400 bg-white/95 dark:bg-background/40 focus-visible:border-sky-500 focus-visible:ring-sky-500/30'
+                  placeholder='Re-type your new password'
                 />
                 <button
                   type='button'
@@ -261,10 +301,10 @@ export default function ChangePasswordForm() {
               )}
             </div>
 
-            <div className='pt-1'>
+            <div className='pt-2'>
               <Button
                 type='submit'
-                className='cursor-pointer'
+                className='cursor-pointer px-6'
                 disabled={!valid || loading}
               >
                 {loading ? 'Saving…' : 'Update Password'}

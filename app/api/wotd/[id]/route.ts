@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { dbConnect } from '@/lib/db'
 import { Wotd, WotdSetting } from '@/models/Wotd'
+import { recordAudit } from '@/lib/audit'
 
 export async function GET(
   _req: Request,
@@ -34,6 +35,14 @@ export async function PUT(
   ).lean()
   if (!updated)
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  try {
+    recordAudit({
+      action: 'Updated',
+      resourceType: 'wotd',
+      resourceId: String(updated._id),
+      details: `Updated WOTD: ${updated.title}`,
+    })
+  } catch {}
   return NextResponse.json(updated)
 }
 
@@ -59,5 +68,13 @@ export async function DELETE(
     }
     if (changed) await setting.save()
   }
+  try {
+    recordAudit({
+      action: 'Deleted',
+      resourceType: 'wotd',
+      resourceId: String(params.id),
+      details: `Deleted WOTD: ${deleted?.title || params.id}`,
+    })
+  } catch {}
   return NextResponse.json({ ok: true })
 }

@@ -9,21 +9,82 @@ import Image from 'next/image'
 import { ArrowRight, Newspaper, ChevronDown } from 'lucide-react'
 import * as React from 'react'
 import { excerptFromHtml } from '@/lib/text'
+import { Skeleton } from '@/components/ui/skeleton'
 
 type Props = {
-  sampleNews: NewsItem[]
+  // Optional fallback while dynamic data loads
+  sampleNews?: NewsItem[]
 }
 
-export function RecentNewsSection({ sampleNews }: Props) {
-  const [visible, setVisible] = React.useState(3) // initially show 3 (feature + 2)
-  const canLoadMore = visible < sampleNews.length
+export function RecentNewsSection({ sampleNews = [] }: Props) {
+  const [items, setItems] = React.useState<NewsItem[]>(sampleNews)
+  const [loading, setLoading] = React.useState<boolean>(false)
+  const [error, setError] = React.useState<string | null>(null)
 
-  const feature = sampleNews[0]
-  const side = sampleNews.slice(1, Math.min(3, visible))
-  const rest = sampleNews.slice(3, visible)
+  // Show 3 initially (feature + 2)
+  const [visible, setVisible] = React.useState(3)
+  const canLoadMore = visible < items.length
+
+  const sortByDateDesc = (arr: NewsItem[]) =>
+    [...arr].sort(
+      (a, b) =>
+        new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime(),
+    )
+
+  const load = React.useCallback(async () => {
+    let cancelled = false
+    try {
+      setLoading(true)
+      setError(null)
+      const res = await fetch('/api/news', { cache: 'no-store' })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = (await res.json()) as NewsItem[]
+      if (!cancelled && Array.isArray(data)) setItems(data)
+    } catch (e: any) {
+      console.error('[home] failed to load /api/news', e)
+      if (!cancelled) setError(e?.message || 'Failed to load updates')
+    } finally {
+      if (!cancelled) setLoading(false)
+    }
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  React.useEffect(() => {
+    // If sample data is provided, ensure it's sorted so the feature is the latest
+    if (Array.isArray(sampleNews) && sampleNews.length > 0) {
+      setItems(sortByDateDesc(sampleNews))
+    }
+    const cancel = load()
+    return () => {
+      if (typeof cancel === 'function') (cancel as any)()
+    }
+  }, [load])
+
+  const clampedVisible = Math.min(visible, items.length)
+  const feature = items[0]
+  const side = items.slice(1, Math.min(3, clampedVisible))
+  const rest = items.slice(3, clampedVisible)
+
+  // Deterministic gradient per tag
+  const gradients = [
+    'from-indigo-600 via-blue-500 to-sky-500',
+    'from-violet-600 via-purple-500 to-fuchsia-500',
+    'from-emerald-600 via-green-500 to-teal-500',
+    'from-rose-500 via-pink-500 to-fuchsia-500',
+    'from-amber-500 via-orange-500 to-rose-500',
+    'from-cyan-600 via-sky-500 to-indigo-500',
+  ]
+  const hash = (s: string) =>
+    Array.from(s).reduce((h, ch) => ((h << 5) - h + ch.charCodeAt(0)) | 0, 0)
+  const tagGradient = (t?: string) =>
+    `bg-gradient-to-r ${
+      gradients[Math.abs(hash(t || '')) % gradients.length]
+    } text-white`
 
   return (
-    <section className='space-y-8 px-4 md:px-0'>
+    <section id='updates' className='space-y-8 px-4 md:px-0'>
       <div className='flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0'>
         <div className='space-y-2'>
           <span className='text-xs font-semibold text-white bg-gray-700 mx-auto px-4 py-1 rounded-full'>
@@ -59,8 +120,41 @@ export function RecentNewsSection({ sampleNews }: Props) {
         </Button>
       </div>
 
+      {/* Error state */}
+      {error && !loading && (
+        <div className='rounded-lg bg-red-50 text-red-800 border border-red-200 px-4 py-3'>
+          <div className='flex items-center justify-between'>
+            <p className='text-sm'>Failed to load updates. {error}</p>
+            <Button
+              variant='outline'
+              size='sm'
+              className='ml-3'
+              onClick={() => load()}
+            >
+              Retry
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Grid */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4 md:auto-rows-[1fr]'>
+        {/* Loading skeletons */}
+        {loading && items.length === 0 && (
+          <>
+            <div className='md:col-span-2 md:row-span-2 aspect-[16/9] md:aspect-auto md:h-[500px] rounded-lg overflow-hidden ring-1 ring-black/10'>
+              <Skeleton className='w-full h-full' />
+            </div>
+            {[...Array(2)].map((_, i) => (
+              <div
+                key={i}
+                className='aspect-[16/10] md:aspect-auto md:h-[240px] rounded-lg overflow-hidden ring-1 ring-black/10'
+              >
+                <Skeleton className='w-full h-full' />
+              </div>
+            ))}
+          </>
+        )}
         {/* FEATURED (spans 2 cols & 2 rows) */}
         {feature && (
           <Link
@@ -81,8 +175,9 @@ export function RecentNewsSection({ sampleNews }: Props) {
             <div className='relative z-10 flex flex-col justify-end h-full p-5 md:p-8'>
               <div className='mb-2'>
                 <Badge
-                  variant='secondary'
-                  className='bg-white/85 text-black font-semibold'
+                  className={`font-semibold capitalize border-0 ${tagGradient(
+                    feature.tags?.[0],
+                  )}`}
                 >
                   {feature.tags?.[0]}
                 </Badge>
@@ -124,8 +219,9 @@ export function RecentNewsSection({ sampleNews }: Props) {
             <div className='relative z-10 flex flex-col justify-end h-full p-4'>
               <div className='mb-1'>
                 <Badge
-                  variant='secondary'
-                  className='bg-white/85 text-black font-semibold'
+                  className={`font-semibold capitalize border-0 ${tagGradient(
+                    item.tags?.[0],
+                  )}`}
                 >
                   {item.tags?.[0]}
                 </Badge>
@@ -167,8 +263,9 @@ export function RecentNewsSection({ sampleNews }: Props) {
             <div className='relative z-10 flex flex-col justify-end h-full p-4'>
               <div className='mb-1'>
                 <Badge
-                  variant='secondary'
-                  className='bg-white/85 text-black font-semibold'
+                  className={`font-semibold capitalize border-0 ${tagGradient(
+                    item.tags?.[0],
+                  )}`}
                 >
                   {item.tags?.[0]}
                 </Badge>
@@ -193,9 +290,7 @@ export function RecentNewsSection({ sampleNews }: Props) {
         <div className='flex justify-center'>
           <Button
             variant='outline'
-            onClick={() =>
-              setVisible((v) => Math.min(v + 3, sampleNews.length))
-            }
+            onClick={() => setVisible((v) => Math.min(v + 3, items.length))}
             className='rounded-full border-slate-300 text-slate-800 hover:bg-slate-50 hover:border-slate-400 inline-flex items-center cursor-pointer'
           >
             View more updates

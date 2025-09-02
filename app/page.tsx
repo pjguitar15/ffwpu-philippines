@@ -76,7 +76,7 @@ export default function HomePage() {
         <HeroSection />
         <div className='container mx-auto py-12 space-y-16'>
           <AnnouncementBanner />
-          <RecentNewsSection sampleNews={sampleNews} />
+          <RecentNewsSection />
           <SideBySide
             withSocials
             imgUrl='https://images.squarespace-cdn.com/content/v1/62fa4ede47f10a2311b0f84e/6ba29bab-f2ad-4451-ad7c-b194fafb60fe/6T0A5606-2.jpg'

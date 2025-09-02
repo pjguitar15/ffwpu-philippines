@@ -55,7 +55,7 @@ const TAG_PALETTES = [
     border: 'border-emerald-200',
   },
   { bg: 'bg-rose-100', text: 'text-rose-700', border: 'border-rose-200' },
-  { bg: 'bg-amber-100', text: 'text-amber-800', border: 'border-amber-200' },
+  { bg: 'bg-violet-100', text: 'text-violet-700', border: 'border-violet-200' },
   { bg: 'bg-teal-100', text: 'text-teal-700', border: 'border-teal-200' },
   { bg: 'bg-cyan-100', text: 'text-cyan-700', border: 'border-cyan-200' },
 ]
@@ -215,58 +215,17 @@ export default function AdminNewsPage() {
             </div>
           </div>
 
-          {/* Search and Stats */}
-          <div className='grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6'>
-            {/* Search */}
-            <Card className='lg:col-span-2 overflow-hidden border-0 shadow-sm bg-gradient-to-br from-sky-50 to-white dark:from-sky-950/30 dark:to-background'>
-              <div className='h-1 w-full bg-sky-500' />
-              <CardHeader>
-                <CardTitle className='text-lg'>Search News</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className='relative'>
-                  <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sky-600 dark:text-sky-300' />
-                  <Input
-                    placeholder='Search by title, author, or tags...'
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className='pl-10'
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Total Articles */}
-            <Card className='overflow-hidden border-0 shadow-sm bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/30 dark:to-background'>
-              <div className='h-1 w-full bg-indigo-500' />
-              <CardHeader>
-                <CardTitle className='text-lg'>Total Articles</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className='text-2xl font-bold text-indigo-700 dark:text-indigo-100'>
-                  {newsItems.length}
-                </div>
-                <p className='text-xs text-muted-foreground'>
-                  All news articles
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Active Articles */}
-            <Card className='overflow-hidden border-0 shadow-sm bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/30 dark:to-background'>
-              <div className='h-1 w-full bg-emerald-500' />
-              <CardHeader>
-                <CardTitle className='text-lg'>Active Articles</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className='text-2xl font-bold text-emerald-700 dark:text-emerald-100'>
-                  {newsItems.filter((item) => item.status === 'active').length}
-                </div>
-                <p className='text-xs text-muted-foreground'>
-                  Currently published
-                </p>
-              </CardContent>
-            </Card>
+          {/* Inline search above table */}
+          <div className='mb-4'>
+            <div className='relative w-full sm:max-w-xs'>
+              <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+              <Input
+                placeholder='Search by title, author, or tags...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className='pl-9 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+              />
+            </div>
           </div>
 
           {/* News Table */}
@@ -401,12 +360,13 @@ export default function AdminNewsPage() {
                                   <span className='hidden sm:inline'>View</span>
                                 </Button>
                                 <Button
-                                  variant='ghost'
+                                  variant='secondary'
                                   size='sm'
-                                  className='text-amber-700 hover:text-amber-800 hover:bg-amber-50'
+                                  className='gap-2 rounded-full border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
                                   onClick={() => setEditItem(item)}
                                 >
                                   <Edit className='h-4 w-4' />
+                                  <span className='hidden sm:inline'>Edit</span>
                                 </Button>
                                 <Button
                                   variant='ghost'

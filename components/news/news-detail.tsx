@@ -73,6 +73,7 @@ export default function NewsDetailClient() {
   const slug = params.id as string
   const [newsItem, setNewsItem] = useState<NewsItem | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(true)
+  const [allNews, setAllNews] = useState<NewsItem[]>([])
 
   useEffect(() => {
     let mounted = true
@@ -98,6 +99,39 @@ export default function NewsDetailClient() {
     }
   }, [slug])
 
+  // Load all news (for related/more sections)
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const res = await fetch('/api/news', { cache: 'no-store' })
+        if (res.ok) {
+          const data = (await res.json()) as NewsItem[]
+          const sorted = Array.isArray(data)
+            ? [...data].sort(
+                (a, b) =>
+                  new Date(b.date || 0).getTime() -
+                  new Date(a.date || 0).getTime(),
+              )
+            : []
+          if (mounted) setAllNews(sorted)
+          return
+        }
+      } catch {}
+      // Fallback to bundled sample if API fails
+      if (mounted)
+        setAllNews(
+          [...sampleNews].sort(
+            (a, b) =>
+              new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime(),
+          ) as NewsItem[],
+        )
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [])
+
   const [shareUrl, setShareUrl] = useState('')
   useEffect(() => {
     if (typeof window !== 'undefined') setShareUrl(window.location.href)
@@ -105,26 +139,22 @@ export default function NewsDetailClient() {
 
   const related = useMemo(() => {
     if (!newsItem) return []
+    const source = allNews.length ? allNews : (sampleNews as NewsItem[])
     const firstTag = newsItem.tags?.[0]
-    const pool = sampleNews.filter((n) => n.slug !== newsItem.slug)
+    const pool = source.filter((n) => n.slug !== newsItem.slug)
     const tagged = firstTag
-      ? pool.filter((n) => n.tags?.includes(firstTag))
+      ? pool.filter((n) => (n.tags || []).includes(firstTag))
       : []
     return (tagged.length ? tagged : pool).slice(0, 3) as NewsItem[]
-  }, [newsItem])
-
-  const more = useMemo(() => {
-    if (!newsItem) return []
-    const ids = new Set([newsItem.slug, ...related.map((r) => r.slug)])
-    return sampleNews.filter((n) => !ids.has(n.slug)).slice(0, 8) as NewsItem[]
-  }, [newsItem, related])
+  }, [newsItem, allNews])
 
   const moreRandomBelow = useMemo(() => {
     if (!newsItem) return []
+    const source = allNews.length ? allNews : (sampleNews as NewsItem[])
     const ids = new Set([newsItem.slug, ...related.map((r) => r.slug)])
-    const pool = sampleNews.filter((n) => !ids.has(n.slug))
+    const pool = source.filter((n) => !ids.has(n.slug))
     return pickRandom(pool, 3) as NewsItem[]
-  }, [newsItem, related])
+  }, [newsItem, related, allNews])
 
   if (loading) {
     return (
@@ -337,7 +367,7 @@ export default function NewsDetailClient() {
                 ))}
               </div>
 
-              {related.length < 2 && (
+              {related.length < 4 && (
                 <div className='mt-8 border-t pt-6'>
                   <h4 className='text-slate-900 font-extrabold tracking-wide uppercase text-sm'>
                     More updates

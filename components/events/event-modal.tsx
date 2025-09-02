@@ -4,7 +4,7 @@ import * as React from 'react'
 import { X, Calendar, Clock, MapPin, ArrowRight } from 'lucide-react'
 
 type EventItem = {
-  id: number
+  id: number | string
   title: string
   date: string
   end?: string
