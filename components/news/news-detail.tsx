@@ -9,6 +9,12 @@ import { sampleNews } from '@/data/news' // fallback
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { ArticleBody } from './article-body'
+import {
+  FadeIn,
+  FadeInItem,
+  StaggerContainer,
+  PopInItem,
+} from '@/components/ui/motion'
 
 // Tag gradient helpers moved to module scope to avoid hook ordering issues
 const TAG_GRADIENTS: Record<string, string> = {
@@ -233,50 +239,52 @@ export default function NewsDetailClient() {
       <main className='flex-1'>
         <div className='container mx-auto py-10 px-4 md:px-6 mb-12'>
           {/* Breadcrumbs */}
-          <nav
-            aria-label='Breadcrumb'
-            className='mb-4 -mx-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'
-          >
-            <ol className='mx-2 inline-flex items-center gap-1 text-sm text-slate-600'>
-              <li>
-                <Link
-                  href='/'
-                  className='inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 hover:bg-slate-100 hover:text-slate-900 transition'
-                >
-                  <Home className='h-4 w-4' />
-                  <span className='hidden sm:inline'>Home</span>
-                </Link>
-              </li>
-              <li aria-hidden='true'>
-                <ChevronRight className='h-4 w-4 text-slate-400' />
-              </li>
-              <li>
-                <Link
-                  href='/news'
-                  className='inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 hover:bg-slate-100 hover:text-slate-900 transition'
-                >
-                  News
-                </Link>
-              </li>
-              <li aria-hidden='true'>
-                <ChevronRight className='h-4 w-4 text-slate-400' />
-              </li>
-              <li className='inline-flex items-center'>
-                <span
-                  aria-current='page'
-                  className='rounded-md px-2.5 py-1.5 bg-slate-100/70 text-slate-900 max-w-[60vw] md:max-w-none truncate'
-                  title={item.title}
-                >
-                  {item.title}
-                </span>
-              </li>
-            </ol>
-          </nav>
+          <FadeIn>
+            <nav
+              aria-label='Breadcrumb'
+              className='mb-4 -mx-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'
+            >
+              <ol className='mx-2 inline-flex items-center gap-1 text-sm text-slate-600'>
+                <li>
+                  <Link
+                    href='/'
+                    className='inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 hover:bg-slate-100 hover:text-slate-900 transition'
+                  >
+                    <Home className='h-4 w-4' />
+                    <span className='hidden sm:inline'>Home</span>
+                  </Link>
+                </li>
+                <li aria-hidden='true'>
+                  <ChevronRight className='h-4 w-4 text-slate-400' />
+                </li>
+                <li>
+                  <Link
+                    href='/news'
+                    className='inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 hover:bg-slate-100 hover:text-slate-900 transition'
+                  >
+                    News
+                  </Link>
+                </li>
+                <li aria-hidden='true'>
+                  <ChevronRight className='h-4 w-4 text-slate-400' />
+                </li>
+                <li className='inline-flex items-center'>
+                  <span
+                    aria-current='page'
+                    className='rounded-md px-2.5 py-1.5 bg-slate-100/70 text-slate-900 max-w-[60vw] md:max-w-none truncate'
+                    title={item.title}
+                  >
+                    {item.title}
+                  </span>
+                </li>
+              </ol>
+            </nav>
+          </FadeIn>
 
           {/* HERO */}
-          <div className='relative'>
+          <PopInItem className='relative rounded-xl ring-1 ring-black/10 shadow'>
             <div className='flex items-stretch gap-4'>
-              <div className='relative w-full rounded-xl overflow-hidden ring-1 ring-black/10 shadow'>
+              <div className='relative w-full rounded-xl overflow-hidden bg-black/5'>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={item.image}
@@ -286,117 +294,144 @@ export default function NewsDetailClient() {
                 <div className='absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent' />
               </div>
             </div>
-          </div>
+          </PopInItem>
 
           {/* Main + Sidebar */}
           <div className='mt-10 grid grid-cols-1 lg:grid-cols-4 gap-10'>
             {/* MAIN */}
             <article className='lg:col-span-3'>
-              <div className='text-sm text-slate-600 font-semibold mb-2'>
-                <span>{item.author}</span> •{' '}
-                <span>{new Date(item.date).toLocaleDateString()}</span>
-              </div>
+              <StaggerContainer delayChildren={0.05} stagger={0.08}>
+                <FadeInItem>
+                  <div className='text-sm text-slate-600 font-semibold mb-2'>
+                    <span>{item.author}</span> •{' '}
+                    <span>{new Date(item.date).toLocaleDateString()}</span>
+                  </div>
+                </FadeInItem>
 
-              <h1 className='text-3xl md:text-4xl font-extrabold leading-tight tracking-wide text-slate-900'>
-                {item.title}
-              </h1>
+                <FadeInItem>
+                  <h1 className='text-3xl md:text-4xl font-extrabold leading-tight tracking-wide text-slate-900'>
+                    {item.title}
+                  </h1>
+                </FadeInItem>
 
-              <div className='mt-3 flex items-center gap-4 text-slate-500 text-sm'>
-                <span className='inline-flex items-center gap-1'>
-                  <User className='h-4 w-4' /> {item.author}
-                </span>
-                <span className='inline-flex items-center gap-1'>
-                  <Calendar className='h-4 w-4' />{' '}
-                  {new Date(item.date).toLocaleDateString()}
-                </span>
-              </div>
+                <FadeInItem>
+                  <div className='mt-3 flex items-center gap-4 text-slate-500 text-sm'>
+                    <span className='inline-flex items-center gap-1'>
+                      <User className='h-4 w-4' /> {item.author}
+                    </span>
+                    <span className='inline-flex items-center gap-1'>
+                      <Calendar className='h-4 w-4' />{' '}
+                      {new Date(item.date).toLocaleDateString()}
+                    </span>
+                  </div>
+                </FadeInItem>
+              </StaggerContainer>
 
               {/* Tags */}
               {item.tags?.length > 0 && (
-                <div className='mt-4 flex flex-wrap gap-2'>
+                <StaggerContainer
+                  className='mt-4 flex flex-wrap gap-2'
+                  delayChildren={0.03}
+                  stagger={0.06}
+                >
                   {item.tags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      className={cn(
-                        'bg-gradient-to-r',
-                        gradientFor(tag),
-                        'text-white border-0 rounded-full',
-                        'px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase',
-                        'shadow-sm ring-1 ring-white/15 hover:ring-white/25 transition-colors',
-                      )}
-                    >
-                      {tag}
-                    </Badge>
+                    <FadeInItem key={tag}>
+                      <Badge
+                        className={cn(
+                          'bg-gradient-to-r',
+                          gradientFor(tag),
+                          'text-white border-0 rounded-full',
+                          'px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase',
+                          'shadow-sm ring-1 ring-white/15 hover:ring-white/25 transition-colors',
+                        )}
+                      >
+                        {tag}
+                      </Badge>
+                    </FadeInItem>
                   ))}
-                </div>
+                </StaggerContainer>
               )}
 
               {/* Content */}
-              <ArticleBody content={item.content} />
+              <FadeIn delay={0.05}>
+                <ArticleBody content={item.content} />
+              </FadeIn>
             </article>
 
             {/* SIDEBAR */}
             <aside className='lg:col-span-1'>
-              <h3 className='text-slate-900 font-extrabold tracking-wide uppercase'>
-                Related Updates{' '}
-                <span className='text-slate-500'>in this topic</span>
-              </h3>
+              <FadeIn>
+                <h3 className='text-slate-900 font-extrabold tracking-wide uppercase'>
+                  Related Updates{' '}
+                  <span className='text-slate-500'>in this topic</span>
+                </h3>
+              </FadeIn>
 
-              <div className='mt-4 space-y-6'>
+              <StaggerContainer
+                className='mt-4 space-y-6'
+                delayChildren={0.05}
+                stagger={0.08}
+              >
                 {related.map((item) => (
-                  <Link
-                    key={item.slug}
-                    href={`/news/${item.slug}`}
-                    className='block group'
-                  >
-                    <div className='relative rounded-lg overflow-hidden ring-1 ring-black/10 shadow bg-white'>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className='w-full h-32 object-cover group-hover:scale-[1.02] transition'
-                      />
-                    </div>
-                    <div className='mt-2 text-xs text-slate-600'>
-                      {item.author} • {new Date(item.date).toLocaleDateString()}
-                    </div>
-                    <h4 className='mt-1 font-bold leading-snug group-hover:underline'>
-                      {item.title}
-                    </h4>
-                  </Link>
+                  <PopInItem key={item.slug} className='block'>
+                    <Link href={`/news/${item.slug}`} className='block group'>
+                      <div className='relative rounded-lg overflow-hidden ring-1 ring-black/10 shadow bg-white'>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className='w-full h-32 object-cover group-hover:scale-[1.02] transition'
+                        />
+                      </div>
+                      <div className='mt-2 text-xs text-slate-600'>
+                        {item.author} •{' '}
+                        {new Date(item.date).toLocaleDateString()}
+                      </div>
+                      <h4 className='mt-1 font-bold leading-snug group-hover:underline'>
+                        {item.title}
+                      </h4>
+                    </Link>
+                  </PopInItem>
                 ))}
-              </div>
+              </StaggerContainer>
 
               {related.length < 4 && (
                 <div className='mt-8 border-t pt-6'>
-                  <h4 className='text-slate-900 font-extrabold tracking-wide uppercase text-sm'>
-                    More updates
-                  </h4>
-                  <div className='mt-4 space-y-6'>
+                  <FadeIn>
+                    <h4 className='text-slate-900 font-extrabold tracking-wide uppercase text-sm'>
+                      More updates
+                    </h4>
+                  </FadeIn>
+                  <StaggerContainer
+                    className='mt-4 space-y-6'
+                    delayChildren={0.05}
+                    stagger={0.08}
+                  >
                     {moreRandomBelow.map((item) => (
-                      <Link
-                        key={item.slug}
-                        href={`/news/${item.slug}`}
-                        className='block group'
-                      >
-                        <div className='relative rounded-lg overflow-hidden ring-1 ring-black/10 shadow bg-white'>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={item.image}
-                            alt={item.title}
-                            className='w-full h-32 object-cover group-hover:scale-[1.02] transition'
-                          />
-                        </div>
-                        <div className='mt-2 text-xs text-slate-600'>
-                          {item.author} •{' '}
-                          {new Date(item.date).toLocaleDateString()}
-                        </div>
-                        <h4 className='mt-1 font-bold leading-snug group-hover:underline'>
-                          {item.title}
-                        </h4>
-                      </Link>
+                      <PopInItem key={item.slug} className='block'>
+                        <Link
+                          href={`/news/${item.slug}`}
+                          className='block group'
+                        >
+                          <div className='relative rounded-lg overflow-hidden ring-1 ring-black/10 shadow bg-white'>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className='w-full h-32 object-cover group-hover:scale-[1.02] transition'
+                            />
+                          </div>
+                          <div className='mt-2 text-xs text-slate-600'>
+                            {item.author} •{' '}
+                            {new Date(item.date).toLocaleDateString()}
+                          </div>
+                          <h4 className='mt-1 font-bold leading-snug group-hover:underline'>
+                            {item.title}
+                          </h4>
+                        </Link>
+                      </PopInItem>
                     ))}
-                  </div>
+                  </StaggerContainer>
                 </div>
               )}
             </aside>

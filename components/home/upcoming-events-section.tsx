@@ -13,6 +13,12 @@ import {
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  FadeIn,
+  StaggerContainer,
+  FadeInItem,
+  PopInItem,
+} from '@/components/ui/motion'
 
 // lazy modal
 const EventModal = dynamic(() => import('@/components/events/event-modal'), {
@@ -288,29 +294,39 @@ export function UpcomingEventsSection({
       <div className='relative bg-gray-800'>
         <div className='container mx-auto px-4 md:px-6 py-16'>
           {/* Eyebrow */}
-          <div className='mb-2 flex items-center justify-center gap-2'>
-            <Sparkles className='h-3.5 w-3.5 text-amber-300' />
-            <span className='text-[11px] md:text-xs font-extrabold tracking-[0.25em] uppercase text-amber-300/90'>
-              {eyebrow}
-            </span>
-          </div>
+          <FadeIn y={10} delay={0.02}>
+            <div className='mb-2 flex items-center justify-center gap-2'>
+              <Sparkles className='h-3.5 w-3.5 text-amber-300' />
+              <span className='text-[11px] md:text-xs font-extrabold tracking-[0.25em] uppercase text-amber-300/90'>
+                {eyebrow}
+              </span>
+            </div>
+          </FadeIn>
 
-          <div className='flex items-center justify-center gap-3 mb-2'>
-            <HighlightTitle
-              text="Events you don't want to miss"
-              highlightedText="don't want to miss"
-              as='h2'
-              className='text-2xl md:text-4xl text-white text-center tracking-wider'
-              uppercase
-              gradientClassName='bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 bg-clip-text text-transparent'
-            />
-          </div>
-          <p className='text-center text-teal-100/90 max-w-2xl mx-auto mb-8'>
-            Filter by area to find gatherings near you.
-          </p>
+          <FadeIn y={12} delay={0.08}>
+            <div className='flex items-center justify-center gap-3 mb-2'>
+              <HighlightTitle
+                text="Events you don't want to miss"
+                highlightedText="don't want to miss"
+                as='h2'
+                className='text-2xl md:text-4xl text-white text-center tracking-wider'
+                uppercase
+                gradientClassName='bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 bg-clip-text text-transparent'
+              />
+            </div>
+          </FadeIn>
+          <FadeIn y={10} delay={0.14}>
+            <p className='text-center text-teal-100/90 max-w-2xl mx-auto mb-8'>
+              Filter by area to find gatherings near you.
+            </p>
+          </FadeIn>
 
           {/* Area Tabs */}
-          <div className='flex flex-wrap justify-center gap-2 md:gap-3 mb-8'>
+          <StaggerContainer
+            className='flex flex-wrap justify-center gap-2 md:gap-3 mb-8'
+            delayChildren={0.04}
+            stagger={0.05}
+          >
             {AREAS.map((a) => {
               const active = a === tab
               const label =
@@ -318,21 +334,22 @@ export function UpcomingEventsSection({
                   ? 'All Areas'
                   : `${a} • ${AREA_LABEL[a as keyof typeof AREA_LABEL] ?? ''}`
               return (
-                <button
-                  key={a}
-                  onClick={() => setTab(a)}
-                  className={[
-                    'cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-extrabold tracking-wider uppercase transition-colors',
-                    active
-                      ? 'bg-amber-300 text-gray-900'
-                      : 'bg-white/10 text-white/85 hover:bg-white/15',
-                  ].join(' ')}
-                >
-                  {label}
-                </button>
+                <FadeInItem key={a}>
+                  <button
+                    onClick={() => setTab(a)}
+                    className={[
+                      'cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-extrabold tracking-wider uppercase transition-colors',
+                      active
+                        ? 'bg-amber-300 text-gray-900'
+                        : 'bg-white/10 text-white/85 hover:bg-white/15',
+                    ].join(' ')}
+                  >
+                    {label}
+                  </button>
+                </FadeInItem>
               )
             })}
-          </div>
+          </StaggerContainer>
 
           {/* Carousel */}
           <div className='relative'>
@@ -371,90 +388,90 @@ export function UpcomingEventsSection({
                   (event as any).id ??
                   `${event.title}-${event.date}-${idx}`
                 return (
-                  <div
+                  <PopInItem
                     key={key}
-                    role='button'
-                    tabIndex={0}
-                    onClick={() => setSelected(event)}
-                    onKeyDown={(e) =>
-                      (e.key === 'Enter' || e.key === ' ') && setSelected(event)
-                    }
-                    className={[
-                      'snap-start w-[290px] md:w-[300px] lg:w-[320px] flex-shrink-0 cursor-pointer group',
-                      'motion-safe:transition-[opacity,transform,filter] motion-safe:duration-300 motion-safe:ease-out',
-                      show
-                        ? 'opacity-100 translate-y-0 blur-0'
-                        : 'opacity-0 translate-y-2 blur-[1px]',
-                    ].join(' ')}
-                    style={{ transitionDelay: `${idx * 70}ms` }}
+                    delay={idx * 0.07}
+                    duration={0.26}
+                    className='snap-start w-[290px] md:w-[300px] lg:w-[320px] flex-shrink-0'
                   >
-                    <div className='rounded-xl bg-white/95 shadow-xl overflow-hidden ring-1 ring-black/5 border-2 border-gray-800/70 group-hover:border-white duration-300'>
-                      {/* Image */}
-                      <div className='h-44 relative overflow-hidden'>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={event.image}
-                          onError={handleImgError}
-                          alt={event.title || 'Event image'}
-                          loading='lazy'
-                          decoding='async'
-                          className='absolute inset-0 w-full h-full object-cover'
-                        />
-                        {/* subtle overlay */}
-                        <div className='absolute inset-0 bg-gradient-to-t from-black/40 to-transparent' />
-                        {/* Area pill */}
-                        <div
-                          className={[
-                            'absolute top-2 left-2 rounded-full text-[10px] font-bold px-2 py-0.5 tracking-wider',
-                            areaClass,
-                          ].join(' ')}
-                          title={AREA_LABEL[event.area] ?? event.area}
-                        >
-                          {event.area}
-                        </div>
-                      </div>
-
-                      {/* Body */}
-                      <div className='p-4'>
-                        {/* Date + Time */}
-                        <div className='flex items-center gap-3 text-xs text-slate-700 mb-2'>
-                          <span className='inline-flex items-center gap-1.5'>
-                            <Calendar className='h-4 w-4' />
-                            {fmtDate(start)}
-                          </span>
-                          <span className='inline-flex items-center gap-1.5'>
-                            <Clock className='h-4 w-4' />
-                            {fmtTime(start)}
-                            {end ? ` – ${fmtTime(end)}` : ''}
-                          </span>
+                    <div
+                      role='button'
+                      tabIndex={0}
+                      onClick={() => setSelected(event)}
+                      onKeyDown={(e) =>
+                        (e.key === 'Enter' || e.key === ' ') &&
+                        setSelected(event)
+                      }
+                      className='cursor-pointer group'
+                    >
+                      <div className='rounded-xl bg-white/95 shadow-xl overflow-hidden ring-1 ring-black/5 border-2 border-gray-800/70 group-hover:border-white duration-300'>
+                        {/* Image */}
+                        <div className='h-44 relative overflow-hidden'>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={event.image}
+                            onError={handleImgError}
+                            alt={event.title || 'Event image'}
+                            loading='lazy'
+                            decoding='async'
+                            className='absolute inset-0 w-full h-full object-cover'
+                          />
+                          {/* subtle overlay */}
+                          <div className='absolute inset-0 bg-gradient-to-t from-black/40 to-transparent' />
+                          {/* Area pill */}
+                          <div
+                            className={[
+                              'absolute top-2 left-2 rounded-full text-[10px] font-bold px-2 py-0.5 tracking-wider',
+                              areaClass,
+                            ].join(' ')}
+                            title={AREA_LABEL[event.area] ?? event.area}
+                          >
+                            {event.area}
+                          </div>
                         </div>
 
-                        {/* Title */}
-                        <h3 className='text-sm font-extrabold tracking-wider text-slate-900 uppercase'>
-                          {event.title}
-                        </h3>
-
-                        {/* Location */}
-                        <p className='mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-widest text-slate-500 uppercase'>
-                          <MapPin className='h-3.5 w-3.5' />
-                          {event.location}
-                        </p>
-
-                        {/* Chips: Region + Church */}
-                        <div className='mt-3 flex flex-wrap gap-2'>
-                          <span className='inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200 px-2 py-0.5 text-[10px] font-semibold'>
-                            {event.region}
-                          </span>
-                          {event.church && (
-                            <span className='inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200 px-2 py-0.5 text-[10px] font-semibold'>
-                              <Building2 className='h-3 w-3' />
-                              {event.church}
+                        {/* Body */}
+                        <div className='p-4'>
+                          {/* Date + Time */}
+                          <div className='flex items-center gap-3 text-xs text-slate-700 mb-2'>
+                            <span className='inline-flex items-center gap-1.5'>
+                              <Calendar className='h-4 w-4' />
+                              {fmtDate(start)}
                             </span>
-                          )}
+                            <span className='inline-flex items-center gap-1.5'>
+                              <Clock className='h-4 w-4' />
+                              {fmtTime(start)}
+                              {end ? ` – ${fmtTime(end)}` : ''}
+                            </span>
+                          </div>
+
+                          {/* Title */}
+                          <h3 className='text-sm font-extrabold tracking-wider text-slate-900 uppercase'>
+                            {event.title}
+                          </h3>
+
+                          {/* Location */}
+                          <p className='mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-widest text-slate-500 uppercase'>
+                            <MapPin className='h-3.5 w-3.5' />
+                            {event.location}
+                          </p>
+
+                          {/* Chips: Region + Church */}
+                          <div className='mt-3 flex flex-wrap gap-2'>
+                            <span className='inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200 px-2 py-0.5 text-[10px] font-semibold'>
+                              {event.region}
+                            </span>
+                            {event.church && (
+                              <span className='inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200 px-2 py-0.5 text-[10px] font-semibold'>
+                                <Building2 className='h-3 w-3' />
+                                {event.church}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </PopInItem>
                 )
               })}
             </div>

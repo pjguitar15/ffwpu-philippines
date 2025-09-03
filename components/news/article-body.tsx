@@ -28,7 +28,7 @@ export function ArticleBody({ content }: { content: string }) {
   if (!html) return null
 
   return (
-    <div className='mt-6 text-slate-800 dark:text-slate-100 pe-9'>
+    <div className='mt-6 text-slate-800 dark:text-slate-100'>
       <article
         className='news-article max-w-none'
         dangerouslySetInnerHTML={{ __html: html }}

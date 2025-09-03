@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { NewsletterSignup } from '@/components/newsletter-signup'
+import SparklesOverlay from '@/components/hero/sparkles'
 
 export function HeroSection() {
   return (
@@ -32,7 +33,7 @@ export function HeroSection() {
       />
 
       {/* Readability + color wash overlays */}
-      <div className='pointer-events-none absolute inset-0'>
+      <div className='pointer-events-none absolute inset-0 z-0'>
         {/* Base dark vignette for contrast */}
         <div className='absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-900/40 to-slate-950/80' />
         {/* Colorful radial washes (sky/cyan top-right, fuchsia bottom-left) */}
@@ -61,38 +62,24 @@ export function HeroSection() {
               text='Families Centered on Heavenly Parent'
               highlightedText='Heavenly Parent'
               uppercase={true}
-              className='text-4xl md:text-5xl font-extrabold leading-tight tracking-wide text-white [text-shadow:0_1px_0_rgba(0,0,0,0.28)]'
+              className='text-4xl md:text-5xl font-extrabold leading-tight tracking-wide text-white [text-shadow:0_1px_0_rgba(0,0,0,0.28)] whitespace-normal break-words text-balance'
               gradientClassName='bg-gradient-to-r from-sky-300 via-cyan-200 to-fuchsia-300 bg-clip-text text-transparent'
             />
 
-            <p className='mx-auto mt-4 max-w-3xl text-base md:text-lg text-white/90 font-medium leading-relaxed'>
-              FFWPU Philippines is a
-              <span className='mx-1 bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-rose-200 to-violet-300 font-semibold'>
-                Heavenly Parent–centered
-              </span>
-              family, deepening faith through
-              <span className='mx-1 bg-clip-text text-transparent bg-gradient-to-r from-sky-300 via-teal-200 to-emerald-300 font-semibold'>
-                Cheon&nbsp;Shim&nbsp;Won
-              </span>
-              devotion,
-              <span className='mx-1 bg-clip-text text-transparent bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 font-semibold'>
-                cherishing the Blessing
-              </span>
-              as the foundation of true families, advancing the Philippine
-              Providence, and living
-              <span className='mx-1 bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 font-semibold'>
-                True Parents’ vision
-              </span>
-              .
+            <p className='mx-auto mt-4 max-w-3xl text-base md:text-lg text-white font-medium leading-relaxed'>
+              FFWPU Philippines is a Heavenly Parent–centered family, deepening
+              faith through Cheon Shim Won devotion, cherishing the Blessing as
+              the foundation of true families, advancing the Philippine
+              Providence, and living True Parents’ vision.
             </p>
           </div>
 
           {/* CTAs */}
           <div className='flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4'>
             <Link href='/about' className='inline-block'>
-              <EpicButton className='bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 ring-1 ring-white/10 shadow-[0_8px_30px_rgba(34,211,238,0.35)]'>
+              <EpicButton className='bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 ring-1 ring-white/10 shadow-[0_8px_30px_rgba(34,211,238,0.35)] text-base sm:text-base px-6'>
                 <span className='inline-flex items-center gap-2'>
-                  About Us <ArrowRight className='h-4 w-4' />
+                  About FFWPU PH <ArrowRight className='h-4 w-4' />
                 </span>
               </EpicButton>
             </Link>
@@ -133,6 +120,15 @@ export function HeroSection() {
       >
         <ChevronDown className='h-5 w-5 animate-bounce' />
       </a>
+
+      {/* Sparkles on top of hero (non-interactive) */}
+      <SparklesOverlay
+        className='z-50'
+        count={42}
+        color='rgba(255,255,255,0.95)'
+        minSize={2.5}
+        maxSize={6}
+      />
     </section>
   )
 }

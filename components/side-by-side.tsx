@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import * as React from 'react'
 import { HighlightTitle } from './ui/highlight-title'
+import { motion } from 'framer-motion'
 
 type BottomLink = { label: string; href: string }
 
@@ -36,6 +37,9 @@ export function SideBySide({
   sideText = 'CHEON SHIM WON',
 }: SideBySideProps) {
   const pairDir = reversed ? 'md:flex-row-reverse' : 'md:flex-row'
+  const imgFromX = reversed ? 36 : -36
+  const textFromX = reversed ? -36 : 36
+  const baseTransition = { duration: 0.55, ease: 'easeInOut' as const }
 
   const SideRail = (
     <aside className='hidden lg:flex flex-col items-center gap-4 pt-6'>
@@ -56,7 +60,13 @@ export function SideBySide({
             className={`flex flex-col ${pairDir} items-start md:items-stretch gap-8 md:gap-8 lg:gap-12 flex-1`}
           >
             {/* IMAGE */}
-            <div className='w-full md:basis-1/2 md:max-w-none lg:max-w-[640px]'>
+            <motion.div
+              className='w-full md:basis-1/2 md:max-w-none lg:max-w-[640px]'
+              initial={{ opacity: 0, x: imgFromX }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ ...baseTransition, delay: 0.05 }}
+            >
               <div className='relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/10'>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -66,10 +76,16 @@ export function SideBySide({
                 />
                 <div className='pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent' />
               </div>
-            </div>
+            </motion.div>
 
             {/* TEXT */}
-            <div className='w-full md:basis-1/2 md:max-w-none lg:flex-1 lg:max-w-2xl'>
+            <motion.div
+              className='w-full md:basis-1/2 md:max-w-none lg:flex-1 lg:max-w-2xl'
+              initial={{ opacity: 0, x: textFromX }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ ...baseTransition, delay: 0.12 }}
+            >
               {eyebrow && (
                 <div className='text-sm font-semibold text-slate-800/90 mb-3'>
                   {eyebrow}
@@ -107,7 +123,7 @@ export function SideBySide({
                   ))}
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
 
           {withSocials && reversed && SideRail}

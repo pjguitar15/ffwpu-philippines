@@ -43,6 +43,11 @@ export async function sendEmailJs(
   if (!res.ok) {
     const text = await res.text().catch(() => '')
     console.warn('[email] EmailJS send failed:', res.status, text)
+    if (res.status === 422 && /recipients? address is empty/i.test(text)) {
+      console.warn(
+        '[email] Hint: Configure your EmailJS template "To email" field to either a fixed address or the variable {{to_email}}. Ensure your API sends template_params.to_email.',
+      )
+    }
     return { ok: false }
   }
   return { ok: true }

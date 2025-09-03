@@ -24,9 +24,7 @@ export function AboutCTA() {
         </p>
         <div className='pt-2 flex justify-center gap-3'>
           <Link href='/contact' className='inline-block'>
-            <EpicButton className='bg-gradient-to-r from-sky-700 via-blue-700 to-indigo-800 hover:from-blue-700 hover:to-indigo-700'>
-              Join Us Now
-            </EpicButton>
+            <EpicButton>Join Us Now</EpicButton>
           </Link>
         </div>
       </div>

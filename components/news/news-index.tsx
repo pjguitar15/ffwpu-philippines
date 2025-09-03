@@ -19,6 +19,7 @@ import { HighlightTitle } from '@/components/ui/highlight-title'
 import { SectionShell } from '@/components/ui/section-shell'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { excerptFromHtml } from '@/lib/text'
+import { PopInItem } from '@/components/ui/motion'
 
 export type NewsItem = {
   id: string
@@ -236,105 +237,111 @@ export function NewsIndex({
           </div>
         ) : view === 'grid' ? (
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {visible.map((item) => (
-              <Link
+            {visible.map((item, i) => (
+              <PopInItem
                 key={item.slug}
-                href={`/news/${item.slug}`}
-                className='group relative rounded-xl overflow-hidden ring-1 ring-black/10 bg-white hover:shadow-lg transition'
+                delay={(i % 3) * 0.04 + Math.random() * 0.06}
+                duration={0.22}
+                className='group relative rounded-xl overflow-hidden ring-1 ring-black/10 hover:shadow-lg transition'
               >
-                <div className='relative h-44 md:h-52'>
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className='object-cover'
-                    sizes='(max-width: 768px) 100vw, 33vw'
-                  />
-                  <div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent' />
-                  <div className='absolute bottom-2 left-2 flex gap-2'>
-                    {(item.tags || []).slice(0, 1).map((tag) => (
-                      <Badge
-                        key={tag}
-                        className={`capitalize border-0 ${tagGradient(tag)}`}
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
+                <Link href={`/news/${item.slug}`} className='block bg-white'>
+                  <div className='relative h-44 md:h-52'>
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className='object-cover'
+                      sizes='(max-width: 768px) 100vw, 33vw'
+                    />
+                    <div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent' />
+                    <div className='absolute bottom-2 left-2 flex gap-2'>
+                      {(item.tags || []).slice(0, 1).map((tag) => (
+                        <Badge
+                          key={tag}
+                          className={`capitalize border-0 ${tagGradient(tag)}`}
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <div className='p-4'>
-                  <div className='text-xs text-slate-500 flex items-center gap-3'>
-                    <span className='inline-flex items-center gap-1'>
-                      <Calendar className='h-3.5 w-3.5' />
-                      {new Date(item.date).toLocaleDateString()}
-                    </span>
-                    {/* <span className='inline-flex items-center gap-1'>
+                  <div className='p-4'>
+                    <div className='text-xs text-slate-500 flex items-center gap-3'>
+                      <span className='inline-flex items-center gap-1'>
+                        <Calendar className='h-3.5 w-3.5' />
+                        {new Date(item.date).toLocaleDateString()}
+                      </span>
+                      {/* <span className='inline-flex items-center gap-1'>
                       <Eye className='h-3.5 w-3.5' /> {item.views ?? 0}
                     </span>
                     <span className='inline-flex items-center gap-1'>
                       <Heart className='h-3.5 w-3.5' /> {item.likes ?? 0}
                     </span> */}
+                    </div>
+                    <h3 className='mt-2 font-extrabold leading-snug tracking-wide group-hover:underline'>
+                      {item.title}
+                    </h3>
+                    <p className='mt-1 text-sm text-slate-600 line-clamp-2'>
+                      {/* this too */}
+                      {excerptFromHtml(item?.content || '', 180)}
+                    </p>
                   </div>
-                  <h3 className='mt-2 font-extrabold leading-snug tracking-wide group-hover:underline'>
-                    {item.title}
-                  </h3>
-                  <p className='mt-1 text-sm text-slate-600 line-clamp-2'>
-                    {/* this too */}
-                    {excerptFromHtml(item?.content || '', 180)}
-                  </p>
-                </div>
-              </Link>
+                </Link>
+              </PopInItem>
             ))}
           </div>
         ) : (
           // List view
           <div className='space-y-4'>
-            {visible.map((item) => (
-              <Link
+            {visible.map((item, i) => (
+              <PopInItem
                 key={item.slug}
-                href={`/news/${item.slug}`}
-                className='group grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4 rounded-xl overflow-hidden ring-1 ring-black/10 bg-white hover:shadow-lg transition'
+                delay={(i % 4) * 0.05 + Math.random() * 0.08}
+                duration={0.22}
+                className='group grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4 rounded-xl overflow-hidden ring-1 ring-black/10 hover:shadow-lg transition'
               >
-                <div className='relative h-44 md:h-full'>
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className='object-cover'
-                    sizes='260px'
-                  />
-                  <div className='absolute bottom-2 left-2 flex gap-2'>
-                    {(item.tags || []).slice(0, 2).map((tag) => (
-                      <Badge
-                        key={tag}
-                        className={`capitalize border-0 ${tagGradient(tag)}`}
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
+                <Link href={`/news/${item.slug}`} className='contents bg-white'>
+                  <div className='relative h-44 md:h-full'>
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className='object-cover'
+                      sizes='260px'
+                    />
+                    <div className='absolute bottom-2 left-2 flex gap-2'>
+                      {(item.tags || []).slice(0, 2).map((tag) => (
+                        <Badge
+                          key={tag}
+                          className={`capitalize border-0 ${tagGradient(tag)}`}
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <div className='p-4'>
-                  <div className='text-xs text-slate-500 flex items-center gap-3'>
-                    <span className='inline-flex items-center gap-1'>
-                      <Calendar className='h-3.5 w-3.5' />
-                      {new Date(item.date).toLocaleDateString()}
-                    </span>
-                    {/* <span className='inline-flex items-center gap-1'>
+                  <div className='p-4'>
+                    <div className='text-xs text-slate-500 flex items-center gap-3'>
+                      <span className='inline-flex items-center gap-1'>
+                        <Calendar className='h-3.5 w-3.5' />
+                        {new Date(item.date).toLocaleDateString()}
+                      </span>
+                      {/* <span className='inline-flex items-center gap-1'>
                       <Eye className='h-3.5 w-3.5' /> {item.views ?? 0}
                     </span>
                     <span className='inline-flex items-center gap-1'>
                       <Heart className='h-3.5 w-3.5' /> {item.likes ?? 0}
                     </span> */}
+                    </div>
+                    <h3 className='mt-1 font-extrabold tracking-wide group-hover:underline'>
+                      {item.title}
+                    </h3>
+                    <p className='mt-1 text-sm text-slate-600 line-clamp-2'>
+                      {item.content || ''}
+                    </p>
                   </div>
-                  <h3 className='mt-1 font-extrabold tracking-wide group-hover:underline'>
-                    {item.title}
-                  </h3>
-                  <p className='mt-1 text-sm text-slate-600 line-clamp-2'>
-                    {item.content || ''}
-                  </p>
-                </div>
-              </Link>
+                </Link>
+              </PopInItem>
             ))}
           </div>
         )}

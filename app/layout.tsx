@@ -5,6 +5,7 @@ import './globals.css'
 import UnderConstruction from '@/components/under-construction'
 import { SiteShell } from '@/components/layout/site-shell'
 import { Toaster } from "@/components/ui/toaster"
+import { ThemeProvider } from '@/components/theme-provider'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -102,7 +103,8 @@ export default function RootLayout({
   return (
     <html
       lang='en'
-      className={`${montserrat.variable} ${inter.variable} antialiased scrollbar-thin scroll-smooth`}
+      suppressHydrationWarning
+      className={`${montserrat.variable} ${inter.variable} antialiased scrollbar-thin scroll-smooth light`}
     >
       <head>
         <link rel='icon' href='/favicon.webp' />
@@ -128,12 +130,20 @@ export default function RootLayout({
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </head>
       <body className='font-body page-transition'>
-        <SiteShell
-          isUnderConstruction={process.env.IS_UNDER_CONSTRUCTION === 'true'}
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='light'
+          enableSystem={false}
+          forcedTheme='light'
+          enableColorScheme={false}
         >
-          {children}
-        </SiteShell>
-        <Toaster />
+          <SiteShell
+            isUnderConstruction={process.env.IS_UNDER_CONSTRUCTION === 'true'}
+          >
+            {children}
+          </SiteShell>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   )

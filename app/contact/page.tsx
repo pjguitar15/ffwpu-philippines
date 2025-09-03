@@ -1,7 +1,7 @@
 'use client'
 
 import type React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -41,6 +41,12 @@ export default function ContactPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
+  const [ts, setTs] = useState<number>(() => Date.now())
+
+  // Reset timestamp on mount (helps avoid stale form)
+  useEffect(() => {
+    setTs(Date.now())
+  }, [])
 
   const serviceImg =
     'https://familyfedihq.org/wp-content/uploads/2024/03/ph-ss-1024x558.jpg'
@@ -55,14 +61,32 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    await new Promise((r) => setTimeout(r, 1200))
-    toast({
-      title: 'Message Sent! 📧',
-      description:
-        "Thank you for reaching out. We'll get back to you within 24 hours.",
-    })
-    setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
-    setIsLoading(false)
+    try {
+      const payload = { ...formData, ts, company: '', website: '' }
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok || json?.success !== true) {
+        throw new Error(json?.error || 'Failed to send message')
+      }
+      toast({
+        title: 'Message Sent! 📧',
+        description:
+          "Thank you for reaching out. We'll get back to you within 24 hours.",
+      })
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
+      setTs(Date.now())
+    } catch (err: any) {
+      toast({
+        title: 'Unable to send message',
+        description: err?.message || 'Please try again later.',
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const address = '32 Samar Avenue, Diliman, Quezon City'
@@ -114,6 +138,25 @@ export default function ContactPage() {
                 </CardHeader>
                 <CardContent className='relative'>
                   <form onSubmit={handleSubmit} className='space-y-6'>
+                    {/* Honeypot fields (visually hidden) */}
+                    <div className='hidden' aria-hidden>
+                      <label htmlFor='company'>Company</label>
+                      <input
+                        id='company'
+                        name='company'
+                        autoComplete='organization'
+                        tabIndex={-1}
+                      />
+                      <label htmlFor='website'>Website</label>
+                      <input
+                        id='website'
+                        name='website'
+                        autoComplete='url'
+                        tabIndex={-1}
+                      />
+                      <input type='hidden' name='ts' value={ts} readOnly />
+                    </div>
+
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                       <div className='space-y-2'>
                         <Label htmlFor='name'>Full Name *</Label>

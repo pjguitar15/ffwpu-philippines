@@ -84,7 +84,7 @@ export function BackgroundCarousel({
             priority={i === 0}
             className={[
               'object-cover will-change-transform',
-              dim ? 'brightness-[.42]' : '',
+              dim ? 'brightness-[.52]' : '',
             ].join(' ')}
           />
         </div>

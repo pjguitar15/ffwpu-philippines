@@ -10,6 +10,7 @@ import { ArrowRight, Newspaper, ChevronDown } from 'lucide-react'
 import * as React from 'react'
 import { excerptFromHtml } from '@/lib/text'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AnimatePresence, motion } from 'framer-motion'
 
 type Props = {
   // Optional fallback while dynamic data loads
@@ -244,45 +245,54 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
         ))}
 
         {/* MORE CARDS (flow under the feature) */}
-        {rest.map((item) => (
-          <Link
-            key={item.id}
-            href={`/news/${item.slug}`}
-            className='relative group rounded-lg overflow-hidden ring-1 ring-black/10
-                       bg-black/80 min-h-0
-                       aspect-[16/10] md:aspect-auto md:h-[240px]'
-          >
-            <Image
-              src={item.image}
-              alt={item.title}
-              fill
-              sizes='(max-width: 768px) 100vw, 33vw'
-              className='object-cover object-center opacity-85 md:group-hover:scale-105 transition-transform duration-500'
-            />
-            <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent md:group-hover:from-black/90 md:group-hover:via-black/60 transition-colors duration-300' />
-            <div className='relative z-10 flex flex-col justify-end h-full p-4'>
-              <div className='mb-1'>
-                <Badge
-                  className={`font-semibold capitalize border-0 ${tagGradient(
-                    item.tags?.[0],
-                  )}`}
-                >
-                  {item.tags?.[0]}
-                </Badge>
-              </div>
-              <h4 className='text-base sm:text-lg font-bold text-white mb-1 line-clamp-2'>
-                {item.title}
-              </h4>
-              <div className='text-white/80 text-xs'>
-                {item.author} &middot;{' '}
-                {new Date(item.date).toLocaleDateString()}
-              </div>
-              <p className='text-white/90 text-xs sm:text-sm line-clamp-1'>
-                {excerptFromHtml(item.content, 180)}
-              </p>
-            </div>
-          </Link>
-        ))}
+        <AnimatePresence initial={false}>
+          {rest.map((item) => (
+            <motion.div
+              key={item.id}
+              layout
+              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.98 }}
+              transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
+              className='group rounded-lg overflow-hidden ring-1 ring-black/10'
+            >
+              <Link
+                href={`/news/${item.slug}`}
+                className='relative block bg-black/80 min-h-0 aspect-[16/10] md:aspect-auto md:h-[240px]'
+              >
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  sizes='(max-width: 768px) 100vw, 33vw'
+                  className='object-cover object-center opacity-85 md:group-hover:scale-105 transition-transform duration-500'
+                />
+                <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent md:group-hover:from-black/90 md:group-hover:via-black/60 transition-colors duration-300' />
+                <div className='relative z-10 flex flex-col justify-end h-full p-4'>
+                  <div className='mb-1'>
+                    <Badge
+                      className={`font-semibold capitalize border-0 ${tagGradient(
+                        item.tags?.[0],
+                      )}`}
+                    >
+                      {item.tags?.[0]}
+                    </Badge>
+                  </div>
+                  <h4 className='text-base sm:text-lg font-bold text-white mb-1 line-clamp-2'>
+                    {item.title}
+                  </h4>
+                  <div className='text-white/80 text-xs'>
+                    {item.author} &middot;{' '}
+                    {new Date(item.date).toLocaleDateString()}
+                  </div>
+                  <p className='text-white/90 text-xs sm:text-sm line-clamp-1'>
+                    {excerptFromHtml(item.content, 180)}
+                  </p>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {/* Load more */}

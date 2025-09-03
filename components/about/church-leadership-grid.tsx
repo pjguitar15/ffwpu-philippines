@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import clsx from 'clsx'
+import { StaggerContainer, FadeInItem, FadeIn } from '@/components/ui/motion'
 
 /** ──────────────────────────────────────────────────────────────────────────
  * Types
@@ -195,7 +196,7 @@ export default function ChurchLeadershipGrid({
     >
       <div className='mx-auto max-w-7xl px-6'>
         {/* Header */}
-        <div className='mx-auto max-w-3xl text-center mb-8'>
+        <FadeIn className='mx-auto max-w-3xl text-center mb-8'>
           <p className='mb-1 text-xs tracking-widest uppercase text-gray-500'>
             {eyebrow}
           </p>
@@ -206,7 +207,7 @@ export default function ChurchLeadershipGrid({
             {heading}
           </h2>
           <p className='mt-2 text-sm md:text-base text-gray-600'>{subtext}</p>
-        </div>
+        </FadeIn>
 
         {/* Filter / Search */}
         {showFilter && (
@@ -232,49 +233,48 @@ export default function ChurchLeadershipGrid({
         )}
 
         {/* Cards */}
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-7'>
+        <StaggerContainer className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-7'>
           {filtered.map((p, i) => (
-            <article
-              key={`${p.name}-${i}`}
-              className='relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md pt-5 px-4'
-            >
-              <div className='absolute inset-0 pointer-events-none ring-1 ring-black/5 rounded-2xl' />
-              <div className='pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500/70 opacity-70' />
+            <FadeInItem key={`${p.name}-${i}`}>
+              <article className='relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md pt-5 px-4'>
+                <div className='absolute inset-0 pointer-events-none ring-1 ring-black/5 rounded-2xl' />
+                <div className='pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500/70 opacity-70' />
 
-              {/* Portrait frame */}
-              <div
-                className='relative aspect-[3/4] overflow-hidden rounded-xl'
-                style={{
-                  backgroundColor: 'white',
-                  backgroundImage: `
+                {/* Portrait frame */}
+                <div
+                  className='relative aspect-[3/4] overflow-hidden rounded-xl'
+                  style={{
+                    backgroundColor: 'white',
+                    backgroundImage: `
                     radial-gradient(ellipse at 50% -20%, rgba(56,189,248,0.28), rgba(56,189,248,0) 60%),
                     linear-gradient(#e5e7eb 1px, transparent 1px),
                     linear-gradient(90deg, #e5e7eb 1px, transparent 1px)
                   `,
-                  backgroundSize: 'auto, 14px 14px, 14px 14px',
-                  backgroundPosition: 'center top, 0 0, 0 0',
-                }}
-              >
-                <LeaderPortrait src={p.photoUrl} name={p.name} />
-                <div className='pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white/70 to-transparent' />
-                <div className='pointer-events-none absolute inset-0 ring-1 ring-black/5 rounded-xl' />
-              </div>
+                    backgroundSize: 'auto, 14px 14px, 14px 14px',
+                    backgroundPosition: 'center top, 0 0, 0 0',
+                  }}
+                >
+                  <LeaderPortrait src={p.photoUrl} name={p.name} />
+                  <div className='pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white/70 to-transparent' />
+                  <div className='pointer-events-none absolute inset-0 ring-1 ring-black/5 rounded-xl' />
+                </div>
 
-              {/* Caption */}
-              <div className='px-3 py-3 text-center'>
-                <h3 className='text-sm font-semibold text-slate-900'>
-                  {p.name}
-                </h3>
-                <p className='mt-0.5 text-xs text-slate-600'>{p.title}</p>
-                {p.tag && (
-                  <span className='mt-2 inline-block rounded-full border bg-gray-50 px-2 py-0.5 text-[10px] tracking-wide uppercase text-gray-600'>
-                    {p.tag}
-                  </span>
-                )}
-              </div>
-            </article>
+                {/* Caption */}
+                <div className='px-3 py-3 text-center'>
+                  <h3 className='text-sm font-semibold text-slate-900'>
+                    {p.name}
+                  </h3>
+                  <p className='mt-0.5 text-xs text-slate-600'>{p.title}</p>
+                  {p.tag && (
+                    <span className='mt-2 inline-block rounded-full border bg-gray-50 px-2 py-0.5 text-[10px] tracking-wide uppercase text-gray-600'>
+                      {p.tag}
+                    </span>
+                  )}
+                </div>
+              </article>
+            </FadeInItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         <p className='mt-6 text-center text-xs text-gray-500'>
           Levels: <strong>National</strong> → <strong>Departments</strong> →{' '}

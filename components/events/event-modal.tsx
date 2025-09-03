@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { X, Calendar, Clock, MapPin, ArrowRight } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 type EventItem = {
   id: number | string
@@ -54,142 +55,190 @@ export default function EventModal({
     : undefined
 
   return (
-    <div className='fixed inset-0 z-[100]'>
+    <motion.div
+      className='fixed inset-0 z-[100]'
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
+    >
       {/* Backdrop */}
       <div
-        className='absolute inset-0 bg-[#0b1020]/80 backdrop-blur-sm'
+        className='absolute inset-0 bg-black/50 backdrop-blur-sm'
         onClick={onClose}
         aria-hidden='true'
       />
 
-      {/* Dialog */}
+      {/* Dialog - full screen content */}
       <div
         role='dialog'
         aria-modal='true'
-        className='absolute inset-0 flex items-center justify-center p-4'
+        className='absolute inset-0'
         onClick={onClose}
       >
-        {/* Gradient frame */}
-        <div
-          className='relative w-full max-w-6xl rounded-3xl p-[1px] bg-gradient-to-br from-sky-500 via-blue-600 to-rose-500 shadow-[0_8px_40px_rgba(2,6,23,0.38)]'
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Glass body */}
-          <div className='relative h-[60vh] rounded-[calc(theme(borderRadius.3xl)-1px)] overflow-hidden bg-[#0b1020]/90 ring-1 ring-white/10'>
-            {/* Image */}
+        <div className='relative h-full w-full overflow-y-auto'>
+          {/* Full-screen blurred background (click to close) */}
+          <motion.div
+            className='absolute inset-0 z-0 overflow-hidden cursor-pointer'
+            onClick={onClose}
+            aria-hidden='true'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.35 }}
+          >
             <img
               src={event.image}
-              alt={event.title}
-              className='absolute inset-0 h-full w-full object-cover opacity-70'
-              loading='eager'
-              decoding='async'
-              onError={(e) => {
-                const FALLBACK =
-                  'data:image/svg+xml;utf8,' +
-                  encodeURIComponent(
-                    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='#0ea5e9'/><stop offset='50%' stop-color='#6366f1'/><stop offset='100%' stop-color='#e11d48'/></linearGradient></defs><rect width='1200' height='630' fill='url(#g)'/></svg>`,
-                  )
-                const img = e.currentTarget as HTMLImageElement
-                if (img.dataset.fallbackTried !== '1') {
-                  img.dataset.fallbackTried = '1'
-                  img.src = FALLBACK
-                }
-              }}
+              alt=''
+              className='w-full h-full object-cover scale-[1.18] blur-[26px] md:blur-[30px] lg:blur-[34px] opacity-85'
+              aria-hidden='true'
             />
+            {/* Gentle vignette and bottom wash for readability */}
+            <div className='absolute inset-0 bg-[radial-gradient(900px_420px_at_80%_-10%,rgba(59,130,246,0.08),transparent_60%)]' />
+            <div className='absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white/90 via-white/70 to-transparent' />
+          </motion.div>
 
-            {/* Readability overlays */}
-            <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(1200px_600px_at_80%_-10%,rgba(59,130,246,0.25),transparent_60%)]' />
-            <div className='absolute inset-0 bg-gradient-to-t from-[#0b1020]/90 via-[#0b1020]/40 to-transparent' />
+          {/* Click-catcher over background, under content */}
+          <button
+            aria-hidden='true'
+            onClick={onClose}
+            className='absolute inset-0 z-[5] cursor-default bg-transparent'
+            tabIndex={-1}
+          />
 
-            {/* Close */}
-            <button
-              onClick={onClose}
-              aria-label='Close'
-              className='absolute right-4 top-4 z-30 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-slate-900 hover:bg-white focus:outline-none focus:ring-2 focus:ring-rose-400 cursor-pointer'
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            aria-label='Close'
+            className='fixed right-4 top-4 z-40 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-800 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-300 cursor-pointer shadow'
+          >
+            <X className='h-5 w-5' />
+          </button>
+
+          {/* Content stack (vertically centered) */}
+          <div className='relative z-10 min-h-[100svh] grid place-items-center py-12'>
+            <motion.div
+              className='w-full max-w-6xl px-4 md:px-6'
+              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             >
-              <X className='h-5 w-5' />
-            </button>
-
-            {/* Content */}
-            <div className='absolute inset-x-0 bottom-0 z-20 p-6 md:p-10 text-white'>
-              {/* Region pill */}
-              <div className='inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest ring-1 ring-white/15 md:text-xs'>
-                {event.region}
+              {/* Media area (no background; rounded image) */}
+              <div className='relative w-full'>
+                <div className='relative flex justify-center'>
+                  <img
+                    src={event.image}
+                    alt={event.title}
+                    className='max-h-[70vh] md:max-h-[75vh] lg:max-h-[80vh] w-auto h-auto object-contain select-none pointer-events-none rounded-3xl shadow-sm'
+                    loading='eager'
+                    decoding='async'
+                    onError={(e) => {
+                      const FALLBACK =
+                        'data:image/svg+xml;utf8,' +
+                        encodeURIComponent(
+                          `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='#0ea5e9'/><stop offset='50%' stop-color='#6366f1'/><stop offset='100%' stop-color='#e11d48'/></linearGradient></defs><rect width='1200' height='630' fill='url(#g)'/></svg>`,
+                        )
+                      const img = e.currentTarget as HTMLImageElement
+                      if (img.dataset.fallbackTried !== '1') {
+                        img.dataset.fallbackTried = '1'
+                        img.src = FALLBACK
+                      }
+                    }}
+                  />
+                </div>
               </div>
 
-              {/* Title */}
-              <h3 className='mt-3 text-2xl font-extrabold uppercase tracking-wide md:text-4xl'>
-                {event.title}
-              </h3>
+              {/* Info card overlaps image without gap; roughly 4rem upward */}
+              <motion.div
+                className='relative mx-auto w-full md:max-w-3xl -mt-16 -translate-y-2 md:-translate-y-3'
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.3,
+                  ease: [0.16, 1, 0.3, 1],
+                  delay: 0.05,
+                }}
+              >
+                <div className='rounded-2xl bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85 ring-1 ring-slate-200 shadow-lg p-5 md:p-7 text-slate-800'>
+                  {/* Region pill */}
+                  <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest ring-1 ring-slate-200 text-slate-700 md:text-xs'>
+                    {event.region}
+                  </div>
 
-              {/* Meta chips */}
-              <div className='mt-4 flex flex-wrap items-center gap-3 text-sm'>
-                <div className='inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/15'>
-                  <Calendar className='h-4 w-4' />
-                  {new Intl.DateTimeFormat('en-PH', {
-                    timeZone: 'Asia/Manila',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  }).format(start)}
-                </div>
+                  {/* Title */}
+                  <h3 className='mt-3 text-2xl md:text-3xl font-extrabold tracking-wide text-slate-900'>
+                    {event.title}
+                  </h3>
 
-                <div className='inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/15'>
-                  <Clock className='h-4 w-4' />
-                  {new Intl.DateTimeFormat('en-PH', {
-                    timeZone: 'Asia/Manila',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  }).format(start)}
-                  {end
-                    ? ` – ${new Intl.DateTimeFormat('en-PH', {
+                  {/* Meta chips */}
+                  <div className='mt-4 flex flex-wrap items-center gap-3 text-sm'>
+                    <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 ring-1 ring-slate-200 text-slate-700'>
+                      <Calendar className='h-4 w-4' />
+                      {new Intl.DateTimeFormat('en-PH', {
+                        timeZone: 'Asia/Manila',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      }).format(start)}
+                    </div>
+
+                    <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 ring-1 ring-slate-200 text-slate-700'>
+                      <Clock className='h-4 w-4' />
+                      {new Intl.DateTimeFormat('en-PH', {
                         timeZone: 'Asia/Manila',
                         hour: '2-digit',
                         minute: '2-digit',
-                      }).format(end)}`
-                    : ''}
-                </div>
+                      }).format(start)}
+                      {end
+                        ? ` – ${new Intl.DateTimeFormat('en-PH', {
+                            timeZone: 'Asia/Manila',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          }).format(end)}`
+                        : ''}
+                    </div>
 
-                <div className='inline-flex max-w-full items-center gap-2 rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/15'>
-                  <MapPin className='h-4 w-4 shrink-0' />
-                  <span className='truncate'>{event.location}</span>
-                </div>
-              </div>
+                    <div className='inline-flex max-w-full items-center gap-2 rounded-full bg-slate-100 px-3 py-1 ring-1 ring-slate-200 text-slate-700'>
+                      <MapPin className='h-4 w-4 shrink-0' />
+                      <span className='truncate'>{event.location}</span>
+                    </div>
+                  </div>
 
-              {/* Footer actions */}
-              <div className='mt-6 flex flex-wrap items-center gap-3'>
-                {buttonLabel &&
-                  (isUrl ? (
-                    <a
-                      href={event.button!}
-                      target={
-                        event.button!.startsWith('/') ? '_self' : '_blank'
-                      }
-                      rel='noreferrer'
-                      className='inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95'
-                    >
-                      {buttonLabel} <ArrowRight className='h-4 w-4' />
-                    </a>
-                  ) : (
+                  {/* Footer actions */}
+                  <div className='mt-6 flex flex-wrap items-center gap-3'>
+                    {buttonLabel &&
+                      (isUrl ? (
+                        <a
+                          href={event.button!}
+                          target={
+                            event.button!.startsWith('/') ? '_self' : '_blank'
+                          }
+                          rel='noreferrer'
+                          className='inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95'
+                        >
+                          {buttonLabel} <ArrowRight className='h-4 w-4' />
+                        </a>
+                      ) : (
+                        <button
+                          className='inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95 cursor-pointer'
+                          onClick={onClose}
+                        >
+                          {buttonLabel} <ArrowRight className='h-4 w-4' />
+                        </button>
+                      ))}
+
                     <button
-                      className='inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95 cursor-pointer'
                       onClick={onClose}
+                      className='inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 cursor-pointer'
                     >
-                      {buttonLabel} <ArrowRight className='h-4 w-4' />
+                      Close
                     </button>
-                  ))}
-
-                <button
-                  onClick={onClose}
-                  className='inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15 cursor-pointer'
-                >
-                  Close
-                </button>
-              </div>
-            </div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

@@ -103,16 +103,16 @@ export default function AffiliatedOrganizations({
         {/* Logos grid */}
         <div
           className={clsx(
-            'grid gap-8',
+            'grid gap-6',
             'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6',
-            'justify-items-center', // ✅ centers items per cell
+            'justify-items-stretch items-stretch auto-rows-fr', // stretch items so cards are equal width/height per row
           )}
         >
           {orgs.map((org) => {
             const Card = (
               <div
                 key={org.name}
-                className='flex flex-col items-center text-center rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-sm shadow-sm hover:shadow-md transition w-full max-w-[180px]'
+                className='flex h-full w-full flex-col items-center text-center rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-sm shadow-sm hover:shadow-md transition'
               >
                 <div className='flex items-center justify-center p-4'>
                   <Image
@@ -143,7 +143,7 @@ export default function AffiliatedOrganizations({
                 href={org.href}
                 target='_blank'
                 rel='noreferrer noopener'
-                className='focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 rounded-2xl'
+                className='block h-full w-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400'
               >
                 {Card}
               </a>
