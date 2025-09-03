@@ -80,10 +80,10 @@ export function NewsletterBanner() {
             <span className='inline-block bg-blue-900/80 text-white text-xs font-semibold rounded px-3 py-1 mb-3'>
               Our newsletters
             </span>
-            <h2 className='font-heading text-3xl md:text-4xl font-bold text-white mb-2 text-left'>
+            <h2 className='font-heading text-2xl md:text-4xl font-bold text-white mb-2 text-left'>
               Join Our Spiritual Family
             </h2>
-            <p className='text-blue-100 mb-6 text-left'>
+            <p className='text-blue-100 mb-4 md:mb-6 text-left text-sm md:text-base'>
               Receive {frequency === 'weekly' ? 'weekly' : 'monthly'}{' '}
               inspiration, community updates, and spiritual guidance directly to
               your inbox
@@ -91,13 +91,13 @@ export function NewsletterBanner() {
           </div>
 
           {/* Glass panel around the form */}
-          <div className='rounded-xl border border-white/10 bg-white/5 backdrop-blur px-4 py-4 md:px-6 md:py-6 shadow-sm'>
+          <div className='rounded-xl border border-white/10 bg-white/5 backdrop-blur px-3 py-3 md:px-6 md:py-6 shadow-sm'>
             <div ref={signupHostRef}>
               <NewsletterSignup className='newsletter-signup-form' />
             </div>
 
             <div
-              className='mt-4 flex flex-wrap items-center gap-6'
+              className='mt-3 md:mt-4 flex flex-wrap items-center gap-4 md:gap-6'
               role='radiogroup'
               aria-label='Newsletter frequency'
             >

@@ -147,9 +147,9 @@ export default function EventModal({
                 </div>
               </div>
 
-              {/* Info card overlaps image without gap; roughly 4rem upward */}
+              {/* Info card overlaps image on md+; no negative offset on small screens */}
               <motion.div
-                className='relative mx-auto w-full md:max-w-3xl -mt-16 -translate-y-2 md:-translate-y-3'
+                className='relative mx-auto w-full md:max-w-3xl md:-mt-16 md:-translate-y-3'
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{

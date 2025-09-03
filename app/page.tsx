@@ -7,8 +7,6 @@ import { HeroSection } from '@/components/home/hero-section'
 import { RecentNewsSection } from '@/components/home/recent-news-section'
 import { UpcomingEventsSection } from '@/components/home/upcoming-events-section'
 import { QuickLinksSection } from '@/components/home/quick-links-section'
-import { ChurchBranchesSection } from '@/components/home/church-branches-section'
-import { NewsletterBanner } from '@/components/home/newsletter-banner'
 import { SideBySide } from '@/components/side-by-side'
 import AffiliatedOrganizationsLogos from '@/components/home/affiliated-organizations'
 import WordOfTheDayModal from '@/components/word-of-the-day/word-of-the-day'
@@ -248,11 +246,9 @@ export default function HomePage() {
         </div>
         <AffiliatedOrganizationsLogos />
         <QuickLinksSection />
-        <div className='container mx-auto space-y-16'>
-          <ChurchBranchesSection />
-        </div>
+        {/* ChurchBranchesSection is now rendered globally from the layout */}
       </main>
-      <NewsletterBanner />
+      {/* NewsletterBanner is now rendered globally from the layout */}
       <WordOfTheDayModal />
     </div>
   )

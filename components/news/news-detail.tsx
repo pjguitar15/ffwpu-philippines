@@ -352,10 +352,8 @@ export default function NewsDetailClient() {
                 </StaggerContainer>
               )}
 
-              {/* Content */}
-              <FadeIn delay={0.05}>
-                <ArticleBody content={item.content} />
-              </FadeIn>
+              {/* Content (no animation to avoid late render on mobile) */}
+              <ArticleBody content={item.content} />
             </article>
 
             {/* SIDEBAR */}

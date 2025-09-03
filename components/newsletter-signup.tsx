@@ -150,14 +150,14 @@ export function NewsletterSignup({
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
-        className='flex-1 px-6 py-6 focus:ring-0 bg-white text-gray-900 placeholder-gray-400 rounded-none rounded-l-lg border border-transparent focus:border-blue-400'
+        className='flex-1 px-4 md:px-6 py-3.5 md:py-6 focus:ring-0 bg-white text-gray-900 placeholder-gray-400 rounded-none rounded-l-lg border border-transparent focus:border-blue-400 text-sm md:text-base'
         style={{ minWidth: 0 }}
       />
 
       <button
         type='submit'
         disabled={isLoading}
-        className='relative overflow-hidden rounded-none rounded-r-lg px-6 text-white font-semibold text-base cursor-pointer disabled:opacity-70 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-yellow-500 group/button'
+        className='relative overflow-hidden rounded-none rounded-r-lg px-4 md:px-6 text-white font-semibold text-sm md:text-base cursor-pointer disabled:opacity-70 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-yellow-500 group/button'
         style={{
           background: 'linear-gradient(90deg, #B8860B, #DAA520)',
           boxShadow: '0 4px 10px rgba(184, 134, 11, 0.4)',

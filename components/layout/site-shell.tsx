@@ -5,6 +5,8 @@ import { Footer } from '@/components/layout/footer'
 import UnderConstruction from '@/components/under-construction'
 import { ConditionalUpcomingEvents } from '@/components/home/conditional-upcoming-events'
 import { Header } from './header'
+import { NewsletterBanner } from '@/components/home/newsletter-banner'
+import { ChurchBranchesSection } from '@/components/home/church-branches-section'
 
 type Props = {
   isUnderConstruction: boolean
@@ -24,7 +26,12 @@ export function SiteShell({ isUnderConstruction, children }: Props) {
     <>
       <Header />
       {children}
+      {/* Events first (conditionally), then branches, then newsletter */}
       <ConditionalUpcomingEvents />
+      <div className='container mx-auto space-y-16'>
+        <ChurchBranchesSection />
+      </div>
+      <NewsletterBanner />
       <Footer />
     </>
   )
