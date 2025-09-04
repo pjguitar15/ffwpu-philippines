@@ -23,6 +23,7 @@ import {
 } from 'react-icons/fi'
 import { Sparkles, Search as SearchIcon } from 'lucide-react'
 import { HeaderSearch } from './header-search'
+import { LiveIndicator } from '@/components/ui/live-indicator'
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -31,15 +32,9 @@ export function Header() {
 
   const mainNavItems = [
     {
-      href: '/about/true-parents',
-      label: 'True Parents',
-      desc: 'Rev. Moon & Holy Mother Han',
-      icon: FiHeart,
-    },
-    {
-      href: '/news',
-      label: 'News',
-      desc: 'Latest updates & reports',
+      href: '/',
+      label: 'Home',
+      desc: 'Welcome & featured highlights',
       icon: FiFileText,
     },
     {
@@ -47,6 +42,12 @@ export function Header() {
       label: 'About',
       desc: 'Who we are & our mission',
       icon: FiInfo,
+    },
+    {
+      href: '/news',
+      label: 'News',
+      desc: 'Latest updates & reports',
+      icon: FiFileText,
     },
     {
       href: '/contact',
@@ -57,6 +58,12 @@ export function Header() {
   ]
 
   const extraNavItems = [
+    {
+      href: '/about/true-parents',
+      label: 'True Parents',
+      desc: 'Rev. Moon & Holy Mother Han',
+      icon: FiHeart,
+    },
     {
       href: '/holy-mother-han',
       label: 'Holy Mother Han',
@@ -150,6 +157,9 @@ export function Header() {
               />
             </div>
           </Link>
+
+          {/* Live Indicator */}
+          <LiveIndicator className='ml-3' />
 
           {/* Desktop search (Suspense required because it uses useSearchParams) */}
           <Suspense

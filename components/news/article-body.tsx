@@ -108,25 +108,25 @@ export function ArticleBody({ content }: { content: string }) {
         :global(.news-article h1) {
           font-size: 1.875rem;
           line-height: 2.25rem;
-          font-weight: 500;
+          font-weight: 700;
           margin: 1.25rem 0 0.75rem;
         }
         :global(.news-article h2) {
           font-size: 1.5rem;
           line-height: 2rem;
-          font-weight: 500;
+          font-weight: 700;
           margin: 1.25rem 0 0.5rem;
         }
         :global(.news-article h3) {
           font-size: 1.25rem;
           line-height: 1.75rem;
-          font-weight: 500;
+          font-weight: 700;
           margin: 1rem 0 0.5rem;
         }
         :global(.news-article h4) {
           font-size: 1.125rem;
           line-height: 1.75rem;
-          font-weight: 500;
+          font-weight: 700;
           margin: 0.75rem 0 0.5rem;
         }
         :global(.news-article ul),

@@ -42,17 +42,20 @@ export default function EventModal({
   const start = new Date(event.date)
   const end = event.end ? new Date(event.end) : undefined
 
-  const isUrl =
-    !!event.button &&
-    (event.button.startsWith('http://') ||
-      event.button.startsWith('https://') ||
-      event.button.startsWith('/'))
+  // Check if we have a URL in the href field
+  const hasUrl = !!(event as any).href
 
-  const buttonLabel = event.button
-    ? isUrl
-      ? 'Open details'
-      : event.button
-    : undefined
+  // Ensure external URLs have proper protocol
+  const formatUrl = (url: string) => {
+    if (url.startsWith('/')) return url // internal link
+    if (url.startsWith('http://') || url.startsWith('https://')) return url // already has protocol
+    return `https://${url}` // add https:// for external domains
+  }
+
+  // Button label is either the custom button text or default
+  const buttonLabel = (event as any).href
+    ? event.button || 'Open details'
+    : event.button
 
   return (
     <motion.div
@@ -206,11 +209,13 @@ export default function EventModal({
                   {/* Footer actions */}
                   <div className='mt-6 flex flex-wrap items-center gap-3'>
                     {buttonLabel &&
-                      (isUrl ? (
+                      (hasUrl ? (
                         <a
-                          href={event.button!}
+                          href={formatUrl((event as any).href!)}
                           target={
-                            event.button!.startsWith('/') ? '_self' : '_blank'
+                            (event as any).href!.startsWith('/')
+                              ? '_self'
+                              : '_blank'
                           }
                           rel='noreferrer'
                           className='inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95'

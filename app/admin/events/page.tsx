@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import Image from 'next/image'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { Button } from '@/components/ui/button'
 import {
@@ -41,6 +42,7 @@ import {
   MoreVertical,
   Upload,
   RefreshCcw,
+  Eye,
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -56,8 +58,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { useToast } from '@/hooks/use-toast'
 import { Skeleton } from '@/components/ui/skeleton'
+import EventModal from '@/components/events/event-modal'
 import { Progress } from '@/components/ui/progress'
 
 type EventItem = {
@@ -580,6 +589,7 @@ export default function AdminEventsPage() {
   const [open, setOpen] = useState(false)
   const [editItem, setEditItem] = useState<EventItem | null>(null)
   const [deleteItem, setDeleteItem] = useState<EventItem | null>(null)
+  const [viewItem, setViewItem] = useState<EventItem | null>(null)
   const { toast } = useToast()
   const [page, setPage] = useState(1)
   const pageSize = 5
@@ -670,139 +680,192 @@ export default function AdminEventsPage() {
               <CardDescription>Create, edit, and delete events</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className='relative -mx-2 md:mx-0 overflow-auto rounded-xl border border-border/60'>
-                <Table className='min-w-[980px]'>
-                  <TableHeader className='sticky top-0 z-[1] bg-gradient-to-r from-slate-50 to-sky-50 dark:from-slate-900/60 dark:to-sky-950/40 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
-                    <TableRow className='h-14'>
-                      <TableHead className='text-slate-700 py-3'>
-                        Title
-                      </TableHead>
-                      <TableHead className='text-slate-700 py-3'>
-                        Date
-                      </TableHead>
-                      <TableHead className='text-slate-700 py-3'>
-                        Location
-                      </TableHead>
-                      <TableHead className='text-slate-700 py-3'>
-                        Area
-                      </TableHead>
-                      <TableHead className='text-slate-700 py-3'>
-                        Region
-                      </TableHead>
-                      <TableHead className='py-3 w-0'></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {!loading && filtered.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={6}>
-                          <Empty />
-                        </TableCell>
+              <TooltipProvider>
+                <div className='relative -mx-2 md:mx-0 overflow-auto rounded-xl border border-border/60'>
+                  <Table className='min-w-[980px]'>
+                    <TableHeader className='sticky top-0 z-[1] bg-gradient-to-r from-slate-50 to-sky-50 dark:from-slate-900/60 dark:to-sky-950/40 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
+                      <TableRow className='h-14'>
+                        <TableHead className='text-slate-700 py-3 w-20'></TableHead>
+                        <TableHead className='text-slate-700 py-3'>
+                          Title
+                        </TableHead>
+                        <TableHead className='text-slate-700 py-3'>
+                          Date
+                        </TableHead>
+                        <TableHead className='text-slate-700 py-3'>
+                          Location
+                        </TableHead>
+                        <TableHead className='text-slate-700 py-3'>
+                          Area
+                        </TableHead>
+                        <TableHead className='text-slate-700 py-3'>
+                          Region
+                        </TableHead>
+                        <TableHead className='py-3 w-0'></TableHead>
                       </TableRow>
-                    )}
-                    {loading
-                      ? Array.from({ length: pageSize }).map((_, i) => (
-                          <TableRow key={`sk-${i}`}>
-                            <TableCell className='py-4'>
-                              <div className='min-w-[280px] max-w-[480px]'>
-                                <Skeleton className='h-4 w-64' />
-                                <div className='mt-2'>
-                                  <Skeleton className='h-3 w-40' />
+                    </TableHeader>
+                    <TableBody>
+                      {!loading && filtered.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={7}>
+                            <Empty />
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {loading
+                        ? Array.from({ length: pageSize }).map((_, i) => (
+                            <TableRow key={`sk-${i}`}>
+                              <TableCell className='py-4'>
+                                <Skeleton className='h-12 w-16 rounded' />
+                              </TableCell>
+                              <TableCell className='py-4'>
+                                <div className='min-w-[280px] max-w-[480px]'>
+                                  <Skeleton className='h-4 w-64' />
+                                  <div className='mt-2'>
+                                    <Skeleton className='h-3 w-40' />
+                                  </div>
                                 </div>
-                              </div>
-                            </TableCell>
-                            <TableCell className='py-4'>
-                              <Skeleton className='h-4 w-40' />
-                            </TableCell>
-                            <TableCell className='py-4'>
-                              <Skeleton className='h-4 w-48' />
-                            </TableCell>
-                            <TableCell className='py-4'>
-                              <Skeleton className='h-6 w-20 rounded-full' />
-                            </TableCell>
-                            <TableCell className='py-4'>
-                              <Skeleton className='h-4 w-28' />
-                            </TableCell>
-                            <TableCell className='py-4'>
-                              <div className='flex items-center gap-2'>
-                                <Skeleton className='h-8 w-16 rounded-full' />
-                                <Skeleton className='h-8 w-8 rounded-full' />
-                                <Skeleton className='h-8 w-8 rounded-full' />
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      : pageItems.map((e) => (
-                          <TableRow
-                            key={e._id}
-                            className='h-16 hover:bg-sky-50/60 dark:hover:bg-sky-950/20 transition-colors'
-                          >
-                            <TableCell className='py-4'>
-                              <div className='font-medium'>{e.title}</div>
-                              {e.church && (
-                                <div className='text-sm text-muted-foreground line-clamp-1'>
-                                  {e.church}
+                              </TableCell>
+                              <TableCell className='py-4'>
+                                <Skeleton className='h-4 w-40' />
+                              </TableCell>
+                              <TableCell className='py-4'>
+                                <Skeleton className='h-4 w-48' />
+                              </TableCell>
+                              <TableCell className='py-4'>
+                                <Skeleton className='h-6 w-20 rounded-full' />
+                              </TableCell>
+                              <TableCell className='py-4'>
+                                <Skeleton className='h-4 w-28' />
+                              </TableCell>
+                              <TableCell className='py-4'>
+                                <div className='flex items-center gap-2'>
+                                  <Skeleton className='h-8 w-16 rounded-full' />
+                                  <Skeleton className='h-8 w-8 rounded-full' />
+                                  <Skeleton className='h-8 w-8 rounded-full' />
                                 </div>
-                              )}
-                            </TableCell>
-                            <TableCell className='py-4'>
-                              <div className='flex items-center gap-2'>
-                                <Calendar className='h-4 w-4' />{' '}
-                                {new Date(e.date).toLocaleString()}
-                              </div>
-                            </TableCell>
-                            <TableCell className='py-4'>
-                              <div className='flex items-center gap-2'>
-                                <MapPin className='h-4 w-4' /> {e.location}
-                              </div>
-                            </TableCell>
-                            <TableCell className='py-4'>
-                              <Badge className='rounded-full text-white border border-indigo-300 bg-gradient-to-r from-sky-500 to-indigo-500 px-3 py-1 shadow-sm'>
-                                {e.area}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className='py-4'>{e.region}</TableCell>
-                            <TableCell className='py-4 text-right'>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    variant='ghost'
-                                    size='icon'
-                                    className='h-8 w-8 p-0'
-                                    aria-label='Actions'
-                                  >
-                                    <MoreVertical className='h-4 w-4' />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent
-                                  align='end'
-                                  className='w-40'
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        : pageItems.map((e) => (
+                            <TableRow
+                              key={e._id}
+                              className='h-16 hover:bg-sky-50/60 dark:hover:bg-sky-950/20 transition-colors'
+                            >
+                              <TableCell className='py-4'>
+                                <div className='relative group'>
+                                  <div className='relative w-16 h-12 rounded overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer'>
+                                    {e.image ? (
+                                      <Image
+                                        src={e.image}
+                                        alt={e.title}
+                                        fill
+                                        className='object-cover'
+                                        sizes='64px'
+                                      />
+                                    ) : (
+                                      <div className='w-full h-full flex items-center justify-center'>
+                                        <ImageIcon className='h-6 w-6 text-slate-400' />
+                                      </div>
+                                    )}
+                                  </div>
+                                  {/* Enlarged image on hover - positioned to the right */}
+                                  {e.image && (
+                                    <div className='absolute left-20 top-0 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none'>
+                                      <div className='relative w-64 h-48 rounded-lg overflow-hidden shadow-xl border border-slate-200 bg-white'>
+                                        <Image
+                                          src={e.image}
+                                          alt={e.title}
+                                          fill
+                                          className='object-cover'
+                                          sizes='256px'
+                                        />
+                                      </div>
+                                      <div className='absolute bottom-2 left-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded'>
+                                        {e.title}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell className='py-4'>
+                                <div
+                                  className='font-medium cursor-pointer hover:underline transition-all duration-200 ease-in-out'
+                                  onClick={() => setViewItem(e)}
                                 >
-                                  <DropdownMenuItem
-                                    onClick={() => {
-                                      setEditItem(e)
-                                      setOpen(true)
-                                    }}
-                                    className='cursor-pointer'
+                                  {e.title}
+                                </div>
+                                {e.church && (
+                                  <div className='text-sm text-muted-foreground line-clamp-1'>
+                                    {e.church}
+                                  </div>
+                                )}
+                              </TableCell>
+                              <TableCell className='py-4'>
+                                <div className='flex items-center gap-2'>
+                                  <Calendar className='h-4 w-4' />{' '}
+                                  {new Date(e.date).toLocaleString()}
+                                </div>
+                              </TableCell>
+                              <TableCell className='py-4'>
+                                <div className='flex items-center gap-2'>
+                                  <MapPin className='h-4 w-4' /> {e.location}
+                                </div>
+                              </TableCell>
+                              <TableCell className='py-4'>
+                                <Badge className='rounded-full text-white border border-indigo-300 bg-gradient-to-r from-sky-500 to-indigo-500 px-3 py-1 shadow-sm'>
+                                  {e.area}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className='py-4'>{e.region}</TableCell>
+                              <TableCell className='py-4 text-right'>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button
+                                      variant='ghost'
+                                      size='icon'
+                                      className='h-8 w-8 p-0'
+                                      aria-label='Actions'
+                                    >
+                                      <MoreVertical className='h-4 w-4' />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent
+                                    align='end'
+                                    className='w-40'
                                   >
-                                    <Edit className='h-4 w-4' /> Edit
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    variant='destructive'
-                                    onClick={() => setDeleteItem(e)}
-                                    className='cursor-pointer'
-                                  >
-                                    <Trash2 className='h-4 w-4' /> Delete
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                  </TableBody>
-                </Table>
-              </div>
+                                    <DropdownMenuItem
+                                      onClick={() => setViewItem(e)}
+                                      className='cursor-pointer'
+                                    >
+                                      <Eye className='h-4 w-4' /> View
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() => {
+                                        setEditItem(e)
+                                        setOpen(true)
+                                      }}
+                                      className='cursor-pointer'
+                                    >
+                                      <Edit className='h-4 w-4' /> Edit
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                      variant='destructive'
+                                      onClick={() => setDeleteItem(e)}
+                                      className='cursor-pointer'
+                                    >
+                                      <Trash2 className='h-4 w-4' /> Delete
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TooltipProvider>
               <div className='mt-4 flex items-center justify-between'>
                 <div className='text-sm text-muted-foreground'>
                   {loading ? (
@@ -935,6 +998,18 @@ export default function AdminEventsPage() {
           />
         </div>
       </main>
+
+      {/* Event View Modal */}
+      {viewItem && (
+        <EventModal
+          event={{
+            ...viewItem,
+            id: viewItem._id || '',
+          }}
+          isOpen={!!viewItem}
+          onClose={() => setViewItem(null)}
+        />
+      )}
     </div>
   )
 }

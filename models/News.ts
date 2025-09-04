@@ -6,7 +6,7 @@ export interface NewsDoc extends mongoose.Document {
   date: string
   image: string
   tags: string[]
-  status: 'active' | 'inactive'
+  status: 'published' | 'draft' | 'active' | 'inactive' // Temporarily support both for migration
   views: number
   likes: number
   content: string
@@ -23,16 +23,24 @@ const NewsSchema = new Schema<NewsDoc>(
     date: { type: String, required: true }, // ISO date string
     image: { type: String, required: true },
     tags: { type: [String], default: [] },
-    status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+    status: {
+      type: String,
+      enum: ['published', 'draft', 'active', 'inactive'],
+      default: 'published',
+    },
     views: { type: Number, default: 0 },
     likes: { type: Number, default: 0 },
     content: { type: String, required: true },
     slug: { type: String, required: true, unique: true, index: true },
-  // Use Mixed[] for now; admin UI doesn't edit comments yet
-  comments: { type: [Schema.Types.Mixed] as unknown as any, default: [] },
+    // Use Mixed[] for now; admin UI doesn't edit comments yet
+    comments: { type: [Schema.Types.Mixed] as unknown as any, default: [] },
   },
   { timestamps: true },
 )
 
-export const News = (models.News as mongoose.Model<NewsDoc>) ||
-  model<NewsDoc>('News', NewsSchema)
+// Clear the model cache to ensure the new schema is used
+if (models.News) {
+  delete models.News
+}
+
+export const News = model<NewsDoc>('News', NewsSchema)

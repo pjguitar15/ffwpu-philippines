@@ -31,7 +31,8 @@ export async function PUT(
   { params }: { params: { id: string } },
 ) {
   await dbConnect()
-  const doc = await findByIdOrSlug(params.id)
+  const { id } = await params
+  const doc = await findByIdOrSlug(id)
   if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   const body = await req.json()
 
@@ -40,7 +41,13 @@ export async function PUT(
   if (body.date) doc.date = body.date
   if (body.image) doc.image = body.image
   if (Array.isArray(body.tags)) doc.tags = body.tags
-  if (body.status) doc.status = body.status
+  if (body.status) {
+    // Handle migration from old status values to new ones
+    let newStatus = body.status
+    if (body.status === 'active') newStatus = 'published'
+    if (body.status === 'inactive') newStatus = 'draft'
+    doc.status = newStatus
+  }
   if (typeof body.content === 'string')
     doc.content = toParagraphHtml(body.content)
   if (body.slug) doc.slug = slugify(body.slug)
@@ -65,7 +72,8 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   await dbConnect()
-  const doc = await findByIdOrSlug(params.id)
+  const { id } = await params
+  const doc = await findByIdOrSlug(id)
   if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   await doc.deleteOne()
   // Audit log

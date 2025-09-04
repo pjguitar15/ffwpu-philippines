@@ -8,9 +8,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { useToast } from '@/hooks/use-toast'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { toParagraphHtml, slugify, htmlToText } from '@/lib/text'
 import RichTextEditor from '@/components/admin/rich-text-editor'
 import {
@@ -23,6 +31,7 @@ import {
   Upload,
   RefreshCcw,
   Trash2,
+  CheckCircle,
 } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
 
@@ -33,7 +42,7 @@ type NewsFormValues = {
   date: string
   image: string
   tags: string
-  status: 'active' | 'inactive'
+  status: 'published' | 'draft'
   content: string
   slug?: string
 }
@@ -55,7 +64,7 @@ export function NewsForm({
     date: new Date().toISOString().slice(0, 10),
     image: '',
     tags: '',
-    status: 'active',
+    status: 'published',
     content: '',
   })
   const [saving, setSaving] = useState(false)
@@ -65,6 +74,7 @@ export function NewsForm({
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const isEdit = Boolean(initial && (initial as any)._id)
+  const { toast } = useToast()
 
   useEffect(() => {
     if (open) {
@@ -78,7 +88,7 @@ export function NewsForm({
         tags: Array.isArray((initial as any)?.tags)
           ? ((initial as any)?.tags || []).join(', ')
           : (initial?.tags as any) || '',
-        status: (initial?.status as any) || 'active',
+        status: (initial?.status as any) || 'published',
         content: (initial?.content as any) || '',
         slug: (initial as any)?.slug,
         _id: (initial as any)?._id,
@@ -187,7 +197,11 @@ export function NewsForm({
       onOpenChange(false)
     } catch (err) {
       console.error('Save failed:', err)
-      alert('Failed to save news. Check console for details.')
+      toast({
+        title: 'Failed to save news',
+        description: 'Please check the console for details and try again.',
+        variant: 'destructive',
+      })
     } finally {
       setSaving(false)
     }
@@ -215,9 +229,9 @@ export function NewsForm({
           >
             {/* Scrollable content area; bottom padding ensures content not hidden behind footer */}
             <div className='flex-1 min-h-0 overflow-y-auto px-6 pb-6 pr-7'>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                {/* Row 1: Title | Author */}
-                <div>
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                {/* Row 1: Title spans 2 columns | Author */}
+                <div className='md:col-span-2'>
                   <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
                     <Type className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
                     Title
@@ -248,7 +262,7 @@ export function NewsForm({
                   />
                 </div>
 
-                {/* Row 2: Date | Tags */}
+                {/* Row 2: Date | Status | Tags */}
                 <div>
                   <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
                     <Calendar className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
@@ -256,7 +270,7 @@ export function NewsForm({
                   </label>
                   <Input
                     type='date'
-                    placeholder='YYYY-MM-DD'
+                    placeholder='MM/DD/YYYY'
                     value={values.date}
                     onChange={(e) =>
                       setValues({ ...values, date: e.target.value })
@@ -264,6 +278,26 @@ export function NewsForm({
                     required
                     className='bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
                   />
+                </div>
+                <div>
+                  <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
+                    <CheckCircle className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
+                    Status
+                  </label>
+                  <Select
+                    value={values.status}
+                    onValueChange={(value: 'published' | 'draft') =>
+                      setValues({ ...values, status: value })
+                    }
+                  >
+                    <SelectTrigger className='bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='published'>Published</SelectItem>
+                      <SelectItem value='draft'>Draft</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
@@ -293,8 +327,8 @@ export function NewsForm({
                   )}
                 </div>
 
-                {/* Row 3: Dropbox-like dropzone or image preview, spanning both columns */}
-                <div className='md:col-span-2'>
+                {/* Row 3: Dropbox-like dropzone or image preview, spanning all columns */}
+                <div className='md:col-span-3'>
                   <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
                     <ImageIcon className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
                     Upload Image
@@ -416,7 +450,7 @@ export function NewsForm({
                 </div>
 
                 {/* Content editor */}
-                <div className='md:col-span-2'>
+                <div className='md:col-span-3'>
                   <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
                     <FileText className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
                     Content

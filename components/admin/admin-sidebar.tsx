@@ -17,6 +17,7 @@ import {
   Shield,
   User,
   KeyRound,
+  Radio,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
@@ -117,12 +118,18 @@ export function AdminSidebar() {
       { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { href: '/admin/news', label: 'News Management', icon: FileText },
       { href: '/admin/events', label: 'Events', icon: Megaphone },
+      { href: '/admin/livestream', label: 'Livestream', icon: Radio },
       { href: '/admin/newsletter', label: 'Newsletter', icon: Megaphone },
       {
         href: '/admin/word-of-the-day',
         label: 'Word of the Day',
         icon: Sparkles,
       },
+    ],
+    [],
+  )
+  const accountItems = useMemo(
+    () => [
       {
         href: '/admin/change-password',
         label: 'Change Password',
@@ -209,6 +216,30 @@ export function AdminSidebar() {
           )
         })}
 
+        {/* Accounts Section */}
+        <Separator className='my-4' />
+        <div className='space-y-3'>
+          <p className='text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4'>
+            Accounts
+          </p>
+          {accountItems.map((item) => {
+            const Icon = item.icon as any
+            const isActive =
+              pathname === item.href || pathname?.startsWith(item.href + '/')
+            return (
+              <Link key={item.href} href={item.href}>
+                <Button
+                  variant={isActive ? 'default' : 'ghost'}
+                  className='w-full justify-start h-10 px-4 cursor-pointer'
+                >
+                  <Icon className='mr-3 h-4 w-4' />
+                  {item.label}
+                </Button>
+              </Link>
+            )
+          })}
+        </div>
+
         {adminUser?.role === 'super_admin' && (
           <>
             <Separator className='my-4' />
@@ -224,8 +255,8 @@ export function AdminSidebar() {
                 return (
                   <Link key={item.href} href={item.href}>
                     <Button
-                      variant={isActive ? 'secondary' : 'ghost'}
-                      className='w-full justify-start h-10 px-4'
+                      variant={isActive ? 'default' : 'ghost'}
+                      className='w-full justify-start h-10 px-4 cursor-pointer'
                     >
                       <Icon className='mr-3 h-4 w-4' />
                       {item.label}

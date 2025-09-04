@@ -91,7 +91,7 @@ export function HeroSection() {
                   Get weekly updates
                 </button>
               </DialogTrigger>
-              <DialogContent className='border-white/10 bg-slate-900/90 backdrop-blur-md'>
+              <DialogContent className='border-white/10 bg-slate-900/90 backdrop-blur-md [&>button]:text-white [&>button]:hover:text-white/80'>
                 <DialogHeader>
                   <DialogTitle className='text-left'>
                     <span className='bg-clip-text text-transparent bg-gradient-to-r from-sky-300 via-cyan-200 to-fuchsia-300'>

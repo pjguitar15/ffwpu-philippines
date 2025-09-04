@@ -4,7 +4,29 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0); /* Pure white */
+  --background: oklch(1 0 0); /* Pure   @keyframes scroll-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%) skewX(-12deg);
+    }
+    50% {
+      transform: translateX(-100%) skewX(-12deg);
+    }
+    51% {
+      transform: translateX(200%) skewX(-12deg);
+    }
+    100% {
+      transform: translateX(200%) skewX(-12deg);
+    }
+  }
   --foreground: oklch(0.3 0 0); /* Dark gray for text */
   --card: oklch(0.98 0 0); /* Very light gray for cards */
   --card-foreground: oklch(0.3 0 0);

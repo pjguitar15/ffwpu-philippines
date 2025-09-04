@@ -10,62 +10,42 @@ import {
   FiMapPin,
   FiArrowRight,
   FiPhone,
+  FiChevronDown,
+  FiMail,
 } from 'react-icons/fi'
 import { BiBuilding } from 'react-icons/bi'
 import { StaggerContainer, FadeInItem } from '@/components/ui/motion'
+import { CHURCH_BRANCHES, sortBranches } from '@/data/branches'
 
 export function ChurchBranchesSection() {
+  // Filter to only rows whose name includes 'Church' (exclude centers or other facilities)
+  const allChurches = CHURCH_BRANCHES.filter((b) => /church/i.test(b.name))
+
+  // Define priority order for first 4 churches
+  const priorityOrder = ['metro-manila', 'antipolo', 'cavite', 'davao']
+
+  // Sort with priority churches first, then alphabetically for the rest
   const branches = [
-    {
-      title: 'Metro Manila',
-      venue: 'FFWPU Headquarters',
-      address:
-        '32 Samar Ave, South Triangle (Diliman), Quezon City, Metro Manila, Philippines',
-      phone: '+63 917 111 1111',
-    },
-    {
-      title: 'Cebu',
-      venue: 'Visayas Peace Embassy (FFWPU Cebu Center)',
-      address: '25 Urgello St, Sambag 1, Cebu City, Cebu, Philippines',
-      phone: '+63 917 222 2222',
-    },
-    {
-      title: 'Davao',
-      venue: 'FFWPU Davao Center',
-      address: 'Davao City, Davao del Sur, Philippines',
-      phone: '+63 917 333 3333',
-    },
-    {
-      title: 'Cavite',
-      venue: 'FFWPU Cavite Church',
-      address:
-        'Blk. 17 Lot 1, Phase III, Brgy. Cabuco, Trece Martires City, Cavite, Philippines',
-      phone: '+63 917 444 4444',
-    },
-    {
-      title: 'Bicol (Legazpi)',
-      venue: 'FFWPU Legazpi Family Church',
-      address: 'Legazpi City, Albay, Philippines (contact for directions)',
-      phone: '+63 917 555 5555',
-    },
-    {
-      title: 'Antipolo (Rizal)',
-      venue: 'FFWPU Antipolo Family Church',
-      address:
-        '126 M. Santos St., Brgy. San Jose, Antipolo City, Rizal, Philippines',
-      phone: '+63 917 666 6666',
-    },
-    {
-      title: 'Cauayan (Isabela)',
-      venue: 'FFWPU Isabela / Cauayan Church',
-      address: 'Cauayan City, Isabela, Philippines (contact for directions)',
-      phone: '+63 917 777 7777',
-    },
+    // Priority churches in specified order
+    ...priorityOrder
+      .map((slug) => allChurches.find((b) => b.slug === slug))
+      .filter(
+        (church): church is NonNullable<typeof church> => church !== undefined,
+      ),
+    // Remaining churches sorted alphabetically
+    ...sortBranches(allChurches.filter((b) => !priorityOrder.includes(b.slug))),
   ]
 
-  const INITIAL_COUNT = 4
-  const [showAll, setShowAll] = useState(false)
-  const visible = showAll ? branches : branches.slice(0, INITIAL_COUNT)
+  // State for progressive loading
+  const [visibleCount, setVisibleCount] = useState(4)
+  const ITEMS_PER_LOAD = 4
+
+  const visibleBranches = branches.slice(0, visibleCount)
+  const hasMore = visibleCount < branches.length
+
+  const handleShowMore = () => {
+    setVisibleCount((prev) => Math.min(prev + ITEMS_PER_LOAD, branches.length))
+  }
 
   return (
     <section id='branches' className='relative py-16 sm:py-20'>
@@ -94,38 +74,34 @@ export function ChurchBranchesSection() {
           once={true}
           className='mt-10 grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]'
         >
-          {visible.map((b, idx) => {
+          {visibleBranches.map((b, idx) => {
             const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-              `${b.venue} ${b.address}`,
+              `${b.venue || ''} ${b.address}`.trim(),
             )}`
-            const telHref = `tel:${b.phone.replace(/[^+\d]/g, '')}`
-            const isInitial = idx < INITIAL_COUNT
-            const newIdx = Math.max(0, idx - INITIAL_COUNT)
+            const telHref = b.phone
+              ? `tel:${b.phone.replace(/[^+\d]/g, '')}`
+              : undefined
+            const delayIdx = idx
 
             return (
               <FadeInItem
-                key={b.title}
-                duration={0.6}
-                y={22}
+                key={b.slug}
+                duration={0.55}
+                y={20}
                 className='rounded-2xl ring-1 ring-slate-900/5'
-                // Keep initial items static; animate only newly revealed ones
-                initial={isInitial ? false : { opacity: 0, y: 22 }}
-                animate={isInitial ? undefined : { opacity: 1, y: 0 }}
-                transition={
-                  isInitial
-                    ? undefined
-                    : {
-                        duration: 0.55,
-                        ease: 'easeInOut',
-                        delay: 0.06 * newIdx,
-                      }
-                }
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.55,
+                  ease: 'easeInOut',
+                  delay: 0.04 * delayIdx,
+                }}
               >
                 <Card className='group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white/90 p-0 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg'>
                   <div className='p-5 sm:p-6 flex-1'>
                     <div className='flex items-center justify-between gap-3'>
                       <h3 className='font-heading text-lg font-bold text-slate-900'>
-                        {b.title}
+                        {b.name}
                       </h3>
                     </div>
 
@@ -156,7 +132,7 @@ export function ChurchBranchesSection() {
                           <span className='font-semibold text-slate-800'>
                             Venue:
                           </span>{' '}
-                          {b.venue}
+                          {b.venue || '—'}
                         </div>
                       </div>
                       <div className='flex items-start gap-2 text-slate-700'>
@@ -171,6 +147,26 @@ export function ChurchBranchesSection() {
                           {b.address}
                         </div>
                       </div>
+                      {b.leaderName && (
+                        <div className='flex items-start gap-2 text-slate-700'>
+                          <BiBuilding
+                            size={16}
+                            className='mt-0.5 shrink-0 text-slate-500'
+                          />
+                          <div>
+                            <span className='font-semibold text-slate-800'>
+                              Leader:
+                            </span>{' '}
+                            {b.leaderName}
+                            {b.leaderRole && (
+                              <span className='text-slate-500'>
+                                {' '}
+                                — {b.leaderRole}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
                       <div className='flex items-start gap-2 text-slate-700'>
                         <FiPhone
                           size={16}
@@ -180,33 +176,63 @@ export function ChurchBranchesSection() {
                           <span className='font-semibold text-slate-800'>
                             Contact:
                           </span>{' '}
-                          <a
-                            href={telHref}
-                            className='text-slate-900 underline-offset-2 hover:underline'
-                            aria-label={`Call ${b.title} branch at ${b.phone}`}
-                          >
-                            {b.phone}
-                          </a>
+                          {b.phone ? (
+                            telHref ? (
+                              <a
+                                href={telHref}
+                                className='text-slate-900 underline-offset-2 hover:underline'
+                                aria-label={`Call ${b.name} at ${b.phone}`}
+                              >
+                                {b.phone}
+                              </a>
+                            ) : (
+                              b.phone
+                            )
+                          ) : (
+                            <span className='text-slate-500'>—</span>
+                          )}
                         </div>
                       </div>
+                      {b.email && (
+                        <div className='flex items-start gap-2 text-slate-700'>
+                          <FiMail
+                            size={16}
+                            className='mt-0.5 shrink-0 text-slate-500'
+                          />
+                          <div>
+                            <span className='font-semibold text-slate-800'>
+                              Email:
+                            </span>{' '}
+                            <a
+                              href={`mailto:${b.email}`}
+                              className='text-slate-900 underline-offset-2 hover:underline'
+                              aria-label={`Email ${b.name} at ${b.email}`}
+                            >
+                              {b.email}
+                            </a>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   <div className='p-5 pt-0 sm:px-6 sm:pt-0'>
-                    <Button
-                      className='w-full cursor-pointer rounded-full bg-slate-800 text-white shadow-sm transition hover:bg-slate-900 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 focus-visible:ring-offset-2'
-                      asChild
-                    >
-                      <a
-                        href={mapsHref}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        aria-label={`Get directions to ${b.venue}, ${b.title}`}
+                    {b.address && (
+                      <Button
+                        className='w-full cursor-pointer rounded-full bg-slate-800 text-white shadow-sm transition hover:bg-slate-900 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 focus-visible:ring-offset-2'
+                        asChild
                       >
-                        <FiArrowRight size={16} className='mr-2' />
-                        GET DIRECTIONS
-                      </a>
-                    </Button>
+                        <a
+                          href={mapsHref}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          aria-label={`Get directions to ${b.venue || b.name}`}
+                        >
+                          <FiArrowRight size={16} className='mr-2' />
+                          GET DIRECTIONS
+                        </a>
+                      </Button>
+                    )}
                   </div>
                 </Card>
               </FadeInItem>
@@ -214,18 +240,16 @@ export function ChurchBranchesSection() {
           })}
         </StaggerContainer>
 
-        {/* show more / less */}
-        {branches.length > INITIAL_COUNT && (
-          <div className='mt-8 flex justify-center'>
+        {/* Show More Button */}
+        {hasMore && (
+          <div className='mt-10 flex justify-center'>
             <Button
+              onClick={handleShowMore}
               variant='outline'
-              className='rounded-full cursor-pointer'
-              onClick={() => setShowAll((v) => !v)}
-              aria-expanded={showAll}
+              className='cursor-pointer rounded-full border-slate-300 bg-white/90 px-8 py-3 font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 focus-visible:ring-offset-2'
             >
-              {showAll
-                ? 'Show fewer branches'
-                : `Show all branches (${branches.length})`}
+              <FiChevronDown size={16} className='mr-2' />
+              Show More Churches ({branches.length - visibleCount} remaining)
             </Button>
           </div>
         )}

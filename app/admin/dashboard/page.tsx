@@ -62,14 +62,24 @@ export default function AdminDashboardPage() {
         const [newsRes, eventsRes, subsRes, wotdRes, adminsRes, auditRes] =
           results
 
-        // News count
+        // News count - only published articles
         let totalNews = 0
         if (newsRes.status === 'fulfilled' && newsRes.value.ok) {
           const data = await newsRes.value.json()
-          totalNews = Array.isArray(data) ? data.length : 0
+          if (Array.isArray(data)) {
+            // Count only published articles (handle both new and legacy status values)
+            totalNews = data.filter(
+              (item) => item.status === 'published' || item.status === 'active',
+            ).length
+          }
         } else {
-          const alt = await (await fetch('/data/news.json')).json()
-          totalNews = Array.isArray(alt) ? alt.length : 0
+          const alt = await(await fetch('/data/news.json')).json()
+          if (Array.isArray(alt)) {
+            // Count only published articles from fallback data
+            totalNews = alt.filter(
+              (item) => item.status === 'published' || item.status === 'active',
+            ).length
+          }
         }
 
         // Events count
@@ -85,7 +95,7 @@ export default function AdminDashboardPage() {
           const data = await subsRes.value.json()
           totalSubscribers = Number(data?.total || 0)
         } else {
-          const alt = await (await fetch('/data/newsletters.json')).json()
+          const alt = await(await fetch('/data/newsletters.json')).json()
           totalSubscribers = Math.max(
             ...alt.map((n: any) => n.subscribers ?? 0),
             0,
@@ -110,7 +120,7 @@ export default function AdminDashboardPage() {
           if (Array.isArray(arr)) setAdmins(arr)
         } else {
           try {
-            const alt = await (await fetch('/data/admins.json')).json()
+            const alt = await(await fetch('/data/admins.json')).json()
             totalAdmins = alt.filter((a: any) => a.status === 'active').length
             setAdmins(alt)
           } catch {}

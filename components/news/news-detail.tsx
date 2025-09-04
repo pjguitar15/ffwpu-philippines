@@ -105,7 +105,48 @@ export default function NewsDetailClient() {
     }
   }, [slug])
 
-  // Load all news (for related/more sections)
+  // Track views when news item is loaded
+  useEffect(() => {
+    if (newsItem && newsItem.slug) {
+      // Only track views for articles from the API (not sample data)
+      // Check if the item has an _id which indicates it's from the database
+      const isFromDatabase = (newsItem as any)._id || (newsItem as any).id
+
+      if (isFromDatabase) {
+        const trackView = async () => {
+          try {
+            // Check if we've already viewed this article in this session
+            const viewedKey = `viewed_${newsItem.slug}`
+            const lastViewed = localStorage.getItem(viewedKey)
+            const now = Date.now()
+            
+            // Only track if not viewed before, or if 30 minutes have passed
+            const thirtyMinutes = 30 * 60 * 1000 // 30 minutes in milliseconds
+            if (!lastViewed || (now - parseInt(lastViewed)) > thirtyMinutes) {
+              console.log('Tracking view for:', newsItem.slug)
+              const response = await fetch(`/api/news/${newsItem.slug}/views`, {
+                method: 'POST',
+              })
+              const result = await response.json()
+              console.log('View tracking result:', result)
+              
+              // Store the current timestamp
+              localStorage.setItem(viewedKey, now.toString())
+            } else {
+              console.log('View already tracked recently for:', newsItem.slug)
+            }
+          } catch (error) {
+            // Silently fail view tracking to not affect user experience
+            console.log('Failed to track view:', error)
+          }
+        }
+
+        // Track view after a short delay to ensure the user is actually reading
+        const timer = setTimeout(trackView, 2000)
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [newsItem]) // Load all news (for related/more sections)
   useEffect(() => {
     let mounted = true
     ;(async () => {

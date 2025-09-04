@@ -6,7 +6,7 @@ import { recordAudit } from '@/lib/audit'
 
 export async function GET() {
   await dbConnect()
-  const items = await News.find().sort({ createdAt: -1 }).lean()
+  const items = await News.find().sort({ date: -1 }).lean()
   const withId = items.map((d: any) => ({ ...d, id: String(d._id) }))
   console.log('withId', withId[0])
   return NextResponse.json(withId)
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     date,
     image,
     tags = [],
-    status = 'active',
+    status = 'published',
     content = '',
   } = body || {}
 

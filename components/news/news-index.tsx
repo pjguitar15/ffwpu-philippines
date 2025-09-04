@@ -53,6 +53,7 @@ export function NewsIndex({
   const [sort, setSort] = useState<'newest' | 'oldest'>('newest')
   const [view, setView] = useState<'grid' | 'list'>('grid')
   const [limit, setLimit] = useState(initialLimit)
+  const [showAllTags, setShowAllTags] = useState(false)
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -73,19 +74,34 @@ export function NewsIndex({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q])
 
-  // Available tags
+  // Available tags with view counts, sorted by views
   const allTags = useMemo(() => {
-    const set = new Set<string>()
-    items.forEach((i) => (i.tags || []).forEach((t) => set.add(t)))
-    return ['All', ...Array.from(set)]
+    // Calculate total views for each tag
+    const tagViews = new Map<string, number>()
+
+    items.forEach((item) => {
+      if (item.status === 'published' || !item.status) {
+        const views = item.views || 0
+        item.tags?.forEach((tag) => {
+          tagViews.set(tag, (tagViews.get(tag) || 0) + views)
+        })
+      }
+    })
+
+    // Sort tags by total views (descending)
+    const sortedTags = Array.from(tagViews.entries())
+      .sort(([, a], [, b]) => b - a)
+      .map(([tag]) => tag)
+
+    return ['All', ...sortedTags]
   }, [items])
 
   // Filter + sort
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase()
     let list = items
-      // Only show active items if status provided; otherwise assume active
-      .filter((i) => (i.status ? i.status === 'active' : true))
+      // Only show published items if status provided; otherwise assume published
+      .filter((i) => (i.status ? i.status === 'published' : true))
       .filter((i) =>
         !needle
           ? true
@@ -207,7 +223,8 @@ export function NewsIndex({
           <span className='inline-flex items-center gap-1 text-xs uppercase tracking-wide text-slate-500'>
             <TagIcon className='h-3.5 w-3.5' /> Tags:
           </span>
-          {allTags.map((t) => (
+          {/* Show first 8 tags when collapsed, all when expanded */}
+          {(showAllTags ? allTags : allTags.slice(0, 9)).map((t) => (
             <button
               key={t}
               onClick={() => {
@@ -223,6 +240,21 @@ export function NewsIndex({
               {t}
             </button>
           ))}
+          {/* Show more/less button */}
+          {allTags.length > 9 && (
+            <button
+              onClick={() => setShowAllTags(!showAllTags)}
+              className='whitespace-nowrap rounded-full border border-slate-300 bg-slate-100 px-3 py-1.5 text-xs md:text-sm cursor-pointer hover:bg-slate-200 transition flex items-center gap-1'
+            >
+              {showAllTags ? (
+                'Show less'
+              ) : (
+                <>
+                  <span>+{allTags.length - 9} more</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
 
         {/* Results */}
@@ -271,14 +303,14 @@ export function NewsIndex({
                         <Calendar className='h-3.5 w-3.5' />
                         {new Date(item.date).toLocaleDateString()}
                       </span>
+                      <span className='inline-flex items-center gap-1'>
+                        <Eye className='h-3.5 w-3.5' /> {item.views ?? 0}
+                      </span>
                       {/* <span className='inline-flex items-center gap-1'>
-                      <Eye className='h-3.5 w-3.5' /> {item.views ?? 0}
-                    </span>
-                    <span className='inline-flex items-center gap-1'>
                       <Heart className='h-3.5 w-3.5' /> {item.likes ?? 0}
                     </span> */}
                     </div>
-                    <h3 className='mt-2 font-extrabold leading-snug tracking-wide group-hover:underline'>
+                    <h3 className='mt-2 font-extrabold leading-snug tracking-wide cursor-pointer hover:underline transition-all duration-200 ease-in-out'>
                       {item.title}
                     </h3>
                     <p className='mt-1 text-sm text-slate-600 line-clamp-2'>
@@ -326,18 +358,18 @@ export function NewsIndex({
                         <Calendar className='h-3.5 w-3.5' />
                         {new Date(item.date).toLocaleDateString()}
                       </span>
+                      <span className='inline-flex items-center gap-1'>
+                        <Eye className='h-3.5 w-3.5' /> {item.views ?? 0}
+                      </span>
                       {/* <span className='inline-flex items-center gap-1'>
-                      <Eye className='h-3.5 w-3.5' /> {item.views ?? 0}
-                    </span>
-                    <span className='inline-flex items-center gap-1'>
                       <Heart className='h-3.5 w-3.5' /> {item.likes ?? 0}
                     </span> */}
                     </div>
-                    <h3 className='mt-1 font-extrabold tracking-wide group-hover:underline'>
+                    <h3 className='mt-1 font-extrabold tracking-wide cursor-pointer hover:underline transition-all duration-200 ease-in-out'>
                       {item.title}
                     </h3>
                     <p className='mt-1 text-sm text-slate-600 line-clamp-2'>
-                      {item.content || ''}
+                      {excerptFromHtml(item?.content || '', 180)}
                     </p>
                   </div>
                 </Link>
