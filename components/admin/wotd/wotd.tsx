@@ -46,9 +46,6 @@ type Quote = {
   id: string
   text: string
   author?: string
-  date?: string // YYYY-MM-DD
-  status: 'draft' | 'published'
-  tags?: string[]
 }
 
 export default function WotdAdmin({
@@ -66,9 +63,6 @@ export default function WotdAdmin({
     id: '',
     text: '',
     author: '',
-    date: new Date().toISOString().slice(0, 10),
-    status: 'draft',
-    tags: [],
   })
   const isEdit = Boolean(form.id)
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -82,9 +76,6 @@ export default function WotdAdmin({
 
   // UI: search & filter
   const [query, setQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<
-    'all' | 'published' | 'draft'
-  >('all')
 
   // Scheduling
   const [mode, setMode] = useState<'fixed' | 'random'>('fixed')
@@ -111,15 +102,14 @@ export default function WotdAdmin({
     return list.filter((q) => {
       const t = (q.text || '') + (q.author ? ` ${q.author}` : '')
       const okQ = !query || t.toLowerCase().includes(query.toLowerCase())
-      const okS = statusFilter === 'all' || q.status === statusFilter
-      return okQ && okS
+      return okQ
     })
-  }, [list, query, statusFilter])
+  }, [list, query])
 
   // Reset/clamp page when filters or data change
   useEffect(() => {
     setPage(1)
-  }, [query, statusFilter])
+  }, [query])
   useEffect(() => {
     const total = Math.max(1, Math.ceil(filteredList.length / pageSize))
     if (page > total) setPage(total)
@@ -133,9 +123,6 @@ export default function WotdAdmin({
       id: '',
       text: '',
       author: '',
-      date: new Date().toISOString().slice(0, 10),
-      status: 'draft',
-      tags: [],
     })
   }
   function openNew() {
@@ -143,7 +130,7 @@ export default function WotdAdmin({
     setIsFormOpen(true)
   }
   function openEdit(q: Quote) {
-    setForm({ ...q, tags: q.tags ?? [] })
+    setForm({ ...q })
     setIsFormOpen(true)
   }
 
@@ -163,9 +150,6 @@ export default function WotdAdmin({
             id: String(x._id),
             text: x.text,
             author: x.attribution || '',
-            date: x.date || '',
-            status: x.status || 'draft',
-            tags: Array.isArray(x.tags) ? x.tags : [],
           })),
         )
         if (current?.id) setCurrentId(String(current.id))
@@ -194,9 +178,6 @@ export default function WotdAdmin({
           body: JSON.stringify({
             text: form.text,
             attribution: form.author,
-            status: form.status,
-            tags: form.tags,
-            date: form.date,
           }),
         })
         if (!res.ok) throw new Error('Update failed')
@@ -208,9 +189,6 @@ export default function WotdAdmin({
                   id: String(updated._id),
                   text: updated.text,
                   author: updated.attribution || '',
-                  date: updated.date || '',
-                  status: updated.status,
-                  tags: Array.isArray(updated.tags) ? updated.tags : [],
                 }
               : q,
           ),
@@ -223,9 +201,6 @@ export default function WotdAdmin({
           body: JSON.stringify({
             text: form.text,
             attribution: form.author,
-            status: form.status,
-            tags: form.tags,
-            date: form.date,
           }),
         })
         if (!res.ok) throw new Error('Create failed')
@@ -235,9 +210,6 @@ export default function WotdAdmin({
             id: String(created._id),
             text: created.text,
             author: created.attribution || '',
-            date: created.date || '',
-            status: created.status,
-            tags: Array.isArray(created.tags) ? created.tags : [],
           },
           ...prev,
         ])
@@ -246,29 +218,6 @@ export default function WotdAdmin({
       resetForm()
     } catch (e) {
       toast({ title: 'Save failed', variant: 'destructive' as any })
-    }
-  }
-
-  async function updateStatus(id: string, status: Quote['status']) {
-    try {
-      const item = list.find((x) => x.id === id)
-      if (!item) return
-      const res = await fetch(`/api/wotd/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: item.text,
-          attribution: item.author,
-          date: item.date,
-          tags: item.tags,
-          status,
-        }),
-      })
-      if (!res.ok) throw new Error('Failed')
-      setList((prev) => prev.map((q) => (q.id === id ? { ...q, status } : q)))
-      toast({ title: status === 'published' ? 'Published' : 'Unpublished' })
-    } catch (e) {
-      toast({ title: 'Update failed', variant: 'destructive' as any })
     }
   }
 
@@ -569,24 +518,6 @@ export default function WotdAdmin({
                     className='pl-9 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
                   />
                 </div>
-                <div className='flex items-center gap-2'>
-                  <Label
-                    htmlFor='statusFilter'
-                    className='text-xs text-muted-foreground'
-                  >
-                    Status
-                  </Label>
-                  <select
-                    id='statusFilter'
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className='border rounded px-2 py-2 bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-800 cursor-pointer text-sm'
-                  >
-                    <option value='all'>All</option>
-                    <option value='published'>Published</option>
-                    <option value='draft'>Draft</option>
-                  </select>
-                </div>
               </div>
               <div className='text-xs text-muted-foreground'>
                 {list.length > 0
@@ -625,7 +556,6 @@ export default function WotdAdmin({
                           className='underline cursor-pointer'
                           onClick={() => {
                             setQuery('')
-                            setStatusFilter('all')
                           }}
                         >
                           Reset
@@ -642,19 +572,23 @@ export default function WotdAdmin({
                   const pageItems = filtered.slice(start, end)
                   return (
                     <>
-                      <div className='grid grid-cols-1 lg:grid-cols-2 gap-2'>
+                      <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'>
                         {pageItems.map((q) => (
                           <div
                             key={q.id}
-                            className={`relative overflow-hidden rounded-lg border p-4 bg-white/70 dark:bg-slate-900/40 hover:shadow-md transition-all border-l-4 ${
+                            className={`group relative overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1 ${
                               currentId === q.id
-                                ? 'border-l-indigo-500 ring-1 ring-indigo-400/30'
-                                : 'border-l-slate-200 dark:border-l-slate-800'
+                                ? 'border-sky-300 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/30 dark:via-slate-900/50 dark:to-indigo-950/30 ring-2 ring-sky-200 dark:ring-sky-800 shadow-lg shadow-sky-500/20'
+                                : 'border-slate-200 bg-gradient-to-br from-white to-slate-50/80 hover:border-sky-300 dark:border-slate-700 dark:bg-gradient-to-br dark:from-slate-900/80 dark:to-slate-950/60 dark:hover:border-sky-600'
                             }`}
                           >
-                            {/* subtle current glow */}
+                            {/* Current indicator ribbon */}
                             {currentId === q.id && (
-                              <div className='pointer-events-none absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-sky-500/5' />
+                              <div className='absolute -top-2 -right-2 w-16 h-16 overflow-hidden'>
+                                <div className='absolute top-4 right-[-16px] bg-gradient-to-r from-sky-500 to-indigo-500 text-white text-xs font-medium px-8 py-1 rotate-45 shadow-lg'>
+                                  Current
+                                </div>
+                              </div>
                             )}
                             {/* inline current chip handled in top-right cluster */}
 
@@ -664,24 +598,15 @@ export default function WotdAdmin({
                                   “{q.text}”
                                 </div>
                                 <div className='text-xs text-muted-foreground'>
-                                  {q.author ? `${q.author} · ` : ''}
-                                  {q.date || 'No date'}
+                                  {q.author ? q.author : 'Unknown author'}
                                 </div>
                               </div>
                               <div className='flex items-center gap-2 shrink-0'>
-                                {q.status === 'published' ? (
-                                  <span className='inline-flex items-center gap-1 rounded-full bg-emerald-600 text-white px-2.5 py-1 text-xs shadow-sm'>
-                                    <CheckCircle2 className='h-3.5 w-3.5' />{' '}
-                                    Published
-                                  </span>
-                                ) : (
-                                  <Badge variant='secondary'>Draft</Badge>
-                                )}
                                 {currentId === q.id && (
-                                  <span className='inline-flex items-center gap-1 rounded-full bg-indigo-600 text-white px-2.5 py-1 text-xs shadow-sm'>
-                                    <CheckCircle2 className='h-3.5 w-3.5' />{' '}
+                                  <div className='flex items-center gap-1.5 rounded-full bg-sky-500 text-white px-3 py-1.5 text-xs font-medium shadow-sm'>
+                                    <Sparkles className='h-3.5 w-3.5' />
                                     Current
-                                  </span>
+                                  </div>
                                 )}
                                 {/* Kebab is the last item */}
                                 <DropdownMenu>
@@ -729,27 +654,6 @@ export default function WotdAdmin({
                                     <Loader2 className='h-3 w-3 mr-1 animate-spin' />
                                   ) : null}
                                   Set current
-                                </Button>
-                              )}
-                              {q.status === 'draft' ? (
-                                <Button
-                                  size='sm'
-                                  variant='outline'
-                                  onClick={() =>
-                                    updateStatus(q.id, 'published')
-                                  }
-                                  className='cursor-pointer h-7 px-2.5 text-xs'
-                                >
-                                  Publish
-                                </Button>
-                              ) : (
-                                <Button
-                                  size='sm'
-                                  variant='outline'
-                                  onClick={() => updateStatus(q.id, 'draft')}
-                                  className='cursor-pointer h-7 px-2.5 text-xs'
-                                >
-                                  Unpublish
                                 </Button>
                               )}
                             </div>
@@ -924,34 +828,6 @@ export default function WotdAdmin({
                   placeholder='Optional'
                   className='bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
                 />
-              </div>
-              <div>
-                <Label htmlFor='q-date' className='mb-1.5 inline-block'>
-                  Date
-                </Label>
-                <Input
-                  id='q-date'
-                  type='date'
-                  value={form.date || ''}
-                  onChange={(e) => handle('date', e.target.value)}
-                  className='bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
-                />
-              </div>
-              <div>
-                <Label htmlFor='q-status' className='mb-1.5 inline-block'>
-                  Status
-                </Label>
-                <select
-                  id='q-status'
-                  className='border rounded px-2 py-2 text-sm w-full bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-800 cursor-pointer'
-                  value={form.status}
-                  onChange={(e) =>
-                    handle('status', e.target.value as Quote['status'])
-                  }
-                >
-                  <option value='draft'>Draft</option>
-                  <option value='published'>Published</option>
-                </select>
               </div>
             </div>
             {/* tags removed per request */}

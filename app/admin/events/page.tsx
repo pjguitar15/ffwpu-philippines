@@ -72,6 +72,7 @@ import { Progress } from '@/components/ui/progress'
 type EventItem = {
   _id?: string
   title: string
+  description?: string
   date: string
   end?: string
   location: string
@@ -113,6 +114,7 @@ function EventForm({
 }) {
   const [values, setValues] = useState<EventItem>({
     title: '',
+    description: '',
     date: new Date().toISOString().slice(0, 16),
     end: '',
     location: '',
@@ -143,6 +145,7 @@ function EventForm({
     setValues((v) => ({
       ...v,
       title: initial?.title || '',
+      description: initial?.description || '',
       date: (initial?.date as string) || new Date().toISOString().slice(0, 16),
       end: (initial?.end as string) || '',
       location: initial?.location || '',
@@ -171,10 +174,16 @@ function EventForm({
     e.preventDefault()
     try {
       const payload = { ...values }
+      // Keep description even if empty to ensure it gets saved
       if (!payload.end) delete (payload as any).end
       if (!payload.church) delete (payload as any).church
       if (!payload.button) delete (payload as any).button
       if (!payload.href) delete (payload as any).href
+
+      // Debug: Log the payload to see what's being sent
+      console.log('Frontend - Sending description:', payload.description)
+      console.log('Frontend - Full payload:', payload)
+
       const res = await fetch(
         isEdit ? `/api/events/${values._id}` : '/api/events',
         {
@@ -278,6 +287,24 @@ function EventForm({
                       }
                       required
                       className='h-10 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+                    />
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className='col-span-12'>
+                  <label className='block text-[11px] font-semibold tracking-wider uppercase text-muted-foreground mb-1.5'>
+                    Description
+                  </label>
+                  <div className='relative group'>
+                    <textarea
+                      placeholder='Event description (optional)'
+                      value={values.description || ''}
+                      onChange={(e) =>
+                        setValues({ ...values, description: e.target.value })
+                      }
+                      rows={3}
+                      className='w-full min-h-[80px] px-3 py-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0 rounded-md resize-none'
                     />
                   </div>
                 </div>

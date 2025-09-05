@@ -7,9 +7,6 @@ type Quote = {
   id: string
   text: string
   author?: string
-  date?: string
-  status: 'draft' | 'published'
-  tags?: string[]
 }
 
 // Static demo data (quotes)
@@ -18,17 +15,11 @@ const initialList: Quote[] = [
     id: 'q1',
     text: 'A grateful heart is a magnet for miracles.',
     author: 'Unknown',
-    date: '2025-09-02',
-    status: 'published',
-    tags: ['gratitude', 'inspiration'],
   },
   {
     id: 'q2',
     text: 'Small daily improvements over time lead to stunning results.',
     author: 'Robin Sharma',
-    date: '2025-09-03',
-    status: 'draft',
-    tags: ['growth', 'habits'],
   },
 ]
 
