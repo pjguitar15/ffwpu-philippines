@@ -83,6 +83,12 @@ export const extraNavItems = [
     desc: 'Videos & media content',
     icon: FiVideo,
   },
+  {
+    href: '/hj-testimonies',
+    label: 'HJ Testimonies',
+    desc: 'Personal stories & interviews',
+    icon: FiBookOpen,
+  },
 ]
 
 export function Header() {
