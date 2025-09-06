@@ -25,70 +25,70 @@ import { Sparkles, Search as SearchIcon } from 'lucide-react'
 import { HeaderSearch } from './header-search'
 import { LiveIndicator } from '@/components/ui/live-indicator'
 
+export const mainNavItems = [
+  {
+    href: '/',
+    label: 'Home',
+    desc: 'Welcome & featured highlights',
+    icon: FiFileText,
+  },
+  {
+    href: '/about',
+    label: 'About',
+    desc: 'Who we are & our mission',
+    icon: FiInfo,
+  },
+  {
+    href: '/news',
+    label: 'News',
+    desc: 'Latest updates & reports',
+    icon: FiFileText,
+  },
+  {
+    href: '/contact',
+    label: 'Contact',
+    desc: 'Reach out to our team',
+    icon: FiPhone,
+  },
+]
+
+export const extraNavItems = [
+  {
+    href: '/about/true-parents',
+    label: 'True Parents',
+    desc: 'Rev. Moon & Holy Mother Han',
+    icon: FiHeart,
+  },
+  {
+    href: '/holy-mother-han',
+    label: 'Holy Mother Han',
+    desc: 'Learn about Holy Mother Han',
+    icon: Sparkles,
+  },
+  {
+    href: '/true-father',
+    label: 'True Father',
+    desc: 'Rev. Sun Myung Moon',
+    icon: FiShield,
+  },
+  {
+    href: '/about/history',
+    label: 'Our History',
+    desc: 'Roots of our movement',
+    icon: FiClock,
+  },
+  {
+    href: '/hj-media-works',
+    label: 'HJ MediaWorks',
+    desc: 'Videos & media content',
+    icon: FiVideo,
+  },
+]
+
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
   // Search is handled by HeaderSearch (wrapped in Suspense). No direct useSearchParams here.
-
-  const mainNavItems = [
-    {
-      href: '/',
-      label: 'Home',
-      desc: 'Welcome & featured highlights',
-      icon: FiFileText,
-    },
-    {
-      href: '/about',
-      label: 'About',
-      desc: 'Who we are & our mission',
-      icon: FiInfo,
-    },
-    {
-      href: '/news',
-      label: 'News',
-      desc: 'Latest updates & reports',
-      icon: FiFileText,
-    },
-    {
-      href: '/contact',
-      label: 'Contact',
-      desc: 'Reach out to our team',
-      icon: FiPhone,
-    },
-  ]
-
-  const extraNavItems = [
-    {
-      href: '/about/true-parents',
-      label: 'True Parents',
-      desc: 'Rev. Moon & Holy Mother Han',
-      icon: FiHeart,
-    },
-    {
-      href: '/holy-mother-han',
-      label: 'Holy Mother Han',
-      desc: 'Learn about Holy Mother Han',
-      icon: Sparkles,
-    },
-    {
-      href: '/true-father',
-      label: 'True Father',
-      desc: 'Rev. Sun Myung Moon',
-      icon: FiShield,
-    },
-    {
-      href: '/about/history',
-      label: 'Our History',
-      desc: 'Roots of our movement',
-      icon: FiClock,
-    },
-    {
-      href: '/hj-media-works',
-      label: 'HJ MediaWorks',
-      desc: 'Videos & media content',
-      icon: FiVideo,
-    },
-  ]
 
   const isActive = (href: string) => pathname === href
 
@@ -142,17 +142,24 @@ export function Header() {
 
   return (
     <>
-      <div className='bg-primary text-primary-foreground py-2 px-4 text-center text-sm'>
-        <p>
-          Join us for our Weekly Sunday Service - Every Sunday at 10:00 AM
-          Manila Time
+      <div className='bg-gradient-to-r from-blue-800 via-cyan-800 to-sky-800 text-white py-2 px-4 text-center text-sm shadow-sm'>
+        {/* Mobile / Tablet (short) */}
+        <p className='block lg:hidden font-medium tracking-wide'>
+          ✨ Sunday Service • 10:00 AM (Manila)
+        </p>
+
+        {/* Desktop (exact original text) */}
+        <p className='hidden lg:block font-medium tracking-wide'>
+          ✨ Join us for our{' '}
+          <span className='font-semibold'>Weekly Sunday Service</span> • Every
+          Sunday at 10:00 AM (Manila)
         </p>
       </div>
 
       <header className='sticky top-0 z-50 w-full bg-background border-b'>
-        <div className='container mx-auto flex h-16 items-center px-4'>
+        <div className='container mx-auto flex h-16 items-center px-4 gap-3 min-w-0'>
           {/* Logo */}
-          <Link href='/' className='flex items-center space-x-2'>
+          <Link href='/' className='flex items-center space-x-2 shrink-0'>
             <div className='flex flex-col'>
               <Image
                 src='/ffwpu-ph-logo.webp'
@@ -160,31 +167,38 @@ export function Header() {
                 width={130}
                 height={130}
                 priority
+                className='h-8 w-auto md:h-7 lg:h-8 shrink-0'
+                sizes='(min-width: 1024px) 144px, (min-width: 768px) 128px, 112px'
               />
             </div>
           </Link>
 
-          {/* Live Indicator */}
-          <LiveIndicator className='ml-3' />
+          {/* Live Indicator (can hide on tight widths if needed) */}
+          <LiveIndicator className='hidden sm:inline-flex ml-1 shrink-0' />
 
-          {/* Desktop search (Suspense required because it uses useSearchParams) */}
+          {/* Desktop search: flexible, capped width, no large fixed margin */}
           <Suspense
             fallback={
-              <div className='hidden md:block ml-12 w-64 h-9 rounded-full bg-muted/60' />
+              <div className='hidden md:block flex-1 min-w-0 h-9 rounded-full bg-muted/60' />
             }
           >
-            <HeaderSearch variant='desktop' className='hidden md:block ml-12' />
+            <div className='hidden md:flex flex-1 min-w-0 justify-center'>
+              <HeaderSearch
+                variant='desktop'
+                className='w-full max-w-[clamp(14rem,40vw,28rem)]' // 224px → 40vw → 448px
+              />
+            </div>
           </Suspense>
 
           {/* Right: nav + burger */}
-          <div className='ml-auto flex items-center gap-3'>
-            <nav className='hidden md:flex items-center gap-6'>
+          <div className='ml-auto flex items-center gap-2 sm:gap-3 min-w-0'>
+            <nav className='hidden lg:flex items-center gap-4'>
               {mainNavItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'text-sm font-medium hover:bg-blue-100 rounded-full px-4 py-2 flex items-center gap-2',
+                    'text-sm font-medium hover:bg-blue-100 rounded-full px-3 py-2 flex items-center gap-2',
                     isActive(item.href) ? 'font-bold' : 'text-foreground',
                   )}
                 >
@@ -197,7 +211,7 @@ export function Header() {
               type='button'
               aria-label='Open menu'
               onClick={() => setIsOpen(true)}
-              className='h-12 w-12 inline-flex items-center justify-center hover:bg-blue-100 rounded-full cursor-pointer'
+              className='h-12 w-12 inline-flex items-center justify-center hover:bg-blue-100 rounded-full cursor-pointer shrink-0'
             >
               <FiMenu className='h-5 w-5' strokeWidth={2.5} />
             </button>

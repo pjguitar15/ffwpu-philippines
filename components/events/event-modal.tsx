@@ -111,15 +111,15 @@ export default function EventModal({
           <button
             onClick={onClose}
             aria-label='Close'
-            className='fixed right-4 top-4 z-40 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-800 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-300 cursor-pointer shadow'
+            className='fixed right-3 top-3 md:right-4 md:top-4 z-40 inline-flex h-12 w-12 md:h-10 md:w-10 items-center justify-center rounded-full bg-white text-slate-800 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-300 cursor-pointer shadow-lg'
           >
-            <X className='h-5 w-5' />
+            <X className='h-6 w-6 md:h-5 md:w-5' />
           </button>
 
           {/* Content stack (vertically centered) */}
-          <div className='relative z-10 min-h-[100svh] grid place-items-center py-12'>
+          <div className='relative z-10 min-h-[100svh] grid place-items-center py-6 md:py-12'>
             <motion.div
-              className='w-full max-w-6xl px-4 md:px-6'
+              className='w-full max-w-6xl px-3 md:px-6'
               onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -131,7 +131,7 @@ export default function EventModal({
                   <img
                     src={event.image}
                     alt={event.title}
-                    className='max-h-[70vh] md:max-h-[75vh] lg:max-h-[80vh] w-auto h-auto object-contain select-none pointer-events-none rounded-3xl shadow-sm'
+                    className='max-h-[50vh] md:max-h-[70vh] lg:max-h-[75vh] xl:max-h-[80vh] w-auto h-auto object-contain select-none pointer-events-none rounded-2xl md:rounded-3xl shadow-sm'
                     loading='eager'
                     decoding='async'
                     onError={(e) => {
@@ -152,7 +152,7 @@ export default function EventModal({
 
               {/* Info card overlaps image on md+; no negative offset on small screens */}
               <motion.div
-                className='relative mx-auto w-full md:max-w-3xl md:-mt-16 md:-translate-y-3'
+                className='relative mx-auto w-full md:max-w-3xl mt-4 md:-mt-16 md:-translate-y-3'
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -161,53 +161,57 @@ export default function EventModal({
                   delay: 0.05,
                 }}
               >
-                <div className='rounded-2xl bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85 ring-1 ring-slate-200 shadow-lg p-5 md:p-7 text-slate-800'>
+                <div className='rounded-xl md:rounded-2xl bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85 ring-1 ring-slate-200 shadow-lg p-4 md:p-7 text-slate-800'>
                   {/* Region pill */}
-                  <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest ring-1 ring-slate-200 text-slate-700 md:text-xs'>
+                  <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1 md:px-3 text-[9px] md:text-[10px] lg:text-xs font-semibold uppercase tracking-widest ring-1 ring-slate-200 text-slate-700'>
                     {event.region}
                   </div>
 
                   {/* Title */}
-                  <h3 className='mt-3 text-2xl md:text-3xl font-extrabold tracking-wide text-slate-900'>
+                  <h3 className='mt-3 text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wide text-slate-900 leading-tight'>
                     {event.title}
                   </h3>
 
                   {/* Meta chips */}
-                  <div className='mt-4 flex flex-wrap items-center gap-3 text-sm'>
-                    <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 ring-1 ring-slate-200 text-slate-700'>
-                      <Calendar className='h-4 w-4' />
-                      {new Intl.DateTimeFormat('en-PH', {
-                        timeZone: 'Asia/Manila',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      }).format(start)}
+                  <div className='mt-4 flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-3 text-sm'>
+                    <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1.5 md:px-3 md:py-1 ring-1 ring-slate-200 text-slate-700 text-xs md:text-sm'>
+                      <Calendar className='h-3.5 w-3.5 md:h-4 md:w-4' />
+                      <span className='whitespace-nowrap'>
+                        {new Intl.DateTimeFormat('en-PH', {
+                          timeZone: 'Asia/Manila',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        }).format(start)}
+                      </span>
                     </div>
 
-                    <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 ring-1 ring-slate-200 text-slate-700'>
-                      <Clock className='h-4 w-4' />
-                      {new Intl.DateTimeFormat('en-PH', {
-                        timeZone: 'Asia/Manila',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      }).format(start)}
-                      {end
-                        ? ` – ${new Intl.DateTimeFormat('en-PH', {
-                            timeZone: 'Asia/Manila',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          }).format(end)}`
-                        : ''}
+                    <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1.5 md:px-3 md:py-1 ring-1 ring-slate-200 text-slate-700 text-xs md:text-sm'>
+                      <Clock className='h-3.5 w-3.5 md:h-4 md:w-4' />
+                      <span className='whitespace-nowrap'>
+                        {new Intl.DateTimeFormat('en-PH', {
+                          timeZone: 'Asia/Manila',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        }).format(start)}
+                        {end
+                          ? ` – ${new Intl.DateTimeFormat('en-PH', {
+                              timeZone: 'Asia/Manila',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }).format(end)}`
+                          : ''}
+                      </span>
                     </div>
 
-                    <div className='inline-flex max-w-full items-center gap-2 rounded-full bg-slate-100 px-3 py-1 ring-1 ring-slate-200 text-slate-700'>
-                      <MapPin className='h-4 w-4 shrink-0' />
+                    <div className='inline-flex w-full sm:w-auto max-w-full items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1.5 md:px-3 md:py-1 ring-1 ring-slate-200 text-slate-700 text-xs md:text-sm'>
+                      <MapPin className='h-3.5 w-3.5 md:h-4 md:w-4 shrink-0' />
                       <span className='truncate'>{event.location}</span>
                     </div>
                   </div>
 
                   {/* Footer actions */}
-                  <div className='mt-6 flex flex-wrap items-center gap-3'>
+                  <div className='mt-5 md:mt-6 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3'>
                     {buttonLabel &&
                       (hasUrl ? (
                         <a
@@ -218,13 +222,13 @@ export default function EventModal({
                               : '_blank'
                           }
                           rel='noreferrer'
-                          className='inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95'
+                          className='inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2.5 md:py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95 text-center'
                         >
                           {buttonLabel} <ArrowRight className='h-4 w-4' />
                         </a>
                       ) : (
                         <button
-                          className='inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95 cursor-pointer'
+                          className='inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2.5 md:py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95 cursor-pointer'
                           onClick={onClose}
                         >
                           {buttonLabel} <ArrowRight className='h-4 w-4' />
@@ -233,7 +237,7 @@ export default function EventModal({
 
                     <button
                       onClick={onClose}
-                      className='inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 cursor-pointer'
+                      className='inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-2.5 md:py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 cursor-pointer'
                     >
                       Close
                     </button>

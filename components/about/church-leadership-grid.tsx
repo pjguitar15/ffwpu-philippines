@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import clsx from 'clsx'
-import { StaggerContainer, FadeInItem, FadeIn } from '@/components/ui/motion'
 
 /** ──────────────────────────────────────────────────────────────────────────
  * Types
@@ -24,79 +23,94 @@ export type Leader = {
  * Replace photoUrl with your real half-body portraits under /public/leaders
  * ──────────────────────────────────────────────────────────────────────────*/
 const SAMPLE_LEADERS: Leader[] = [
-  // National
+  // ─────────────────────────────────────────
+  // National (by order)
+  // ─────────────────────────────────────────
   {
     name: 'Rev. Ronnie Sodusta',
-    title: 'National Leader',
-    photoUrl: '/leaders/ronnie-sodusta.webp',
+    title: 'National Leader / Regional Director',
+    photoUrl: '/leaders/ronnie-sodusta.png',
     level: 'National',
     tag: 'Head Office',
     order: 1,
   },
   {
-    name: '—',
-    title: 'National Secretary',
-    photoUrl: '/leaders/national-secretary.jpg',
+    name: 'Rev. John Rhodbert Gregorio',
+    title: 'Secretary General',
+    photoUrl: '/leaders/john-rhodbert-gregorio.png',
     level: 'National',
     tag: 'Head Office',
     order: 2,
   },
 
-  // Departments (examples; rename as needed)
+  // ─────────────────────────────────────────
+  // Departments (chart order)
+  // ─────────────────────────────────────────
   {
-    name: '—',
-    title: 'Head, Data Management Dept.',
-    photoUrl: '/leaders/department-data.jpg',
+    name: 'Mary Grace A. Carumba',
+    title: 'Director, Database Management & Membership Department',
+    photoUrl: '/leaders/mary-grace-carumba.png',
     level: 'Department',
-    tag: 'Data',
+    tag: 'Membership / Data',
     order: 1,
   },
   {
-    name: '—',
-    title: 'Head, Church Growth Dept.',
-    photoUrl: '/leaders/department-growth.jpg',
+    name: 'Angelito Cainday',
+    title: 'Director, Church Growth Department',
+    photoUrl: '/leaders/angelito-cainday.png',
     level: 'Department',
     tag: 'Growth',
     order: 2,
   },
   {
-    name: '—',
-    title: 'Head, General Affairs & PR Dept.',
-    photoUrl: '/leaders/department-pr.jpg',
+    name: 'Venus Agustin',
+    title:
+      'Director, General Affairs & PR Department (UPF Philippines Regional Director)',
+    photoUrl: '/leaders/venus-agustin.png',
     level: 'Department',
-    tag: 'GA & PR',
+    tag: 'PR / UPF',
     order: 3,
   },
   {
-    name: '—',
-    title: 'Head, Youth Department',
-    photoUrl: '/leaders/department-youth.jpg',
+    name: 'Jun Young Teves',
+    title: 'Director, Youth / Future Generation Department',
+    photoUrl: '/leaders/jun-young-teves.png',
     level: 'Department',
     tag: 'Youth',
     order: 4,
   },
   {
-    name: '—',
-    title: 'Head, Blessed Family Dept.',
-    photoUrl: '/leaders/department-bfd.jpg',
+    name: 'Catherine Gregorio',
+    title: 'Director, Blessed Family Department',
+    photoUrl: '/leaders/catherine-gregorio.png',
     level: 'Department',
     tag: 'BFD',
     order: 5,
   },
+  {
+    name: 'Edgar Tanate',
+    title: 'Head, Education, Spirituality & Leadership Development Department',
+    photoUrl: '/leaders/edgar-tanate.png',
+    level: 'Department',
+    tag: 'Education',
+    order: 6,
+  },
 
-  // Area Leaders (drafted from the reference you shared)
+  // ─────────────────────────────────────────
+  // Areas (1 → 5)
+  // ─────────────────────────────────────────
   {
     name: 'Rev. John Rhodbert Gregorio',
     title: 'Area 1 Leader • NCR & Central Luzon',
-    photoUrl: '/leaders/area-1.jpg',
+    photoUrl: '/leaders/john-rhodbert-gregorio.png',
     level: 'Area',
     tag: 'Area 1',
     order: 1,
   },
   {
-    name: 'Rev. Rene Lansangan',
+    name: 'Rene T. Lansangan',
     title: 'Area 2 Leader • Northern Luzon',
-    photoUrl: '/leaders/area-2.jpg',
+    photoUrl: '/leaders/rene-lansangan.png',
     level: 'Area',
     tag: 'Area 2',
     order: 2,
@@ -104,15 +118,15 @@ const SAMPLE_LEADERS: Leader[] = [
   {
     name: 'Rev. Froilan Matbagan',
     title: 'Area 3 Leader • Southern Luzon',
-    photoUrl: '/leaders/area-3.jpg',
+    photoUrl: '/leaders/froilan-matbagan.jpg',
     level: 'Area',
     tag: 'Area 3',
     order: 3,
   },
   {
-    name: 'Rev. Romel Pinson',
+    name: 'Angelito Cainday',
     title: 'Area 4 Leader • Visayas',
-    photoUrl: '/leaders/area-4.jpg',
+    photoUrl: '/leaders/angelito-cainday.png',
     level: 'Area',
     tag: 'Area 4',
     order: 4,
@@ -120,33 +134,152 @@ const SAMPLE_LEADERS: Leader[] = [
   {
     name: 'Mrs. Nobue Caballero',
     title: 'Area 5 Leader • Mindanao',
-    photoUrl: '/leaders/area-5.jpg',
+    photoUrl: '/leaders/nobue-caballero.png',
     level: 'Area',
     tag: 'Area 5',
     order: 5,
   },
 
-  // Example Regional leaders (add as needed)
+  // ─────────────────────────────────────────
+  // Regions / Local Churches (ordered within each Area)
+  // ─────────────────────────────────────────
+  // AREA 1 → NCR, R3
   {
-    name: '—',
-    title: 'Regional Leader • R1 La Union',
-    photoUrl: '/leaders/region-r1.jpg',
+    name: 'Rev. John Rhodbert Gregorio',
+    title: 'Metro Manila Church',
+    photoUrl: '/leaders/john-rhodbert-gregorio.png',
+    level: 'Region',
+    tag: 'NCR',
+    order: 1, // within Area 1
+  },
+  {
+    name: 'Rev. Froilan Ramos',
+    title: 'Cabanatuan Church',
+    photoUrl: '/leaders/froilan-ramos.png',
+    level: 'Region',
+    tag: 'R3',
+    order: 2, // within Area 1
+  },
+
+  // AREA 2 → R1, R2, CAR
+  {
+    name: 'Blessie Belle T. Ramos',
+    title: 'La Union Church',
+    photoUrl: '/leaders/blessie-ramos.png',
     level: 'Region',
     tag: 'R1',
+    order: 1, // within Area 2
   },
   {
-    name: '—',
-    title: 'Regional Leader • R7 Cebu',
-    photoUrl: '/leaders/region-r7.jpg',
+    name: 'Rene T. Lansangan',
+    title: 'Cauayan Church',
+    photoUrl: '/leaders/rene-lansangan.png',
+    level: 'Region',
+    tag: 'R2',
+    order: 2, // within Area 2
+  },
+  {
+    name: 'Rev. Concepcion “Connie” Gawec',
+    title: 'Baguio Church',
+    photoUrl: '/leaders/concepcion-gawec.png',
+    level: 'Region',
+    tag: 'CAR',
+    order: 3, // within Area 2
+  },
+
+  // AREA 3 → R4A, R4A, R4B, R5
+  {
+    name: 'Rev. Froilan Matbagan',
+    title: 'Antipolo Church',
+    photoUrl: '/leaders/froilan-matbagan.jpg',
+    level: 'Region',
+    tag: 'R4A',
+    order: 1, // within Area 3
+  },
+  {
+    name: 'Rev. Reynaldo Estoce',
+    title: 'Cavite Church',
+    photoUrl: '/leaders/reynaldo-estoce.png',
+    level: 'Region',
+    tag: 'R4A',
+    order: 2, // within Area 3
+  },
+  {
+    name: 'Rev. Leopoldo Uba',
+    title: 'Puerto Princesa Church',
+    photoUrl: '/leaders/leopoldo-uba.png',
+    level: 'Region',
+    tag: 'R4B',
+    order: 3, // within Area 3
+  },
+  {
+    name: 'Rev. Ariel Villafuerte',
+    title: 'Legazpi Church',
+    photoUrl: '/leaders/ariel-villafuerte.png',
+    level: 'Region',
+    tag: 'R5',
+    order: 4, // within Area 3
+  },
+
+  // AREA 4 → R6, R7, R8
+  {
+    name: 'Rev. Carlo Niño Bartolo',
+    title: 'Iloilo Church',
+    photoUrl: '/leaders/carlo-bartolo.png',
+    level: 'Region',
+    tag: 'R6',
+    order: 1, // within Area 4
+  },
+  {
+    name: 'Rev. Romel Pinson',
+    title: 'Cebu Church',
+    photoUrl: '/leaders/romel-pinson.png',
     level: 'Region',
     tag: 'R7',
+    order: 2, // within Area 4
   },
   {
-    name: '—',
-    title: 'Regional Leader • R10 Iloilo',
-    photoUrl: '/leaders/region-r10.jpg',
+    name: 'Rev. Editha Cipriano',
+    title: 'Leyte Church',
+    photoUrl: '/leaders/editha-cipriano.png',
+    level: 'Region',
+    tag: 'R8',
+    order: 3, // within Area 4
+  },
+
+  // AREA 5 → R9, R10, (R11 Davao—tbd), R12, R13
+  {
+    name: 'Rev. Elsa Catbay',
+    title: 'Zamboanga Church',
+    photoUrl: '/leaders/elsa-catbay.png',
+    level: 'Region',
+    tag: 'R9',
+    order: 1, // within Area 5
+  },
+  {
+    name: 'Rev. Sylvia Deapera',
+    title: 'Cagayan de Oro Church',
+    photoUrl: '/leaders/sylvia-deapera.png',
     level: 'Region',
     tag: 'R10',
+    order: 2, // within Area 5
+  },
+  // R11 Davao — leader not confirmed in sources; add when known.
+  {
+    name: 'Rev. John C. Bastol',
+    title: 'General Santos (SOCSKSARGEN) Church',
+    photoUrl: '/leaders/john-bastol.png',
+    level: 'Region',
+    tag: 'R12',
+    order: 3, // within Area 5
+  },
+  {
+    name: 'Rev. Percinita Apas',
+    title: 'Butuan Church',
+    photoUrl: '/leaders/percinita-apas.png',
+    level: 'Region',
+    tag: 'R13',
+    order: 4, // within Area 5
   },
 ]
 
@@ -196,7 +329,7 @@ export default function ChurchLeadershipGrid({
     >
       <div className='mx-auto max-w-7xl px-6'>
         {/* Header */}
-        <FadeIn className='mx-auto max-w-3xl text-center mb-8'>
+        <div className='mx-auto max-w-3xl text-center mb-8'>
           <p className='mb-1 text-xs tracking-widest uppercase text-gray-500'>
             {eyebrow}
           </p>
@@ -207,7 +340,7 @@ export default function ChurchLeadershipGrid({
             {heading}
           </h2>
           <p className='mt-2 text-sm md:text-base text-gray-600'>{subtext}</p>
-        </FadeIn>
+        </div>
 
         {/* Filter / Search */}
         {showFilter && (
@@ -233,9 +366,9 @@ export default function ChurchLeadershipGrid({
         )}
 
         {/* Cards */}
-        <StaggerContainer className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-7'>
+        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-7'>
           {filtered.map((p, i) => (
-            <FadeInItem key={`${p.name}-${i}`}>
+            <div key={`${p.name}-${i}`}>
               <article className='relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md pt-5 px-4'>
                 <div className='absolute inset-0 pointer-events-none ring-1 ring-black/5 rounded-2xl' />
                 <div className='pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500/70 opacity-70' />
@@ -272,9 +405,9 @@ export default function ChurchLeadershipGrid({
                   )}
                 </div>
               </article>
-            </FadeInItem>
+            </div>
           ))}
-        </StaggerContainer>
+        </div>
 
         <p className='mt-6 text-center text-xs text-gray-500'>
           Levels: <strong>National</strong> → <strong>Departments</strong> →{' '}
@@ -302,59 +435,16 @@ function levelPriority(level: Level) {
   }
 }
 
-function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('')
-}
-
-/** Renders the photo; falls back to a half-body silhouette/avatar if it fails or is missing */
 function LeaderPortrait({ src, name }: { src?: string; name: string }) {
-  const [broken, setBroken] = useState(!src)
-  const FALLBACK_MASK = '/leaders/ronnie-sodusta.webp' // should have transparent bg
-
-  // If we have a working photo, show it normally
-  if (!broken && src) {
-    return (
-      <Image
-        src={src}
-        alt={name}
-        fill
-        sizes='220px'
-        className='object-cover object-center'
-        onError={() => setBroken(true)}
-        priority={false}
-      />
-    )
-  }
-
-  // Fallback: silhouette using the mask from ronnie-sodusta.webp (no photo detail visible)
   return (
-    <div className='absolute inset-0'>
-      <div
-        className='absolute inset-0'
-        // The mask keeps only the subject’s shape; background stays transparent
-        style={{
-          WebkitMaskImage: `url(${FALLBACK_MASK})`,
-          maskImage: `url(${FALLBACK_MASK})`,
-          WebkitMaskRepeat: 'no-repeat',
-          maskRepeat: 'no-repeat',
-          WebkitMaskSize: 'contain',
-          maskSize: 'contain',
-          WebkitMaskPosition: 'center bottom',
-          maskPosition: 'center bottom',
-          // Solid fill for the silhouette; tweak to brand-gray if you like
-          background:
-            'linear-gradient(180deg, rgba(148,163,184,0.95), rgba(100,116,139,0.98))',
-          // A little lift so it doesn’t feel flat on light backgrounds
-          filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.18))',
-        }}
-        aria-hidden='true'
-      />
-    </div>
+    <Image
+      src={src as string}
+      alt={name}
+      fill
+      sizes='220px'
+      className='object-cover object-center'
+      priority={false}
+    />
   )
 }
 

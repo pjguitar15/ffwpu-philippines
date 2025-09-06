@@ -63,7 +63,7 @@ export function HeroSection() {
               highlightedText='Heavenly Parent'
               uppercase={true}
               className='text-4xl md:text-5xl font-extrabold leading-tight tracking-wide text-white [text-shadow:0_1px_0_rgba(0,0,0,0.28)] whitespace-normal break-words text-balance'
-              gradientClassName='bg-gradient-to-r from-sky-300 via-cyan-200 to-fuchsia-300 bg-clip-text text-transparent'
+              gradientClassName='bg-gradient-to-r from-sky-400 via-cyan-300 to-fuchsia-400 bg-clip-text text-transparent [text-shadow:0_0_20px_rgba(56,189,248,0.6)]'
             />
 
             <p className='mx-auto mt-4 max-w-3xl text-base md:text-lg text-white font-medium leading-relaxed'>

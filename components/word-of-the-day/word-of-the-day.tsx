@@ -16,6 +16,23 @@ type WotdData = { id: string; title: string; text: string; attribution?: string 
 /** Utility */
 const hoursToMs = (h: number) => Math.max(0, h) * 60 * 60 * 1000
 
+function Skeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={clsx(
+        'relative overflow-hidden rounded-md',
+        // base blocks (light + dark mode)
+        'bg-slate-200/90 dark:bg-slate-700/60',
+        className,
+      )}
+      aria-hidden='true'
+    >
+      {/* shimmer sweep */}
+      <div className='absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/70 to-transparent dark:via-white/20 bg-[length:200%_100%] motion-safe:animate-[shimmer_1.6s_linear_infinite]' />
+    </div>
+  )
+}
+
 export default function WordOfTheDayModal() {
   const [open, setOpen] = useState(false)
   const [wotd, setWotd] = useState<WotdData | null>(null)
@@ -69,7 +86,12 @@ export default function WordOfTheDayModal() {
         .then((data: any) => {
           if (cancelled) return
           if (data && data.id && data.text) {
-            setWotd({ id: String(data.id), title: data.title || 'Word of the Day', text: data.text, attribution: data.attribution || '' })
+            setWotd({
+              id: String(data.id),
+              title: data.title || 'Word of the Day',
+              text: data.text,
+              attribution: data.attribution || '',
+            })
             requestAnimationFrame(() => setRevealed(true))
           }
         })
@@ -100,8 +122,11 @@ export default function WordOfTheDayModal() {
 
   const handleClose = () => {
     try {
-  const idToSave = wotd?.id || 'unknown'
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ id: idToSave, ts: Date.now() }))
+      const idToSave = wotd?.id || 'unknown'
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ id: idToSave, ts: Date.now() }),
+      )
     } catch {}
     setOpen(false)
     // release scroll
@@ -161,15 +186,27 @@ export default function WordOfTheDayModal() {
                 </h3>
 
                 {/* Content area: blur -> clear reveal */}
-                {(!wotd || loading) ? (
-                  <div className='mt-4 space-y-2 animate-pulse'>
-                    <div className='h-[22px] rounded bg-slate-200/80 blur-[2px]' />
-                    <div className='h-[22px] rounded bg-slate-200/80 blur-[2px] w-11/12' />
-                    <div className='h-[22px] rounded bg-slate-200/70 blur-[2px] w-9/12' />
-                    <div className='h-[14px] rounded bg-slate-200/70 blur-[2px] w-4/12 mt-3' />
+                {!wotd || loading ? (
+                  <div
+                    className='mt-4 space-y-3'
+                    role='status'
+                    aria-busy='true'
+                    aria-live='polite'
+                  >
+                    <Skeleton className='h-[24px]' />
+                    <Skeleton className='h-[24px] w-11/12' />
+                    <Skeleton className='h-[24px] w-9/12' />
+                    <div className='pt-1'>
+                      <Skeleton className='h-[14px] w-5/12' />
+                    </div>
                   </div>
                 ) : (
-                  <div className={clsx('transition-all duration-500 ease-out', revealed ? 'blur-0 opacity-100' : 'blur-[6px] opacity-60')}> 
+                  <div
+                    className={clsx(
+                      'transition-all duration-500 ease-out',
+                      revealed ? 'blur-0 opacity-100' : 'blur-[6px] opacity-60',
+                    )}
+                  >
                     <p className='mt-4 text-base sm:text-lg leading-relaxed text-slate-700'>
                       {wotd.text}
                     </p>

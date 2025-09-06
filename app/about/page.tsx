@@ -18,9 +18,7 @@ export default function AboutPage() {
             <FadeIn>
               <AboutVisionSection />
             </FadeIn>
-            <FadeIn delay={0.05}>
-              <ChurchLeadershipGrid />
-            </FadeIn>
+            <ChurchLeadershipGrid />
             <FadeIn delay={0.1}>
               <AboutIntroSection />
             </FadeIn>

@@ -1,20 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Separator } from '@/components/ui/separator'
-
-// Keep footer links in sync with Header:
-const mainNavItems = [
-  { href: '/holy-mother-han', label: 'Holy Mother Han' },
-  { href: '/about', label: 'About' },
-  { href: '/news', label: 'News' },
-  { href: '/contact', label: 'Contact' },
-]
-
-const extraNavItems = [
-  { href: '/contact', label: 'Contact' }, // duplicate; we’ll dedupe
-  { href: '/about/history', label: 'Our History' },
-  { href: '/about/true-parents', label: 'True Parents' },
-]
+import { extraNavItems, mainNavItems } from './header'
 
 function dedupe(items: { href: string; label: string }[]) {
   const seen = new Set<string>()
@@ -151,22 +138,6 @@ export function Footer() {
             © {new Date().getFullYear()} Family Federation for World Peace and
             Unification Philippines. All rights reserved.
           </p>
-
-          {/* Optional links (uncomment when routes exist) */}
-          {/* <div className="flex items-center gap-4 text-sm">
-            <Link
-              href="/privacy"
-              className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="/terms"
-              className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded"
-            >
-              Terms of Service
-            </Link>
-          </div> */}
         </div>
       </div>
     </footer>
