@@ -22,9 +22,6 @@ export default function AboutPage() {
             <FadeIn delay={0.1}>
               <AboutIntroSection />
             </FadeIn>
-            <FadeIn delay={0.12}>
-              <AboutStatsStrip />
-            </FadeIn>
             <FadeIn delay={0.14}>
               <AboutPeaceRoadSection />
             </FadeIn>

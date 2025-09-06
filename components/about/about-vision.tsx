@@ -1,18 +1,17 @@
-import { Building2 } from "lucide-react";
-import { SectionShell } from "../ui/section-shell";
-import { TitleBlock } from "../ui/title-block";
+import { SectionShell } from '../ui/section-shell'
+import { TitleBlock } from '../ui/title-block'
 
 export function AboutVisionSection() {
   return (
     <SectionShell dark>
-      <div className='max-w-5xl mx-auto'>
+      <div className='container mx-auto lg:pe-60'>
         <TitleBlock
           dark
           eyebrow='Vision & Strategy • Philippine Providence'
-          title='Growing vibrant family churches across the nation'
-          highlightedText='family churches'
-          gradient='bg-gradient-to-r from-cyan-300 via-blue-300 to-indigo-300 bg-clip-text text-transparent'
-          description='Leaders focus on church growth and member care—raising committed communities in key cities, training leaders, and expanding outreach.'
+          title='About the Heavenly Philippines'
+          highlightedText='Heavenly Philippines'
+          gradient='bg-gradient-to-r from-sky-300 via-cyan-300 to-indigo-300 bg-clip-text text-transparent'
+          description='FFWPU Philippines strengthens Cheon Shim Won devotion, the Blessing & family ministry, HTM witnessing, youth formation through CARP/IAYSP, and UPF peace work—building vibrant churches across Luzon, Visayas, and Mindanao.'
         />
       </div>
     </SectionShell>
