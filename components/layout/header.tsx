@@ -82,6 +82,12 @@ export function Header() {
       desc: 'Roots of our movement',
       icon: FiClock,
     },
+    {
+      href: '/hj-media-works',
+      label: 'HJ MediaWorks',
+      desc: 'Videos & media content',
+      icon: FiVideo,
+    },
   ]
 
   const isActive = (href: string) => pathname === href
@@ -178,7 +184,7 @@ export function Header() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'text-sm font-medium hover:bg-blue-100 rounded-full px-4 py-2',
+                    'text-sm font-medium hover:bg-blue-100 rounded-full px-4 py-2 flex items-center gap-2',
                     isActive(item.href) ? 'font-bold' : 'text-foreground',
                   )}
                 >

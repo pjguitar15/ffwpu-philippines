@@ -18,6 +18,7 @@ import {
   User,
   KeyRound,
   Radio,
+  Video,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
@@ -124,6 +125,11 @@ export function AdminSidebar() {
         href: '/admin/word-of-the-day',
         label: 'Word of the Day',
         icon: Sparkles,
+      },
+      {
+        href: '/admin/hj-media-works',
+        label: 'HJ Media Works',
+        icon: Video,
       },
     ],
     [],

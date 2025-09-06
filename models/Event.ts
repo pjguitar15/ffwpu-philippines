@@ -2,7 +2,6 @@ import mongoose, { Schema, models, model } from 'mongoose'
 
 export interface EventDoc extends mongoose.Document {
   title: string
-  description?: string
   date: string // ISO datetime string e.g., 2025-07-27T09:00:00
   end?: string // ISO datetime string
   location: string
@@ -19,7 +18,6 @@ export interface EventDoc extends mongoose.Document {
 const EventSchema = new Schema<EventDoc>(
   {
     title: { type: String, required: true },
-    description: { type: String },
     date: { type: String, required: true },
     end: { type: String },
     location: { type: String, required: true },
@@ -36,11 +34,6 @@ const EventSchema = new Schema<EventDoc>(
   },
   { timestamps: true },
 )
-
-// Force recreation of the model in development to pick up schema changes
-if (process.env.NODE_ENV === 'development') {
-  delete models.Event
-}
 
 export const Event = (models.Event as mongoose.Model<EventDoc>) ||
   model<EventDoc>('Event', EventSchema)

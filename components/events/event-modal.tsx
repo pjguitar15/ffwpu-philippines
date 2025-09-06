@@ -7,7 +7,6 @@ import { motion } from 'framer-motion'
 type EventItem = {
   id: number | string
   title: string
-  description?: string
   date: string
   end?: string
   location: string
@@ -151,9 +150,9 @@ export default function EventModal({
                 </div>
               </div>
 
-              {/* Info card positioned below image without overlap */}
+              {/* Info card overlaps image on md+; no negative offset on small screens */}
               <motion.div
-                className='relative mx-auto w-full md:max-w-3xl mt-6'
+                className='relative mx-auto w-full md:max-w-3xl md:-mt-16 md:-translate-y-3'
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -172,13 +171,6 @@ export default function EventModal({
                   <h3 className='mt-3 text-2xl md:text-3xl font-extrabold tracking-wide text-slate-900'>
                     {event.title}
                   </h3>
-
-                  {/* Description */}
-                  {event.description && (
-                    <p className='mt-3 text-slate-600 leading-relaxed'>
-                      {event.description}
-                    </p>
-                  )}
 
                   {/* Meta chips */}
                   <div className='mt-4 flex flex-wrap items-center gap-3 text-sm'>

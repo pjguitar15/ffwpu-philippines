@@ -21,24 +21,9 @@ export async function PUT(
   await dbConnect()
   const { id } = params
   const body = await req.json()
-
-  // Specific debug for description field
-  console.log('PUT Event - ID:', id)
-  console.log('PUT Event - Description in body:', body.description)
-
-  // Use $set to explicitly set all fields including new ones
-  const updated = await Event.findByIdAndUpdate(
-    id,
-    { $set: body },
-    { new: true, runValidators: true },
-  ).lean()
-
+  const updated = await Event.findByIdAndUpdate(id, body, { new: true }).lean()
   if (!updated)
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
-
-  // Check if description was saved
-  console.log('PUT Event - Description after save:', updated.description)
-
   // Audit log
   try {
     recordAudit({

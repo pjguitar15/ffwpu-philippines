@@ -572,23 +572,19 @@ export default function WotdAdmin({
                   const pageItems = filtered.slice(start, end)
                   return (
                     <>
-                      <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'>
+                      <div className='space-y-4'>
                         {pageItems.map((q) => (
                           <div
                             key={q.id}
-                            className={`group relative overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1 ${
+                            className={`group relative overflow-hidden rounded-xl border transition-all duration-200 hover:shadow-lg hover:shadow-sky-500/10 ${
                               currentId === q.id
-                                ? 'border-sky-300 bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-sky-950/30 dark:via-slate-900/50 dark:to-indigo-950/30 ring-2 ring-sky-200 dark:ring-sky-800 shadow-lg shadow-sky-500/20'
-                                : 'border-slate-200 bg-gradient-to-br from-white to-slate-50/80 hover:border-sky-300 dark:border-slate-700 dark:bg-gradient-to-br dark:from-slate-900/80 dark:to-slate-950/60 dark:hover:border-sky-600'
+                                ? 'border-sky-300 bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/20 dark:to-indigo-950/20 ring-1 ring-sky-200 dark:ring-sky-800'
+                                : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950/50 dark:hover:border-slate-700'
                             }`}
                           >
-                            {/* Current indicator ribbon */}
+                            {/* subtle current glow */}
                             {currentId === q.id && (
-                              <div className='absolute -top-2 -right-2 w-16 h-16 overflow-hidden'>
-                                <div className='absolute top-4 right-[-16px] bg-gradient-to-r from-sky-500 to-indigo-500 text-white text-xs font-medium px-8 py-1 rotate-45 shadow-lg'>
-                                  Current
-                                </div>
-                              </div>
+                              <div className='pointer-events-none absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-sky-500/5' />
                             )}
                             {/* inline current chip handled in top-right cluster */}
 
