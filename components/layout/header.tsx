@@ -13,15 +13,13 @@ import {
   FiInfo,
   FiFileText,
   FiBookOpen,
-  FiMail,
   FiVideo,
   FiPhone,
   FiClock,
   FiHeart,
   FiShield,
-  FiFile,
 } from 'react-icons/fi'
-import { Sparkles, Search as SearchIcon } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 import { HeaderSearch } from './header-search'
 import { LiveIndicator } from '@/components/ui/live-indicator'
 
@@ -94,11 +92,8 @@ export const extraNavItems = [
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
-  // Search is handled by HeaderSearch (wrapped in Suspense). No direct useSearchParams here.
-
   const isActive = (href: string) => pathname === href
 
-  // Close on Esc
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setIsOpen(false)
     window.addEventListener('keydown', onKey)
@@ -148,13 +143,11 @@ export function Header() {
 
   return (
     <>
+      {/* Info strip */}
       <div className='bg-gradient-to-r from-blue-800 via-cyan-800 to-sky-800 text-white py-2 px-4 text-center text-sm shadow-sm'>
-        {/* Mobile / Tablet (short) */}
         <p className='block lg:hidden font-medium tracking-wide'>
           ✨ Sunday Service • 10:00 AM (Manila)
         </p>
-
-        {/* Desktop (exact original text) */}
         <p className='hidden lg:block font-medium tracking-wide'>
           ✨ Join us for our{' '}
           <span className='font-semibold'>Weekly Sunday Service</span> • Every
@@ -164,9 +157,9 @@ export function Header() {
 
       <header className='sticky top-0 z-50 w-full bg-background border-b'>
         <div className='container mx-auto flex h-16 items-center px-4 gap-3 min-w-0'>
-          {/* Logo */}
-          <Link href='/' className='flex items-center space-x-2 shrink-0'>
-            <div className='flex flex-col'>
+          {/* LEFT GROUP: Logo + Search (you asked for search right next to logo) */}
+          <div className='flex items-center gap-3 min-w-0'>
+            <Link href='/' className='flex items-center space-x-2 shrink-0'>
               <Image
                 src='/ffwpu-ph-logo.webp'
                 alt='FFWPU Philippines Logo'
@@ -176,29 +169,26 @@ export function Header() {
                 className='h-8 w-auto md:h-7 lg:h-8 shrink-0'
                 sizes='(min-width: 1024px) 144px, (min-width: 768px) 128px, 112px'
               />
-            </div>
-          </Link>
+            </Link>
 
-          {/* Live Indicator (can hide on tight widths if needed) */}
-          <LiveIndicator className='hidden sm:inline-flex ml-1 shrink-0' />
+            {/* Search (md+). Lives immediately beside logo. */}
+            <Suspense
+              fallback={
+                <div className='hidden md:block h-9 w-[clamp(12rem,28vw,22rem)] rounded-full bg-muted/60' />
+              }
+            >
+              <div className='hidden md:block min-w-[12rem] w-[clamp(12rem,28vw,24rem)] ms-3'>
+                <HeaderSearch variant='desktop' className='h-9 w-full' />
+              </div>
+            </Suspense>
 
-          {/* Desktop search: flexible, capped width, no large fixed margin */}
-          <Suspense
-            fallback={
-              <div className='hidden md:block flex-1 min-w-0 h-9 rounded-full bg-muted/60' />
-            }
-          >
-            <div className='hidden md:flex flex-1 min-w-0 justify-center'>
-              <HeaderSearch
-                variant='desktop'
-                className='w-full max-w-[clamp(14rem,40vw,28rem)]' // 224px → 40vw → 448px
-              />
-            </div>
-          </Suspense>
+            {/* Optional: small live indicator stays with brand cluster */}
+            <LiveIndicator className='hidden md:inline-flex shrink-0' />
+          </div>
 
-          {/* Right: nav + burger */}
+          {/* RIGHT GROUP: Nav list on the right + burger */}
           <div className='ml-auto flex items-center gap-2 sm:gap-3 min-w-0'>
-            <nav className='hidden lg:flex items-center gap-4'>
+            <nav className='hidden lg:flex items-center gap-2'>
               {mainNavItems.map((item) => (
                 <Link
                   key={item.href}
@@ -224,6 +214,7 @@ export function Header() {
           </div>
         </div>
 
+        {/* Drawer */}
         {isOpen && (
           <>
             <button
@@ -248,7 +239,6 @@ export function Header() {
                 </button>
               </div>
 
-              {/* Scrollable content */}
               <div className='flex-1 overflow-y-auto overscroll-contain'>
                 {/* Drawer search — mobile only */}
                 {isOpen && (

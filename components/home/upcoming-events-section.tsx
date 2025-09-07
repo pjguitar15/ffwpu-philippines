@@ -27,11 +27,6 @@ const EventModal = dynamic(() => import('@/components/events/event-modal'), {
 
 /* ──────────────────────────────────────────────────────────────────────────
    Areas (from your org chart)
-   Area 1  = NCR & Central Luzon
-   Area 2  = Northern Luzon
-   Area 3  = Southern Luzon
-   Area 4  = Visayas
-   Area 5  = Mindanao
    ────────────────────────────────────────────────────────────────────────── */
 const AREA_LABEL: Record<string, string> = {
   'Area 1': 'NCR & Central Luzon',
@@ -71,102 +66,17 @@ export type Event = {
   href?: string
 }
 
-/* ──────────────────────────────────────────────────────────────────────────
-   Sample events (now include area + church)
-   ────────────────────────────────────────────────────────────────────────── */
-// Fallback sample events used only if API is unavailable
-export const events: Event[] = [
-  {
-    id: 1,
-    title: 'Community Teaching (Antipolo City)',
-    date: '2025-02-15T09:00:00',
-    end: '2025-02-15T12:00:00',
-    location: 'Sitio Upper Hinapao, Antipolo City, Rizal',
-    area: 'Area 3', // Southern Luzon
-    region: 'Region IV-A',
-    church: 'Antipolo Family Church',
-    image:
-      'https://familyfedihq.org/wp-content/uploads/2025/02/ph-cm-tc-2-1024x613.jpg',
-    button: 'Read Report',
-  },
-  {
-    id: 2,
-    title: 'Fusion Fest 2025 — CIG Asia Pacific Youth Assembly',
-    date: '2025-07-27T09:00:00',
-    end: '2025-07-27T21:00:00',
-    location: 'Metrotent Convention Center, Pasig City',
-    area: 'Area 1', // NCR
-    region: 'NCR',
-    church: 'Metro Manila Family Church',
-    image: 'https://familyfedihq.org/wp-content/uploads/2025/07/3-1024x576.jpg',
-    button: 'Event Recap',
-  },
-  {
-    id: 3,
-    title: 'National Unified Sunday Service',
-    date: '2024-03-03T10:00:00',
-    end: '2024-03-03T12:00:00',
-    location: 'FFWPU Metro Manila Family Church, Quezon City',
-    area: 'Area 1',
-    region: 'NCR',
-    church: 'Metro Manila Family Church',
-    image:
-      'https://familyfedihq.org/wp-content/uploads/2024/03/ph-ss-1024x558.jpg',
-    button: 'Read Report',
-  },
-  {
-    id: 4,
-    title: 'HJ CheonBo Special Event (Metro Manila)',
-    date: '2024-07-20T09:00:00',
-    end: '2024-07-21T17:00:00',
-    location: 'FFWPU Metro Manila Family Church',
-    area: 'Area 1',
-    region: 'NCR',
-    church: 'Metro Manila Family Church',
-    image:
-      'https://familyfedihq.org/wp-content/uploads/2024/07/cwsp4-1024x544.jpg',
-    button: 'Highlights',
-  },
-  {
-    id: 5,
-    title: 'HJ CheonBo Special Event (La Union)',
-    date: '2024-04-07T09:00:00',
-    end: '2024-04-07T17:00:00',
-    location: 'La Union, Philippines',
-    area: 'Area 2', // Northern Luzon
-    region: 'Region I',
-    church: 'La Union Church',
-    image:
-      'https://familyfedihq.org/wp-content/uploads/2024/04/cwsp1-1024x576.jpg',
-    button: 'View Report',
-  },
-  {
-    id: 6,
-    title: 'CARP Healing Café (Homegroup Session)',
-    date: '2024-10-06T14:00:00',
-    end: '2024-10-06T17:00:00',
-    location: 'FFWPU Philippines National HQ',
-    area: 'Area 1',
-    region: 'NCR',
-    church: 'CARP / National HQ',
-    image:
-      'https://familyfedihq.org/wp-content/uploads/2024/10/CARP-ph-1024x576.jpg',
-    button: 'See Story',
-  },
-  {
-    id: 7,
-    title: 'Hyojeong U-20 Youth Witnessing Festival',
-    date: '2024-10-12T09:00:00',
-    end: '2024-10-12T17:00:00',
-    location: 'Philippines (CARP / Youth)',
-    area: 'Nationwide',
-    region: 'Nationwide',
-    church: 'Multiple Chapters',
-    image:
-      'https://familyfedihq.org/wp-content/uploads/2024/10/U-20-Philippines-4-1024x576.jpg',
-    button: 'See Photos',
-  },
-]
+/** Stable order for tabs (always render them) */
+const ORDERED_AREAS: Event['area'][] = [
+  'Area 1',
+  'Area 2',
+  'Area 3',
+  'Area 4',
+  'Area 5',
+  'Nationwide',
+] as const
+
+type AreaTab = 'All' | Event['area']
 
 /* ──────────────────────────────────────────────────────────────────────────
    Helpers
@@ -183,28 +93,26 @@ export function UpcomingEventsSection({
 }: {
   eyebrow?: string
 }) {
-  const [show, setShow] = React.useState(false)
   const [selected, setSelected] = React.useState<Event | null>(null)
-  const [items, setItems] = React.useState<Event[]>(events)
+  const [items, setItems] = React.useState<Event[]>([])
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
 
-  // Build AREA tabs in numeric order + 'Nationwide'
-  const AREAS = React.useMemo(() => {
-    const uniq = new Set(items.map((e) => e.area))
-    const list = Array.from(uniq)
-    const num = list
-      .filter((a) => a.startsWith('Area '))
-      .sort(
-        (a, b) =>
-          parseInt(a.replace('Area ', '')) - parseInt(b.replace('Area ', '')),
-      )
-    const rest = list.filter((a) => !a.startsWith('Area ')).sort()
-    return ['All', ...num, ...rest] as const
+  /** Active tab — constant default */
+  const [tab, setTab] = React.useState<AreaTab>('All')
+
+  /** Counts (for dimming/disable) */
+  const areaCounts = React.useMemo(() => {
+    const m = new Map<Event['area'], number>()
+    items.forEach((e) => m.set(e.area, (m.get(e.area) ?? 0) + 1))
+    return m
   }, [items])
 
-  const [tab, setTab] = React.useState<(typeof AREAS)[number]>(AREAS[0])
+  /** Always render all tabs */
+  const areaTabs: AreaTab[] = ['All', ...ORDERED_AREAS]
+  const hasEvents = (a: Event['area']) => (areaCounts.get(a) ?? 0) > 0
 
+  /** Filtered list for the current tab */
   const filtered = tab === 'All' ? items : items.filter((e) => e.area === tab)
 
   const railRef = React.useRef<HTMLDivElement>(null)
@@ -215,14 +123,7 @@ export function UpcomingEventsSection({
     el.scrollBy({ left: delta, behavior: 'smooth' })
   }
 
-  React.useEffect(() => {
-    if (railRef.current) railRef.current.scrollTo({ left: 0, behavior: 'auto' })
-    setShow(false)
-    const t = setTimeout(() => setShow(true), 30)
-    return () => clearTimeout(t)
-  }, [tab])
-
-  // Load events dynamically
+  // Load events
   const load = React.useCallback(async () => {
     let cancelled = false
     try {
@@ -231,12 +132,23 @@ export function UpcomingEventsSection({
       const res = await fetch('/api/events', { cache: 'no-store' })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = (await res.json()) as any[]
-      if (!cancelled && Array.isArray(data) && data.length) {
-        // normalize _id -> id for stable keys (fallback to title+date)
-        const normalized: Event[] = data.map((d, i) => ({
-          ...d,
-          id: d._id ?? d.id ?? `${d.title}-${d.date}-${i}`,
-        }))
+
+      if (!cancelled && Array.isArray(data)) {
+        const normalized: Event[] = data.map((d, i) => {
+          const normArea = String(d.area || '')
+            .replace(/\s+/g, ' ')
+            .trim()
+          const safeArea = (
+            ORDERED_AREAS.includes(normArea as any)
+              ? (normArea as Event['area'])
+              : 'Nationwide'
+          ) as Event['area']
+          return {
+            ...d,
+            id: d._id ?? d.id ?? `${d.title}-${d.date}-${i}`,
+            area: safeArea,
+          }
+        })
         setItems(normalized)
       }
     } catch (e: any) {
@@ -257,7 +169,7 @@ export function UpcomingEventsSection({
     }
   }, [load])
 
-  // Fallback image data URI (guaranteed)
+  // Fallback image data URI
   const FALLBACK_EVENT_IMAGE_DATA_URI =
     'data:image/svg+xml;utf8,' +
     encodeURIComponent(`
@@ -297,7 +209,7 @@ export function UpcomingEventsSection({
           <FadeIn y={10} delay={0.02}>
             <div className='mb-2 flex items-center justify-center gap-2'>
               <Sparkles className='h-3.5 w-3.5 text-amber-300' />
-              <span className='text-[11px] md:text-xs font-extrabold tracking-[0.25em] uppercase text-amber-300/90'>
+              <span className='text-[11px] md:text-xs font-extrabold tracking-[0.25em] uppercase text-amber-300'>
                 {eyebrow}
               </span>
             </div>
@@ -316,19 +228,20 @@ export function UpcomingEventsSection({
             </div>
           </FadeIn>
           <FadeIn y={10} delay={0.14}>
-            <p className='text-center text-teal-100/90 max-w-2xl mx-auto mb-8'>
+            <p className='text-center text-[rgba(204,250,241,0.9)] max-w-2xl mx-auto mb-8'>
               Filter by area to find gatherings near you.
             </p>
           </FadeIn>
 
-          {/* Area Tabs */}
+          {/* Area Tabs (always visible) */}
           <StaggerContainer
             className='flex flex-wrap justify-center gap-2 md:gap-3 mb-8'
             delayChildren={0.04}
             stagger={0.05}
           >
-            {AREAS.map((a) => {
+            {areaTabs.map((a) => {
               const active = a === tab
+              const disabled = a !== 'All' && !hasEvents(a as Event['area'])
               const label =
                 a === 'All'
                   ? 'All Areas'
@@ -336,15 +249,23 @@ export function UpcomingEventsSection({
               return (
                 <FadeInItem key={a}>
                   <button
-                    onClick={() => setTab(a)}
+                    onClick={() => !disabled && setTab(a)}
+                    disabled={disabled}
+                    aria-pressed={active}
                     className={[
-                      'cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-extrabold tracking-wider uppercase transition-colors',
+                      'cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-extrabold tracking-wider uppercase transition-colors ring-1 backdrop-blur-sm',
                       active
-                        ? 'bg-amber-300 text-gray-900'
-                        : 'bg-white/10 text-white/85 hover:bg-white/15',
+                        ? 'bg-amber-300 text-gray-900 ring-amber-200'
+                        : 'bg-white/10 text-white ring-white/20 hover:bg-white/20',
+                      disabled ? 'opacity-45 cursor-not-allowed' : '',
                     ].join(' ')}
                   >
                     {label}
+                    {a !== 'All' && (
+                      <span className='ml-2 text-[10px] opacity-80'>
+                        ({areaCounts.get(a as Event['area']) ?? 0})
+                      </span>
+                    )}
                   </button>
                 </FadeInItem>
               )
@@ -356,9 +277,9 @@ export function UpcomingEventsSection({
             <div
               key={tab as string}
               ref={railRef}
-              className={`flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-2`}
+              className='flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-2'
             >
-              {/* Loading skeletons when no data yet */}
+              {/* Loading skeletons */}
               {loading && items.length === 0 && (
                 <>
                   {[...Array(4)].map((_, i) => (
@@ -378,6 +299,16 @@ export function UpcomingEventsSection({
                   ))}
                 </>
               )}
+
+              {/* Empty state for a tab */}
+              {!loading && filtered.length === 0 && (
+                <div className='px-2 py-10 text-center w-full'>
+                  <div className='inline-flex items-center rounded-lg px-4 py-2 text-sm font-semibold bg-white/10 text-white ring-1 ring-white/20 backdrop-blur'>
+                    No events in this area yet.
+                  </div>
+                </div>
+              )}
+
               {filtered.map((event, idx) => {
                 const start = new Date(event.date)
                 const end = event.end ? new Date(event.end) : null
@@ -387,6 +318,7 @@ export function UpcomingEventsSection({
                   (event as any)._id ??
                   (event as any).id ??
                   `${event.title}-${event.date}-${idx}`
+
                 return (
                   <PopInItem
                     key={key}
@@ -521,22 +453,6 @@ export function UpcomingEventsSection({
       {selected && (
         <EventModal isOpen event={selected} onClose={() => setSelected(null)} />
       )}
-      <style jsx>{`
-        .owl-float {
-          animation: owlFloat 5.5s ease-in-out infinite;
-        }
-        @keyframes owlFloat {
-          0% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-4px);
-          }
-          100% {
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </section>
   )
 }

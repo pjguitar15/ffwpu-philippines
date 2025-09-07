@@ -67,7 +67,7 @@ export const LEADERS: Leader[] = [
     order: 1,
   },
   {
-    name: 'Rev. Angelito Cainday',
+    name: 'Mr. Angelito Cainday',
     title: 'Director, Church Growth Department',
     photoUrl: '/leaders/angelito-cainday.png',
     level: 'Department',
