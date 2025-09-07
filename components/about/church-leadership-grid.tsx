@@ -5,11 +5,13 @@ import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { LEADERS } from '@/constants/chruch-leaders'
 import { JoinedLeader, Leader, Level, Role } from '@/types/church-leaders.type'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Input } from '@/components/ui/input'
+import { Search, X } from 'lucide-react'
 
-/** ──────────────────────────────────────────────────────────────────────────
- * Types
+/* ──────────────────────────────────────────────────────────────────────────
+ * Utils
  * ──────────────────────────────────────────────────────────────────────────*/
-
 function normalizeName(n: string) {
   return n.trim().toLowerCase().replace(/\s+/g, ' ')
 }
@@ -27,21 +29,15 @@ function shimmer(w: number, h: number) {
     </defs>
     <rect width="${w}" height="${h}" fill="#f8fafc"/>
     <rect id="r" width="${w}" height="${h}" fill="url(#g)"/>
-    <animate xlink:href="#r" attributeName="x" from="-${w}" to="${w}" dur="1.2s" repeatCount="indefinite"  />
+    <animate xlink:href="#r" attributeName="x" from="-${w}" to="${w}" dur="1.2s" repeatCount="indefinite"/>
   </svg>`
 }
-
 const toBase64 = (str: string) =>
   typeof window === 'undefined'
     ? Buffer.from(str).toString('base64')
     : window.btoa(str)
 
-/** ──────────────────────────────────────────────────────────────────────────
- * Sample data (DRAFT / placeholders)
- * Replace photoUrl with your real half-body portraits under /public/leaders
- * ──────────────────────────────────────────────────────────────────────────*/
-
-/** ──────────────────────────────────────────────────────────────────────────
+/* ──────────────────────────────────────────────────────────────────────────
  * Component
  * ──────────────────────────────────────────────────────────────────────────*/
 export default function ChurchLeadershipGrid({
@@ -62,40 +58,52 @@ export default function ChurchLeadershipGrid({
   const [level, setLevel] = useState<Level | 'All'>('All')
   const [q, setQ] = useState('')
 
-  // NEW: build merged (deduped) people with roles
+  // Build merged (deduped) people with roles
   const joined = useMemo(() => joinLeaders(leaders), [leaders])
 
-  // NEW: filter/search/sort over joined people
+  // Counts per tab (for nice badges)
+  const counts = useMemo(() => {
+    const c: Record<'All' | Level, number> = {
+      All: joined.length,
+      National: 0,
+      Department: 0,
+      Area: 0,
+      Region: 0,
+    }
+    for (const p of joined) {
+      const seen = new Set<Level>()
+      for (const r of p.roles) seen.add(r.level)
+      for (const lv of seen) c[lv]++
+    }
+    return c
+  }, [joined])
+
+  // Filter/search/sort over joined people
   const filtered = useMemo(() => {
-    return (
-      joined
-        // level filter: match if ANY role matches the selected level
-        .filter((person) =>
-          level === 'All' ? true : person.roles.some((r) => r.level === level),
-        )
-        // text search: search name OR any role title/tag
-        .filter((person) => {
-          if (!q.trim()) return true
-          const hay = [
-            person.name,
-            ...person.roles.map((r) => `${r.title} ${r.tag ?? ''}`),
-          ]
-            .join(' ')
-            .toLowerCase()
-          return hay.includes(q.toLowerCase())
-        })
-        // sort by primary role rank → primary order → name
-        .sort((a, b) => {
-          const pa = getPrimaryRole(a.roles)
-          const pb = getPrimaryRole(b.roles)
-          const L = levelPriority(pa.level) - levelPriority(pb.level)
-          if (L !== 0) return L
-          const ao = pa.order ?? 999
-          const bo = pb.order ?? 999
-          if (ao !== bo) return ao - bo
-          return a.name.localeCompare(b.name)
-        })
-    )
+    return joined
+      .filter((person) =>
+        level === 'All' ? true : person.roles.some((r) => r.level === level),
+      )
+      .filter((person) => {
+        if (!q.trim()) return true
+        const hay = [
+          person.name,
+          ...person.roles.map((r) => `${r.title} ${r.tag ?? ''}`),
+        ]
+          .join(' ')
+          .toLowerCase()
+        return hay.includes(q.toLowerCase())
+      })
+      .sort((a, b) => {
+        const pa = getPrimaryRole(a.roles)
+        const pb = getPrimaryRole(b.roles)
+        const L = levelPriority(pa.level) - levelPriority(pb.level)
+        if (L !== 0) return L
+        const ao = pa.order ?? 999
+        const bo = pb.order ?? 999
+        if (ao !== bo) return ao - bo
+        return a.name.localeCompare(b.name)
+      })
   }, [joined, level, q])
 
   return (
@@ -104,7 +112,7 @@ export default function ChurchLeadershipGrid({
       aria-labelledby='leadership-heading'
     >
       <div className='mx-auto container px-6'>
-        {/* Header (unchanged) */}
+        {/* Header */}
         <div className='mx-auto max-w-3xl text-center mb-8'>
           <p className='mb-1 text-xs tracking-widest uppercase text-gray-500'>
             {eyebrow}
@@ -118,26 +126,46 @@ export default function ChurchLeadershipGrid({
           <p className='mt-2 text-sm md:text-base text-gray-600'>{subtext}</p>
         </div>
 
-        {/* Filter / Search (unchanged UI) */}
+        {/* Filter / Search — Tabs + Search */}
         {showFilter && (
-          <div className='mx-auto mb-6 flex flex-wrap items-center justify-center gap-3'>
-            <select
+          <div className='mx-auto mb-8 flex flex-col items-center gap-3'>
+            <Tabs
               value={level}
-              onChange={(e) => setLevel(e.target.value as any)}
-              className='rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm'
+              onValueChange={(v) => setLevel(v as any)}
+              className='w-full'
             >
-              <option value='All'>All Levels</option>
-              <option value='National'>National</option>
-              <option value='Department'>Departments</option>
-              <option value='Area'>Areas</option>
-              <option value='Region'>Regions</option>
-            </select>
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder='Search name, title, tag…'
-              className='w-64 rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm'
-            />
+              <TabsList className='mx-auto flex flex-wrap gap-2 rounded-2xl border bg-white p-1 shadow-sm sm:max-w-3xl'>
+                {(
+                  [
+                    { v: 'All', label: 'All' },
+                    { v: 'National', label: 'National' },
+                    { v: 'Department', label: 'Departments' },
+                    { v: 'Area', label: 'Areas' },
+                    { v: 'Region', label: 'Regions' },
+                  ] as const
+                ).map((t) => (
+                  <TabsTrigger
+                    key={t.v}
+                    value={t.v}
+                    className={clsx(
+                      'px-3 sm:px-4 py-1.5 text-[12px] sm:text-sm rounded-xl data-[state=active]:bg-slate-900 data-[state=active]:text-white',
+                      'data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-slate-900/10 cursor-pointer',
+                    )}
+                  >
+                    {t.label}
+                    <span
+                      className={clsx(
+                        'ml-2 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full px-1 text-[10px]',
+                        'bg-slate-100 text-slate-600',
+                        'data-[state=active]:bg-white/20 data-[state=active]:text-white',
+                      )}
+                    >
+                      {counts[t.v as 'All' | Level]}
+                    </span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
           </div>
         )}
 
@@ -149,7 +177,7 @@ export default function ChurchLeadershipGrid({
             return (
               <article
                 key={`${person.name}-${i}`}
-                className='relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md pt-5 px-4'
+                className='relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md pt-5 px-4'
               >
                 <div className='absolute inset-0 pointer-events-none ring-1 ring-black/5 rounded-2xl' />
                 <div className='pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500/70 opacity-70' />
@@ -198,8 +226,7 @@ export default function ChurchLeadershipGrid({
                           className='inline-flex items-center rounded-full bg-slate-50 px-2 py-0.5 text-[10px] text-slate-600 ring-1 ring-slate-200'
                           title={`${r.title}${r.tag ? ` • ${r.tag}` : ''}`}
                         >
-                          {r.level}: {r.tag ? `${r.tag} — ` : ''}
-                          {r.title}
+                          {r.level}: {r.tag ? `${r.tag} — ` : ''} {r.title}
                         </span>
                       ))}
                     </div>
@@ -219,6 +246,8 @@ export default function ChurchLeadershipGrid({
   )
 }
 
+/* --- helpers ------------------------------------------------------------ */
+
 function levelPriority(level: Level) {
   switch (level) {
     case 'National':
@@ -236,7 +265,6 @@ function levelPriority(level: Level) {
 
 function joinLeaders(leaders: Leader[]): JoinedLeader[] {
   const map = new Map<string, JoinedLeader>()
-
   for (const l of leaders) {
     const key = normalizeName(l.name)
     const role: Role = {
@@ -245,14 +273,11 @@ function joinLeaders(leaders: Leader[]): JoinedLeader[] {
       tag: l.tag,
       order: l.order,
     }
-
     if (!map.has(key)) {
       map.set(key, { name: l.name, photoUrl: l.photoUrl, roles: [role] })
     } else {
       const existing = map.get(key)!
-      // prefer the first non-empty photo, but allow later to replace empty
       if (!existing.photoUrl && l.photoUrl) existing.photoUrl = l.photoUrl
-      // avoid exact duplicate roles
       const dup = existing.roles.some(
         (r) =>
           r.level === role.level &&
@@ -262,8 +287,6 @@ function joinLeaders(leaders: Leader[]): JoinedLeader[] {
       if (!dup) existing.roles.push(role)
     }
   }
-
-  // keep roles of each person in a consistent order
   for (const p of map.values()) {
     p.roles.sort((a, b) => {
       const L = levelPriority(a.level) - levelPriority(b.level)
@@ -271,16 +294,13 @@ function joinLeaders(leaders: Leader[]): JoinedLeader[] {
       const ao = a.order ?? 999
       const bo = b.order ?? 999
       if (ao !== bo) return ao - bo
-      // put National/Dept role tags before empties for readability
       return (a.tag ?? '').localeCompare(b.tag ?? '')
     })
   }
-
   return Array.from(map.values())
 }
 
 function getPrimaryRole(roles: Role[]): Role {
-  // highest position = lowest priority number, then smallest order
   return roles.slice().sort((a, b) => {
     const L = levelPriority(a.level) - levelPriority(b.level)
     if (L !== 0) return L
@@ -290,24 +310,18 @@ function getPrimaryRole(roles: Role[]): Role {
 
 function LeaderPortrait({ src, name }: { src?: string; name: string }) {
   const [loaded, setLoaded] = useState(false)
-
-  // sensible sizes for your grid (tweak if needed)
   const sizes =
     '(max-width: 640px) 45vw, (max-width: 1024px) 28vw, (max-width: 1280px) 20vw, 220px'
-
   return (
     <Image
       src={(src || '/leaders/placeholder.png') as string}
       alt={name}
       fill
       sizes={sizes}
-      // 🔹 Blur-up placeholder (SVG shimmer)
       placeholder='blur'
       blurDataURL={`data:image/svg+xml;base64,${toBase64(shimmer(300, 400))}`}
-      // 🔹 Ensure lazy behavior (Next is lazy by default, this makes it explicit)
       loading='lazy'
       decoding='async'
-      // 🔹 Smooth un-blur on load
       onLoadingComplete={() => setLoaded(true)}
       className={clsx(
         'object-cover object-center transition duration-500 will-change-transform',
@@ -318,4 +332,3 @@ function LeaderPortrait({ src, name }: { src?: string; name: string }) {
     />
   )
 }
-

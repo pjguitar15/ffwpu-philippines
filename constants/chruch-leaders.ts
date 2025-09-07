@@ -1,8 +1,8 @@
-import { Leader } from "@/types/church-leaders.type";
+import { Leader } from '@/types/church-leaders.type'
 
 export const LEADERS: Leader[] = [
   // ─────────────────────────────────────────
-  // National (by order)
+  // National (sorted by order)
   // ─────────────────────────────────────────
   {
     name: 'Rev. Ronnie Sodusta',
@@ -13,17 +13,51 @@ export const LEADERS: Leader[] = [
     order: 1,
   },
   {
+    name: 'Ms. Maraia Aparece',
+    title: 'National Secretary',
+    photoUrl: '/leaders/maraia-aparece.png',
+    level: 'National',
+    tag: 'Head Office',
+    order: 2,
+  },
+  {
     name: 'Rev. John Rhodbert Gregorio',
     title: 'Secretary General',
     photoUrl: '/leaders/john-rhodbert-gregorio.png',
     level: 'National',
     tag: 'Head Office',
-    order: 2,
+    order: 3,
   },
 
   // ─────────────────────────────────────────
-  // Departments (chart order)
+  // Departments (sorted per org slide)
+  // (Board/Finance items appear first)
   // ─────────────────────────────────────────
+  {
+    name: 'Mrs. Kinu Nuyana',
+    title: 'Finance Director (Finance Committee)',
+    photoUrl: '/leaders/kinu-nuyana.png',
+    level: 'Department',
+    tag: 'Finance',
+    order: 0.5,
+  },
+  {
+    name: 'Mrs. Kinu Nuyana',
+    title: 'Accounting Department Director',
+    photoUrl: '/leaders/kinu-nuyana.png',
+    level: 'Department',
+    tag: 'Accounting',
+    order: 0.6,
+  },
+  {
+    name: 'Mrs. Shirley Vergara',
+    title: 'Church Nurturing, Tithes & Offerings Department Director',
+    photoUrl: '/leaders/shirley-vergara.png',
+    level: 'Department',
+    tag: 'Tithes & Offerings / Women',
+    order: 0.7,
+  },
+
   {
     name: 'Mary Grace A. Carumba',
     title: 'Director, Database Management & Membership Department',
@@ -50,11 +84,11 @@ export const LEADERS: Leader[] = [
     order: 3,
   },
   {
-    name: 'Jun Young Teves',
-    title: 'Director, Youth / Future Generation Department',
-    photoUrl: '/leaders/jun-young-teves.png',
+    name: 'Rev. John Rhodbert Gregorio',
+    title: 'Director, Administrative Department',
+    photoUrl: '/leaders/john-rhodbert-gregorio.png',
     level: 'Department',
-    tag: 'Youth',
+    tag: 'Administration',
     order: 4,
   },
   {
@@ -66,12 +100,20 @@ export const LEADERS: Leader[] = [
     order: 5,
   },
   {
+    name: 'Jun Young Teves',
+    title: 'Director, Youth / Future Generation Department',
+    photoUrl: '/leaders/jun-young-teves.png',
+    level: 'Department',
+    tag: 'Youth',
+    order: 6,
+  },
+  {
     name: 'Edgar Tanate',
     title: 'Head, Education, Spirituality & Leadership Development Department',
     photoUrl: '/leaders/edgar-tanate.png',
     level: 'Department',
     tag: 'Education',
-    order: 6,
+    order: 7,
   },
 
   // ─────────────────────────────────────────
@@ -119,8 +161,9 @@ export const LEADERS: Leader[] = [
   },
 
   // ─────────────────────────────────────────
-  // Regions / Local Churches (ordered within each Area)
+  // Regions / Local Churches (ordered inside each Area)
   // ─────────────────────────────────────────
+
   // AREA 1 → NCR, R3
   {
     name: 'Rev. John Rhodbert Gregorio',
@@ -252,7 +295,7 @@ export const LEADERS: Leader[] = [
     order: 3, // within Area 5
   },
   {
-    name: 'Rev. Percinita Apas',
+    name: 'Rev. Percy Apas',
     title: 'Butuan Church',
     photoUrl: '/leaders/percinita-apas.png',
     level: 'Region',
