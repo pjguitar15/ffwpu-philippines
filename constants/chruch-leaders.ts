@@ -59,7 +59,7 @@ export const LEADERS: Leader[] = [
   },
 
   {
-    name: 'Mary Grace A. Carumba',
+    name: 'Mrs. Mary Grace A. Carumba',
     title: 'Director, Database Management & Membership Department',
     photoUrl: '/leaders/mary-grace-carumba.png',
     level: 'Department',
@@ -67,7 +67,7 @@ export const LEADERS: Leader[] = [
     order: 1,
   },
   {
-    name: 'Angelito Cainday',
+    name: 'Rev. Angelito Cainday',
     title: 'Director, Church Growth Department',
     photoUrl: '/leaders/angelito-cainday.png',
     level: 'Department',
@@ -75,7 +75,7 @@ export const LEADERS: Leader[] = [
     order: 2,
   },
   {
-    name: 'Venus Agustin',
+    name: 'Mr. Venus Agustin',
     title:
       'Director, General Affairs & PR Department (UPF Philippines Regional Director)',
     photoUrl: '/leaders/venus-agustin.png',
@@ -92,7 +92,7 @@ export const LEADERS: Leader[] = [
     order: 4,
   },
   {
-    name: 'Catherine Gregorio',
+    name: 'Mrs. Catherine Gregorio',
     title: 'Director, Blessed Family Department',
     photoUrl: '/leaders/catherine-gregorio.png',
     level: 'Department',
@@ -100,7 +100,7 @@ export const LEADERS: Leader[] = [
     order: 5,
   },
   {
-    name: 'Jun Young Teves',
+    name: 'Mr. Jun Young Teves',
     title: 'Director, Youth / Future Generation Department',
     photoUrl: '/leaders/jun-young-teves.png',
     level: 'Department',
@@ -108,7 +108,7 @@ export const LEADERS: Leader[] = [
     order: 6,
   },
   {
-    name: 'Edgar Tanate',
+    name: 'Rev. Edgar Tanate',
     title: 'Head, Education, Spirituality & Leadership Development Department',
     photoUrl: '/leaders/edgar-tanate.png',
     level: 'Department',
@@ -128,7 +128,7 @@ export const LEADERS: Leader[] = [
     order: 1,
   },
   {
-    name: 'Rene T. Lansangan',
+    name: 'Rev. Rene T. Lansangan',
     title: 'Area 2 Leader • Northern Luzon',
     photoUrl: '/leaders/rene-lansangan.png',
     level: 'Area',
@@ -144,7 +144,7 @@ export const LEADERS: Leader[] = [
     order: 3,
   },
   {
-    name: 'Angelito Cainday',
+    name: 'Mr. Angelito Cainday',
     title: 'Area 4 Leader • Visayas',
     photoUrl: '/leaders/angelito-cainday.png',
     level: 'Area',
@@ -184,7 +184,7 @@ export const LEADERS: Leader[] = [
 
   // AREA 2 → R1, R2, CAR
   {
-    name: 'Blessie Belle T. Ramos',
+    name: 'Mrs. Blessie Belle T. Ramos',
     title: 'La Union Church',
     photoUrl: '/leaders/blessie-ramos.png',
     level: 'Region',
@@ -192,7 +192,7 @@ export const LEADERS: Leader[] = [
     order: 1, // within Area 2
   },
   {
-    name: 'Rene T. Lansangan',
+    name: 'Rev. Rene T. Lansangan',
     title: 'Cauayan Church',
     photoUrl: '/leaders/rene-lansangan.png',
     level: 'Region',
