@@ -24,7 +24,7 @@ export default function AdminEventsPage() {
   const [viewItem, setViewItem] = useState<EventItem | null>(null)
 
   const [page, setPage] = useState(1)
-  const pageSize = 5
+  const pageSize = 8
   const { toast } = useToast()
 
   useEffect(() => {

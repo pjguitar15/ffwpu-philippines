@@ -18,10 +18,20 @@ import {
   FiClock,
   FiHeart,
   FiShield,
+  FiChevronDown,
 } from 'react-icons/fi'
 import { Sparkles } from 'lucide-react'
 import { HeaderSearch } from './header-search'
 import { LiveIndicator } from '@/components/ui/live-indicator'
+
+/* ------------------------------
+   Nav Data + XL logic
+-------------------------------*/
+// Routes that appear in the TOP NAV on XL (and therefore should be hidden from the drawer on XL)
+const IN_TOP_NAV_ON_XL = new Set<string>([
+  '/about/true-parents',
+  '/hj-testimonies',
+])
 
 export const mainNavItems = [
   {
@@ -48,7 +58,7 @@ export const mainNavItems = [
     desc: 'Reach out to our team',
     icon: FiPhone,
   },
-]
+] as const
 
 export const extraNavItems = [
   {
@@ -87,29 +97,68 @@ export const extraNavItems = [
     desc: 'Personal stories & interviews',
     icon: FiBookOpen,
   },
-]
+] as const
 
-export function Header() {
-  const [isOpen, setIsOpen] = useState(false)
+// Static splits (no hooks)
+const mediaItems = extraNavItems.filter(
+  (i) => i.href === '/hj-media-works' || i.href === '/hj-testimonies',
+)
+const trueParentsParent = extraNavItems.find(
+  (i) => i.href === '/about/true-parents',
+)
+const trueParentsKids = extraNavItems.filter(
+  (i) => i.href === '/holy-mother-han' || i.href === '/true-father',
+)
+const leftoverExtras = extraNavItems.filter(
+  (i) =>
+    ![
+      '/hj-media-works',
+      '/hj-testimonies',
+      '/about/true-parents',
+      '/holy-mother-han',
+      '/true-father',
+    ].includes(i.href),
+)
+
+// For top nav on XL only
+const desktopExtrasXL = extraNavItems.filter((i) =>
+  IN_TOP_NAV_ON_XL.has(i.href),
+)
+
+// Drawer extras: these always remain in the drawer (all sizes)
+const drawerExtrasAlways = extraNavItems.filter(
+  (i) => !IN_TOP_NAV_ON_XL.has(i.href),
+)
+// Drawer extras: hide on XL (they move to the top nav there)
+const drawerExtrasXLHidden = extraNavItems.filter((i) =>
+  IN_TOP_NAV_ON_XL.has(i.href),
+)
+
+type NavItem = (typeof mainNavItems)[number] | (typeof extraNavItems)[number]
+
+/* ------------------------------
+   Drawer helpers
+-------------------------------*/
+function DrawerList({
+  items,
+  onChoose,
+}: {
+  items: readonly NavItem[]
+  onChoose: () => void
+}) {
   const pathname = usePathname()
   const isActive = (href: string) => pathname === href
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setIsOpen(false)
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [])
-
-  const DrawerList = ({ items }: { items: typeof mainNavItems }) => (
-    <nav className='p-5 mt-2 space-y-1'>
-      {items.map((item, index) => {
+  return (
+    <nav className='px-5 space-y-1'>
+      {items.map((item) => {
         const Icon = item.icon as any
         const active = isActive(item.href)
         return (
           <Link
-            key={index}
+            key={item.href}
             href={item.href}
-            onClick={() => setIsOpen(false)}
+            onClick={onChoose}
             className={cn(
               'group flex items-center gap-3 rounded-xl px-6 py-4 cursor-pointer transition-none',
               'hover:bg-blue-100',
@@ -140,6 +189,106 @@ export function Header() {
       })}
     </nav>
   )
+}
+
+/** Collapsible group with clickable parent link + caret to expand children */
+function DrawerGroup({
+  label,
+  parent,
+  childrenItems,
+  onChoose,
+  defaultOpen,
+  icon: Icon,
+}: {
+  label: string
+  parent?: NavItem
+  childrenItems: readonly NavItem[]
+  onChoose: () => void
+  defaultOpen?: boolean
+  icon?: any
+}) {
+  const pathname = usePathname()
+  const [open, setOpen] = useState(Boolean(defaultOpen))
+
+  useEffect(() => {
+    if (
+      !open &&
+      (parent?.href === pathname ||
+        childrenItems.some((c) => c.href === pathname))
+    ) {
+      setOpen(true)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
+
+  const groupActive =
+    (parent && pathname === parent.href) ||
+    childrenItems.some((c) => c.href === pathname)
+
+  return (
+    <div className='px-5'>
+      <div
+        className={cn(
+          'flex items-stretch rounded-xl overflow-hidden ring-1 ring-transparent hover:ring-blue-200',
+          groupActive && 'ring-blue-300',
+        )}
+      >
+        {/* Parent clickable area */}
+        <Link
+          href={parent?.href || '#'}
+          onClick={onChoose}
+          className={cn(
+            'flex-1 flex items-center gap-3 px-6 py-4 cursor-pointer bg-transparent hover:bg-blue-100',
+            groupActive && 'bg-blue-100',
+          )}
+        >
+          {Icon ? <Icon className='mt-0.5 h-5 w-5 text-foreground/80' /> : null}
+          <div className='flex-1'>
+            <div className={cn('text-md font-semibold leading-none')}>
+              {label}
+            </div>
+            {parent?.desc && (
+              <div className='mt-1 text-xs text-foreground/70'>
+                {parent.desc}
+              </div>
+            )}
+          </div>
+        </Link>
+
+        {/* Caret toggle */}
+        <button
+          type='button'
+          aria-label={open ? `Collapse ${label}` : `Expand ${label}`}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          className='px-4 py-4 cursor-pointer hover:bg-blue-100 border-l'
+        >
+          <FiChevronDown
+            className={cn('h-5 w-5 transition-transform', open && 'rotate-180')}
+          />
+        </button>
+      </div>
+
+      {/* Children (gap = mt-1 to match DrawerList spacing) */}
+      {open && (
+        <div className='mt-1'>
+          <DrawerList items={childrenItems} onChoose={onChoose} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function Header() {
+  const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
+  const isActive = (href: string) => pathname === href
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setIsOpen(false)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   return (
     <>
@@ -157,7 +306,7 @@ export function Header() {
 
       <header className='sticky top-0 z-50 w-full bg-background border-b'>
         <div className='container mx-auto flex h-16 items-center px-4 gap-3 min-w-0'>
-          {/* LEFT GROUP: Logo + Search (you asked for search right next to logo) */}
+          {/* LEFT GROUP: Logo + Search */}
           <div className='flex items-center gap-3 min-w-0'>
             <Link href='/' className='flex items-center space-x-2 shrink-0'>
               <Image
@@ -171,7 +320,7 @@ export function Header() {
               />
             </Link>
 
-            {/* Search (md+). Lives immediately beside logo. */}
+            {/* Search (md+) */}
             <Suspense
               fallback={
                 <div className='hidden md:block h-9 w-[clamp(12rem,28vw,22rem)] rounded-full bg-muted/60' />
@@ -182,13 +331,14 @@ export function Header() {
               </div>
             </Suspense>
 
-            {/* Optional: small live indicator stays with brand cluster */}
             <LiveIndicator className='hidden md:inline-flex shrink-0' />
           </div>
 
-          {/* RIGHT GROUP: Nav list on the right + burger */}
+          {/* RIGHT GROUP: Desktop nav + burger */}
           <div className='ml-auto flex items-center gap-2 sm:gap-3 min-w-0'>
+            {/* Desktop (lg+): show only main items on lg; extras appear only on xl */}
             <nav className='hidden lg:flex items-center gap-2'>
+              {/* Always on lg+ */}
               {mainNavItems.map((item) => (
                 <Link
                   key={item.href}
@@ -201,8 +351,25 @@ export function Header() {
                   {item.label}
                 </Link>
               ))}
+
+              {/* Only on xl+ (True Parents + HJ Testimonies) */}
+              <div className='hidden xl:flex items-center gap-2'>
+                {desktopExtrasXL.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'text-sm font-medium hover:bg-blue-100 rounded-full p-3 flex items-center gap-2',
+                      isActive(item.href) ? 'font-bold' : 'text-foreground',
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
             </nav>
 
+            {/* Burger (all sizes) */}
             <button
               type='button'
               aria-label='Open menu'
@@ -257,12 +424,53 @@ export function Header() {
                   </div>
                 )}
 
-                {/* Drawer links */}
-                <div className='md:hidden'>
-                  <DrawerList items={[...mainNavItems, ...extraNavItems]} />
+                {/* PRIMARY (mobile) — even gaps (space-y-1) */}
+                <div className='md:hidden space-y-1'>
+                  <DrawerList
+                    items={mainNavItems}
+                    onChoose={() => setIsOpen(false)}
+                  />
+
+                  <DrawerGroup
+                    label='Media'
+                    childrenItems={mediaItems}
+                    onChoose={() => setIsOpen(false)}
+                    icon={FiVideo}
+                  />
+
+                  <DrawerGroup
+                    label='True Parents'
+                    parent={trueParentsParent}
+                    childrenItems={trueParentsKids}
+                    onChoose={() => setIsOpen(false)}
+                    icon={FiHeart}
+                  />
+
+                  {leftoverExtras.length > 0 && (
+                    <DrawerList
+                      items={leftoverExtras}
+                      onChoose={() => setIsOpen(false)}
+                    />
+                  )}
                 </div>
-                <div className='hidden md:block'>
-                  <DrawerList items={extraNavItems as any} />
+
+                {/* SECONDARY (drawer on md+) — even gaps (space-y-1) */}
+                <div className='hidden md:block space-y-1'>
+                  {drawerExtrasAlways.length > 0 && (
+                    <DrawerList
+                      items={drawerExtrasAlways}
+                      onChoose={() => setIsOpen(false)}
+                    />
+                  )}
+
+                  {drawerExtrasXLHidden.length > 0 && (
+                    <div className='xl:hidden'>
+                      <DrawerList
+                        items={drawerExtrasXLHidden}
+                        onChoose={() => setIsOpen(false)}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
