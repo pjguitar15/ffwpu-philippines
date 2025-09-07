@@ -256,6 +256,7 @@ export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
   const isActive = (href: string) => pathname === href
+  const isHome = pathname === '/'
 
   // lock page scroll when drawer open
   useEffect(() => {
@@ -280,17 +281,18 @@ export function Header() {
   return (
     <>
       <div className='sticky top-[env(safe-area-inset-top,0px)] z-50'>
-        <div className='bg-gradient-to-r from-blue-800 via-cyan-800 to-sky-800 text-white py-2 px-4 text-center text-sm shadow-sm'>
-          <p className='block lg:hidden font-medium tracking-wide'>
-            ✨ Sunday Service • 10:00 AM (Manila)
-          </p>
-          <p className='hidden lg:block font-medium tracking-wide'>
-            ✨ Join us for our{' '}
-            <span className='font-semibold'>Weekly Sunday Service</span> • Every
-            Sunday at 10:00 AM (Manila)
-          </p>
-        </div>
-
+        {isHome && (
+          <div className='bg-gradient-to-r from-blue-800 via-cyan-800 to-sky-800 text-white py-2 px-4 text-center text-sm shadow-sm'>
+            <p className='block lg:hidden font-medium tracking-wide'>
+              ✨ Sunday Service • 10:00 AM (Manila)
+            </p>
+            <p className='hidden lg:block font-medium tracking-wide'>
+              ✨ Join us for our{' '}
+              <span className='font-semibold'>Weekly Sunday Service</span> •
+              Every Sunday at 10:00 AM (Manila)
+            </p>
+          </div>
+        )}
         <header className='w-full bg-background border-b'>
           <div className='container mx-auto flex h-16 items-center px-4 gap-3 min-w-0'>
             <div className='flex items-center gap-3 min-w-0'>
