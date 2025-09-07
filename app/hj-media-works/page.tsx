@@ -440,14 +440,24 @@ export default function HJMediaWorksPage() {
 
             {/* Title */}
             <div className='space-y-3 text-left'>
-              <HighlightTitle
-                as='h1'
-                text='HJ Media Works'
-                highlightedText='HJ Media Works'
-                uppercase={true}
-                className='text-3xl md:text-5xl font-extrabold leading-tight tracking-wide text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.7)] whitespace-normal break-words text-balance'
-                gradientClassName='bg-gradient-to-r from-sky-400 via-cyan-300 to-fuchsia-400 bg-clip-text text-transparent [text-shadow:0_0_20px_rgba(56,189,248,0.6)]'
-              />
+              <div className='flex items-center gap-3 md:gap-4'>
+                <Image
+                  src='/hj-media-works.jpg' // use a square asset if possible
+                  alt='HJ Media Works logo'
+                  width={56}
+                  height={56}
+                  priority
+                  className='rounded-full bg-white/90 p-1 ring-1 ring-white/40 shadow-md'
+                />
+                <HighlightTitle
+                  as='h1'
+                  text='HJ Media Works'
+                  highlightedText='HJ Media Works'
+                  uppercase
+                  className='text-3xl md:text-5xl font-extrabold leading-tight tracking-wide text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.7)]'
+                  gradientClassName='bg-gradient-to-r from-sky-400 via-cyan-300 to-fuchsia-400 bg-clip-text text-transparent [text-shadow:0_0_20px_rgba(56,189,248,0.6)]'
+                />
+              </div>
 
               <p className='text-base md:text-lg text-white/95 max-w-3xl leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]'>
                 Discover our collection of inspiring videos that share messages

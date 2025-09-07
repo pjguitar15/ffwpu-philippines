@@ -1,0 +1,581 @@
+import { TestimonyVideo } from "@/types/hj-testimonies.types";
+
+// Real HJ Testimonies content based on actual videos
+export const HJ_TESTIMONIES_CONTENT: TestimonyVideo[] = [
+  // Featured Personal Stories
+  {
+    _id: '1',
+    title: 'Living the Legacy: An Inspiring Talk with Mrs. Annie Andanar',
+    description:
+      'Mrs. Annie Andanar shares her inspiring journey and the legacy she hopes to leave for future generations.',
+    speaker: 'Mrs. Annie Andanar',
+    duration: '320 views', // Will be updated with actual duration
+    category: 'personal',
+    videoId: 'FmH7xAuPzEg', // Replace with real YouTube ID
+    thumbnailUrl: 'https://img.youtube.com/vi/FmH7xAuPzEg/maxresdefault.jpg',
+    isActive: true,
+    order: 1,
+    tags: ['legacy', 'inspiration', 'life story'],
+    episodeNumber: 'Featured',
+  },
+
+  // Family & Relationships Series
+  {
+    _id: '2',
+    title: 'What makes Families and Relationships Ideal?',
+    description:
+      'Exploring the key elements that make families and relationships truly ideal and fulfilling.',
+    speaker: 'Panel Discussion',
+    duration: '45:06',
+    category: 'family',
+    videoId: 'voJrtd7YN74',
+    thumbnailUrl: 'https://img.youtube.com/vi/voJrtd7YN74/maxresdefault.jpg',
+    isActive: true,
+    order: 2,
+    tags: ['ideal families', 'relationships', 'family harmony'],
+    episodeNumber: 'Special',
+  },
+
+  // Parenting & Family Guidance Series
+  {
+    _id: '3',
+    title:
+      "Guiding the Next Generation A Couple's Advice on Building a Thriving Family - Episode 3",
+    description:
+      'Practical advice and wisdom for building strong families and guiding the next generation toward success.',
+    speaker: 'Featured Couple',
+    duration: '7:48',
+    category: 'parenting',
+    videoId: 'v_XK94rqwc0',
+    thumbnailUrl: 'https://img.youtube.com/vi/v_XK94rqwc0/maxresdefault.jpg',
+    isActive: true,
+    order: 3,
+    tags: ['next generation', 'family building', 'guidance'],
+    episodeNumber: 'Episode 3',
+  },
+  {
+    _id: '4',
+    title:
+      "This Couple's Parenting Journey Will Inspire You to Raise Great Kids! - Episode 02",
+    description:
+      'An inspiring couple shares their parenting journey and insights on raising exceptional children.',
+    speaker: 'Featured Couple',
+    duration: '17:41',
+    category: 'parenting',
+    videoId: 'QhrzrBR2E-I',
+    thumbnailUrl: 'https://img.youtube.com/vi/QhrzrBR2E-I/maxresdefault.jpg',
+    isActive: true,
+    order: 4,
+    tags: ['parenting', 'children', 'family guidance'],
+    episodeNumber: 'Episode 2',
+  },
+
+  // Couples & Marriage Series
+  {
+    _id: '5',
+    title:
+      "The Key to a Strong Relationship: A Couple's Sacred Union - Episode 01",
+    description:
+      'Discover the fundamental keys to building and maintaining a strong, sacred relationship.',
+    speaker: 'Featured Couple',
+    duration: '15:18',
+    category: 'couples',
+    videoId: 'rsi5FEzc_fY',
+    thumbnailUrl: 'https://img.youtube.com/vi/rsi5FEzc_fY/maxresdefault.jpg',
+    isActive: true,
+    order: 5,
+    tags: ['strong relationships', 'marriage', 'sacred union'],
+    episodeNumber: 'Episode 1',
+  },
+  {
+    _id: '6',
+    title:
+      "From Destiny to Eternity: A Couple's Inspiring Matching & Blessing Journey - Episode 03",
+    description:
+      'A beautiful testimony about the divine matching process and the journey to the Marriage Blessing.',
+    speaker: 'Featured Couple',
+    duration: '10:04',
+    category: 'couples',
+    videoId: 'tIjQn8dvppo',
+    thumbnailUrl: 'https://img.youtube.com/vi/tIjQn8dvppo/maxresdefault.jpg',
+    isActive: true,
+    order: 6,
+    tags: ['matching', 'blessing', 'destiny', 'marriage'],
+    episodeNumber: 'Episode 3',
+  },
+  {
+    _id: '7',
+    title:
+      'Love Knows No Borders Building a Happy Multicultural Family - Episode 02',
+    description:
+      'How love transcends cultural boundaries and creates beautiful multicultural families.',
+    speaker: 'Multicultural Couple',
+    duration: '14:03',
+    category: 'couples',
+    videoId: 'rJyn13ngjfs',
+    thumbnailUrl: 'https://img.youtube.com/vi/rJyn13ngjfs/maxresdefault.jpg',
+    isActive: true,
+    order: 7,
+    tags: ['multicultural', 'international marriage', 'cultural harmony'],
+    episodeNumber: 'Episode 2',
+  },
+
+  // Personal Growth & Family Stories
+  {
+    _id: '8',
+    title: "What's It Like Growing Up with Missionary Parents? - Episode 01",
+    description:
+      'Personal insights into growing up in a missionary family and its impact on faith and character.',
+    speaker: 'Missionary Children',
+    duration: '9:57',
+    category: 'personal',
+    videoId: 'D2HIJt7bHEI',
+    thumbnailUrl: 'https://img.youtube.com/vi/D2HIJt7bHEI/maxresdefault.jpg',
+    isActive: true,
+    order: 8,
+    tags: ['missionary life', 'family background', 'faith journey'],
+    episodeNumber: 'Episode 1',
+  },
+
+  // Dr. Robert Kittel & Mrs. Theresia Kittel Series
+  {
+    _id: '9',
+    title: 'Secrets to a Happy & Lasting Marriage! - Episode 5',
+    description:
+      'Discover the secrets to maintaining a strong, loving marriage that stands the test of time.',
+    speaker: 'Dr. Robert Kittel & Mrs. Theresia Kittel',
+    duration: '11:38',
+    category: 'couples',
+    videoId: 'A0Jm7ODYKaU',
+    thumbnailUrl: 'https://img.youtube.com/vi/A0Jm7ODYKaU/maxresdefault.jpg',
+    isActive: true,
+    order: 9,
+    tags: ['marriage secrets', 'long marriage', 'relationship advice'],
+    episodeNumber: 'Episode 5',
+  },
+  {
+    _id: '10',
+    title:
+      'Parenting with Purpose: How They Raised Outstanding Kids! - Episode 4',
+    description:
+      'Dr. Kittel and Mrs. Kittel share their purposeful approach to raising exceptional children.',
+    speaker: 'Dr. Robert Kittel & Mrs. Theresia Kittel',
+    duration: '10:52',
+    category: 'parenting',
+    videoId: 'y5HrptFkBSc',
+    thumbnailUrl: 'https://img.youtube.com/vi/y5HrptFkBSc/maxresdefault.jpg',
+    isActive: true,
+    order: 10,
+    tags: ['purposeful parenting', 'child development', 'family success'],
+    episodeNumber: 'Episode 4',
+  },
+  {
+    _id: '11',
+    title: 'How a Language Barrier Led to a Beautiful Marriage - Episode 3',
+    description:
+      'A touching story of how love overcame language barriers to create a beautiful marriage.',
+    speaker: 'Dr. Robert Kittel & Mrs. Theresia Kittel',
+    duration: '14:46',
+    category: 'couples',
+    videoId: 'DuP7DDBdPAQ',
+    thumbnailUrl: 'https://img.youtube.com/vi/DuP7DDBdPAQ/maxresdefault.jpg',
+    isActive: true,
+    order: 11,
+    tags: ['language barrier', 'international marriage', 'love story'],
+    episodeNumber: 'Episode 3',
+  },
+  {
+    _id: '12',
+    title: 'How Faith Transformed Our Lives! - Episode 2',
+    description:
+      'Dr. Kittel and Mrs. Kittel share how faith became the transforming force in their lives.',
+    speaker: 'Dr. Robert Kittel & Mrs. Theresia Kittel',
+    duration: '10:21',
+    category: 'personal',
+    videoId: 'QQe7G-qZoDs',
+    thumbnailUrl: 'https://img.youtube.com/vi/QQe7G-qZoDs/maxresdefault.jpg',
+    isActive: true,
+    order: 12,
+    tags: ['faith transformation', 'spiritual journey', 'life change'],
+    episodeNumber: 'Episode 2',
+  },
+  {
+    _id: '13',
+    title:
+      "Back in the Day! The Childhood Memories We'll Never Forget - Episode 1",
+    description:
+      'Heartwarming childhood memories and stories that shaped their lives and faith.',
+    speaker: 'Dr. Robert Kittel & Mrs. Theresia Kittel',
+    duration: '9:45',
+    category: 'personal',
+    videoId: 'M6yYoaLb-jU',
+    thumbnailUrl: 'https://img.youtube.com/vi/M6yYoaLb-jU/maxresdefault.jpg',
+    isActive: true,
+    order: 13,
+    tags: ['childhood memories', 'life story', 'background'],
+    episodeNumber: 'Episode 1',
+  },
+
+  // Featured Stories
+  {
+    _id: '14',
+    title: 'Meet the Halog Brothers',
+    description:
+      'Get to know the Halog Brothers and their inspiring journey of faith and family.',
+    speaker: 'The Halog Brothers',
+    duration: '3:53',
+    category: 'personal',
+    videoId: 'q9ZGKO5T84Y',
+    thumbnailUrl: 'https://img.youtube.com/vi/q9ZGKO5T84Y/maxresdefault.jpg',
+    isActive: true,
+    order: 14,
+    tags: ['family', 'brothers', 'introduction'],
+    episodeNumber: 'Featured',
+  },
+
+  // Erik & Anabel Series
+  {
+    _id: '15',
+    title: 'The Heart of the Filipinos by Erik and Anabel',
+    description:
+      'Erik and Anabel discuss the beautiful heart and culture of the Filipino people and their spiritual journey.',
+    speaker: 'Erik & Anabel',
+    duration: '7:54',
+    category: 'couples',
+    videoId: 'XRugL33hGsU',
+    thumbnailUrl: 'https://img.youtube.com/vi/XRugL33hGsU/maxresdefault.jpg',
+    isActive: true,
+    order: 15,
+    tags: ['Filipino culture', 'spirituality', 'cultural appreciation'],
+    episodeNumber: 'Special',
+  },
+  {
+    _id: '16',
+    title: 'Called to Mission by Erik and Anabel - Episode 6',
+    description:
+      'Erik and Anabel share their calling to mission work and serving others.',
+    speaker: 'Erik & Anabel',
+    duration: '5:32',
+    category: 'personal',
+    videoId: '5a8qgMUceJU',
+    thumbnailUrl: 'https://img.youtube.com/vi/5a8qgMUceJU/maxresdefault.jpg',
+    isActive: true,
+    order: 16,
+    tags: ['mission work', 'calling', 'service'],
+    episodeNumber: 'Episode 6',
+  },
+  {
+    _id: '17',
+    title:
+      'The Beauty of Multicultural Families by Erik and Anabel - Episode 5',
+    description:
+      'Celebrating the beauty and richness that comes from multicultural family backgrounds.',
+    speaker: 'Erik & Anabel',
+    duration: '7:29',
+    category: 'family',
+    videoId: 's6HGVy_NxTA',
+    thumbnailUrl: 'https://img.youtube.com/vi/s6HGVy_NxTA/maxresdefault.jpg',
+    isActive: true,
+    order: 17,
+    tags: ['multicultural', 'family diversity', 'cultural beauty'],
+    episodeNumber: 'Episode 5',
+  },
+  {
+    _id: '18',
+    title: 'First Meeting and Marriage Blessing by Erik and Anabel - Episode 4',
+    description:
+      'Erik and Anabel share their beautiful love story and journey to the Marriage Blessing, offering insights into divine love and partnership.',
+    speaker: 'Erik & Anabel',
+    duration: '13:08',
+    category: 'couples',
+    videoId: 'dQw4w9WgXcQ',
+    thumbnailUrl: 'https://img.youtube.com/vi/EB4ovqfdJeM/maxresdefault.jpg',
+    isActive: true,
+    order: 18,
+    tags: ['marriage', 'blessing', 'love story'],
+    episodeNumber: 'Episode 4',
+  },
+  {
+    _id: '19',
+    title: 'What is True Love? by Erik and Anabel - Episode 3',
+    description:
+      'In this insightful episode, Erik and Anabel explore the deep meaning of true love and its role in building lasting relationships.',
+    speaker: 'Erik & Anabel',
+    duration: '5:41',
+    category: 'couples',
+    videoId: 'ZMU5BtN0kGo',
+    thumbnailUrl: 'https://img.youtube.com/vi/ZMU5BtN0kGo/maxresdefault.jpg',
+    isActive: true,
+    order: 19,
+    tags: ['true love', 'relationships', 'spiritual love'],
+    episodeNumber: 'Episode 3',
+  },
+  {
+    _id: '20',
+    title: 'Family Background by Erik and Anabel - Episode 2',
+    description:
+      'Erik and Anabel share their family backgrounds and how their upbringing shaped their values.',
+    speaker: 'Erik & Anabel',
+    duration: '17:52',
+    category: 'family',
+    videoId: 'AYVMmpc3hSA',
+    thumbnailUrl: 'https://img.youtube.com/vi/AYVMmpc3hSA/maxresdefault.jpg',
+    isActive: true,
+    order: 20,
+    tags: ['family background', 'upbringing', 'values'],
+    episodeNumber: 'Episode 2',
+  },
+  {
+    _id: '21',
+    title:
+      "A Life Journey with Parents' Best Advice by Erik and Anabel - Episode 1",
+    description:
+      'Erik and Anabel reflect on their life journey and share the best advice they received from their parents.',
+    speaker: 'Erik & Anabel',
+    duration: '19:51',
+    category: 'personal',
+    videoId: '9jvcMOr_mpI',
+    thumbnailUrl: 'https://img.youtube.com/vi/9jvcMOr_mpI/maxresdefault.jpg',
+    isActive: true,
+    order: 21,
+    tags: ['life journey', 'parental advice', 'wisdom'],
+    episodeNumber: 'Episode 1',
+  },
+  {
+    _id: '22',
+    title:
+      'ITALIAN HONGKONG couple tries to guess FILIPINO words (Erik and Anabel)',
+    description:
+      'A fun and lighthearted episode where Erik and Anabel try to guess Filipino words, showcasing cultural exchange.',
+    speaker: 'Erik & Anabel',
+    duration: '5:00',
+    category: 'family',
+    videoId: 'PEJV3xsYd_g',
+    thumbnailUrl: 'https://img.youtube.com/vi/PEJV3xsYd_g/maxresdefault.jpg',
+    isActive: true,
+    order: 22,
+    tags: ['cultural exchange', 'Filipino culture', 'fun'],
+    episodeNumber: 'Special',
+  },
+
+  // Mr. Ronnie and Mrs. Weeranut Sodusta Series
+  {
+    _id: '23',
+    title:
+      'Parenting Journey by Mr. Ronnie and Mrs. Weeranut Sodusta - Episode 9',
+    description:
+      'Mr. Ronnie and Mrs. Weeranut share their comprehensive parenting journey and lessons learned.',
+    speaker: 'Mr. Ronnie & Mrs. Weeranut Sodusta',
+    duration: '13:58',
+    category: 'parenting',
+    videoId: 'NR077zgtxew',
+    thumbnailUrl: 'https://img.youtube.com/vi/NR077zgtxew/maxresdefault.jpg',
+    isActive: true,
+    order: 23,
+    tags: ['parenting journey', 'family guidance', 'lessons learned'],
+    episodeNumber: 'Episode 9',
+  },
+  {
+    _id: '24',
+    title: 'Legacy of Love by Mr. Ronnie and Mrs. Weeranut Sodusta - Episode 8',
+    description:
+      'A powerful testimony about building a legacy of love and faith that spans generations.',
+    speaker: 'Mr. Ronnie & Mrs. Weeranut Sodusta',
+    duration: '18:01',
+    category: 'family',
+    videoId: '4IpOduGVj-c',
+    thumbnailUrl: 'https://img.youtube.com/vi/4IpOduGVj-c/maxresdefault.jpg',
+    isActive: true,
+    order: 24,
+    tags: ['legacy', 'family values', 'generational love'],
+    episodeNumber: 'Episode 8',
+  },
+  {
+    _id: '25',
+    title: 'Bound by Love by Mr. Ronnie and Mrs. Weeranut Sodusta - Episode 7',
+    description:
+      'Exploring how love binds families together through challenges and triumphs.',
+    speaker: 'Mr. Ronnie & Mrs. Weeranut Sodusta',
+    duration: '10:06',
+    category: 'family',
+    videoId: 'ewnUW4LGO5o',
+    thumbnailUrl: 'https://img.youtube.com/vi/ewnUW4LGO5o/maxresdefault.jpg',
+    isActive: true,
+    order: 25,
+    tags: ['family love', 'unity', 'relationships'],
+    episodeNumber: 'Episode 7',
+  },
+  {
+    _id: '26',
+    title:
+      'Potential Revealed by Mr. Ronnie and Mrs. Weeranut Sodusta - Episode 6',
+    description:
+      'How to recognize and nurture the potential within family members and individuals.',
+    speaker: 'Mr. Ronnie & Mrs. Weeranut Sodusta',
+    duration: '9:28',
+    category: 'personal',
+    videoId: '5vddHbqOc1Q',
+    thumbnailUrl: 'https://img.youtube.com/vi/5vddHbqOc1Q/maxresdefault.jpg',
+    isActive: true,
+    order: 26,
+    tags: ['potential', 'personal growth', 'development'],
+    episodeNumber: 'Episode 6',
+  },
+  {
+    _id: '27',
+    title: 'Family Bonds by Mr. Ronnie & Mrs. Weeranut Sodusta - Episode 5',
+    description:
+      'Exploring the importance of strong family bonds and how to nurture them in modern times.',
+    speaker: 'Mr. Ronnie & Mrs. Weeranut Sodusta',
+    duration: '8:51',
+    category: 'family',
+    videoId: 'QcrUZCjz5o8',
+    thumbnailUrl: 'https://img.youtube.com/vi/QcrUZCjz5o8/maxresdefault.jpg',
+    isActive: true,
+    order: 27,
+    tags: ['family bonds', 'relationships', 'unity'],
+    episodeNumber: 'Episode 5',
+  },
+  {
+    _id: '28',
+    title: "Adversity's Growth by Mr. Ronnie D. Sodusta - Episode 4",
+    description:
+      'How facing adversity can become a catalyst for personal and spiritual growth.',
+    speaker: 'Mr. Ronnie D. Sodusta',
+    duration: '9:37',
+    category: 'personal',
+    videoId: 'vehz_s7OR8Q',
+    thumbnailUrl: 'https://img.youtube.com/vi/vehz_s7OR8Q/maxresdefault.jpg',
+    isActive: true,
+    order: 28,
+    tags: ['adversity', 'growth', 'resilience'],
+    episodeNumber: 'Episode 4',
+  },
+  {
+    _id: '29',
+    title: 'Purpose Found by Mr. Ronnie D. Sodusta - Episode 3',
+    description:
+      "Mr. Ronnie shares his journey of discovering life's purpose and meaning through faith and family.",
+    speaker: 'Mr. Ronnie D. Sodusta',
+    duration: '12:02',
+    category: 'personal',
+    videoId: 'QFlmSx2_Yuk',
+    thumbnailUrl: 'https://img.youtube.com/vi/QFlmSx2_Yuk/maxresdefault.jpg',
+    isActive: true,
+    order: 29,
+    tags: ['purpose', 'life meaning', 'spiritual journey'],
+    episodeNumber: 'Episode 3',
+  },
+  {
+    _id: '30',
+    title: "Passion's Flame by Mr. Ronnie D. Sodusta - Episode 2",
+    description:
+      'Discovering and nurturing the passion that drives purpose and fulfillment in life.',
+    speaker: 'Mr. Ronnie D. Sodusta',
+    duration: '8:15',
+    category: 'personal',
+    videoId: 'es3hPh59Me0',
+    thumbnailUrl: 'https://img.youtube.com/vi/es3hPh59Me0/maxresdefault.jpg',
+    isActive: true,
+    order: 30,
+    tags: ['passion', 'purpose', 'fulfillment'],
+    episodeNumber: 'Episode 2',
+  },
+  {
+    _id: '31',
+    title: 'Shadows to Sunshine by Mr. Ronnie S. Sodusta - Episode 1',
+    description:
+      'A powerful testimony of transformation from difficult times to hope and joy.',
+    speaker: 'Mr. Ronnie S. Sodusta',
+    duration: '9:21',
+    category: 'personal',
+    videoId: 'ot-sLTFXyVc',
+    thumbnailUrl: 'https://img.youtube.com/vi/ot-sLTFXyVc/maxresdefault.jpg',
+    isActive: true,
+    order: 31,
+    tags: ['transformation', 'hope', 'overcoming challenges'],
+    episodeNumber: 'Episode 1',
+  },
+
+  // Additional Dr. Robert Kittel & Mrs. Theresia Kittel Episodes
+  {
+    _id: '32',
+    title:
+      'Advice for the Youth and Young Couples by Dr. Robert Kittel & Mrs. Theresia Kittel - Episode 5',
+    description:
+      'Valuable advice and guidance specifically tailored for young people and couples starting their journey.',
+    speaker: 'Dr. Robert Kittel & Mrs. Theresia Kittel',
+    duration: '15:05',
+    category: 'couples',
+    videoId: 'P4z58k1Grnc',
+    thumbnailUrl: 'https://img.youtube.com/vi/P4z58k1Grnc/maxresdefault.jpg',
+    isActive: true,
+    order: 32,
+    tags: ['youth advice', 'young couples', 'guidance'],
+    episodeNumber: 'Episode 5',
+  },
+  {
+    _id: '33',
+    title:
+      'Family Practices and Parenting by Dr. Robert Kittel and Mrs. Theresia Kittel Episode 4',
+    description:
+      'Dr. Kittel and Mrs. Kittel share practical wisdom on family practices and effective parenting approaches.',
+    speaker: 'Dr. Robert Kittel & Mrs. Theresia Kittel',
+    duration: '8:05',
+    category: 'parenting',
+    videoId: '3GhzRx2nocw',
+    thumbnailUrl: 'https://img.youtube.com/vi/3GhzRx2nocw/maxresdefault.jpg',
+    isActive: true,
+    order: 33,
+    tags: ['parenting', 'family practices', 'child guidance'],
+    episodeNumber: 'Episode 4',
+  },
+  {
+    _id: '34',
+    title:
+      'Secrets of a Long Marriage by Dr. Robert Kittel and Mrs. Theresia Kittel - Episode 3',
+    description:
+      'Discover the secrets to maintaining a strong, loving marriage that stands the test of time.',
+    speaker: 'Dr. Robert Kittel & Mrs. Theresia Kittel',
+    duration: '13:26',
+    category: 'couples',
+    videoId: 'KLhp22FWo3Q',
+    thumbnailUrl: 'https://img.youtube.com/vi/KLhp22FWo3Q/maxresdefault.jpg',
+    isActive: true,
+    order: 34,
+    tags: ['marriage secrets', 'long marriage', 'relationship advice'],
+    episodeNumber: 'Episode 3',
+  },
+  {
+    _id: '35',
+    title:
+      'Meeting and Love Story by Dr. Robert Kittel and Mrs. Theresia Kittel - Episode 2',
+    description:
+      'The beautiful love story of how Dr. Kittel and Mrs. Kittel met and fell in love.',
+    speaker: 'Dr. Robert Kittel & Mrs. Theresia Kittel',
+    duration: '12:17',
+    category: 'couples',
+    videoId: 'mO-3aqM7JlU',
+    thumbnailUrl: 'https://img.youtube.com/vi/mO-3aqM7JlU/maxresdefault.jpg',
+    isActive: true,
+    order: 35,
+    tags: ['love story', 'meeting', 'romance'],
+    episodeNumber: 'Episode 2',
+  },
+  {
+    _id: '36',
+    title:
+      'Back to Our Roots: Heartfelt Stories from Childhood & Hometown - Episode 1',
+    description:
+      'Heartwarming stories about childhood memories and hometown experiences that shaped their lives.',
+    speaker: 'Dr. Robert Kittel & Mrs. Theresia Kittel',
+    duration: '9:24',
+    category: 'personal',
+    videoId: 'ak02Lga8mdM',
+    thumbnailUrl: 'https://img.youtube.com/vi/ak02Lga8mdM/maxresdefault.jpg',
+    isActive: true,
+    order: 36,
+    tags: ['childhood', 'hometown', 'roots', 'background'],
+    episodeNumber: 'Episode 1',
+  },
+]

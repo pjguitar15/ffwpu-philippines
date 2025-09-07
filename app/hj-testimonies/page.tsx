@@ -16,102 +16,8 @@ import {
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { HighlightTitle } from '@/components/ui/highlight-title'
-
-interface TestimonyVideo {
-  _id: string
-  title: string
-  description?: string
-  speaker: string
-  duration: string
-  category: 'personal' | 'family' | 'ministry' | 'blessing'
-  videoId: string
-  thumbnailUrl: string
-  isActive: boolean
-  order: number
-  tags?: string[]
-}
-
-// Placeholder data - will be replaced with real YouTube links
-const placeholderTestimonies: TestimonyVideo[] = [
-  {
-    _id: '1',
-    title: 'Finding True Love Through the Blessing',
-    description: 'A heartfelt testimony about discovering divine love and the transformative power of the Blessing ceremony.',
-    speaker: 'Maria Santos',
-    duration: '12:45',
-    category: 'blessing',
-    videoId: 'dQw4w9WgXcQ', // Placeholder YouTube ID
-    thumbnailUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-    isActive: true,
-    order: 1,
-    tags: ['blessing', 'marriage', 'love']
-  },
-  {
-    _id: '2',
-    title: 'My Journey from Darkness to Light',
-    description: 'Personal story of spiritual awakening and finding purpose through True Parents\' teachings.',
-    speaker: 'John Kim',
-    duration: '18:30',
-    category: 'personal',
-    videoId: 'dQw4w9WgXcQ',
-    thumbnailUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-    isActive: true,
-    order: 2,
-    tags: ['spiritual growth', 'purpose', 'transformation']
-  },
-  {
-    _id: '3',
-    title: 'Building an Ideal Family',
-    description: 'Sharing experiences about creating harmony and love in the family centered on Heavenly Parent.',
-    speaker: 'Grace & David Lee',
-    duration: '15:20',
-    category: 'family',
-    videoId: 'dQw4w9WgXcQ',
-    thumbnailUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-    isActive: true,
-    order: 3,
-    tags: ['family', 'harmony', 'children']
-  },
-  {
-    _id: '4',
-    title: 'Called to Serve: My Ministry Experience',
-    description: 'How dedicating my life to serving others has brought immense joy and spiritual fulfillment.',
-    speaker: 'Pastor Michael Cruz',
-    duration: '22:15',
-    category: 'ministry',
-    videoId: 'dQw4w9WgXcQ',
-    thumbnailUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-    isActive: true,
-    order: 4,
-    tags: ['ministry', 'service', 'calling']
-  },
-  {
-    _id: '5',
-    title: 'Healing Through Forgiveness',
-    description: 'A powerful testimony about overcoming pain and finding peace through the practice of forgiveness.',
-    speaker: 'Anna Rodriguez',
-    duration: '16:40',
-    category: 'personal',
-    videoId: 'dQw4w9WgXcQ',
-    thumbnailUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-    isActive: true,
-    order: 5,
-    tags: ['healing', 'forgiveness', 'peace']
-  },
-  {
-    _id: '6',
-    title: 'True Parents Changed My Life',
-    description: 'Personal reflection on how meeting True Parents transformed my understanding of love and purpose.',
-    speaker: 'Robert Chen',
-    duration: '20:05',
-    category: 'personal',
-    videoId: 'dQw4w9WgXcQ',
-    thumbnailUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-    isActive: true,
-    order: 6,
-    tags: ['true parents', 'transformation', 'love']
-  }
-]
+import { TestimonyVideo } from '@/types/hj-testimonies.types'
+import { HJ_TESTIMONIES_CONTENT } from '@/constants/hj-testimonies'
 
 function TestimonyRow({
   title,
@@ -202,9 +108,9 @@ function TestimonyRow({
         return <User className='w-4 h-4' />
       case 'family':
         return <Sparkles className='w-4 h-4' />
-      case 'ministry':
+      case 'parenting':
         return <Mic className='w-4 h-4' />
-      case 'blessing':
+      case 'couples':
         return <Sparkles className='w-4 h-4' />
       default:
         return <User className='w-4 h-4' />
@@ -217,9 +123,9 @@ function TestimonyRow({
         return 'bg-blue-100 text-blue-700'
       case 'family':
         return 'bg-green-100 text-green-700'
-      case 'ministry':
+      case 'parenting':
         return 'bg-purple-100 text-purple-700'
-      case 'blessing':
+      case 'couples':
         return 'bg-pink-100 text-pink-700'
       default:
         return 'bg-slate-100 text-slate-700'
@@ -268,7 +174,11 @@ function TestimonyRow({
                     <div className='absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors duration-300' />
 
                     {/* Category badge */}
-                    <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getCategoryColor(testimony.category)}`}>
+                    <div
+                      className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getCategoryColor(
+                        testimony.category,
+                      )}`}
+                    >
                       {getCategoryIcon(testimony.category)}
                       {testimony.category}
                     </div>
@@ -354,7 +264,11 @@ function TestimonyRow({
                     <div className='absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors duration-300' />
 
                     {/* Category badge */}
-                    <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getCategoryColor(testimony.category)}`}>
+                    <div
+                      className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getCategoryColor(
+                        testimony.category,
+                      )}`}
+                    >
                       {getCategoryIcon(testimony.category)}
                       {testimony.category}
                     </div>
@@ -433,9 +347,9 @@ function TestimonyModal({
         return <User className='w-5 h-5' />
       case 'family':
         return <Sparkles className='w-5 h-5' />
-      case 'ministry':
+      case 'parenting':
         return <Mic className='w-5 h-5' />
-      case 'blessing':
+      case 'couples':
         return <Sparkles className='w-5 h-5' />
       default:
         return <User className='w-5 h-5' />
@@ -448,9 +362,9 @@ function TestimonyModal({
         return 'bg-blue-100 text-blue-700'
       case 'family':
         return 'bg-green-100 text-green-700'
-      case 'ministry':
+      case 'parenting':
         return 'bg-purple-100 text-purple-700'
-      case 'blessing':
+      case 'couples':
         return 'bg-pink-100 text-pink-700'
       default:
         return 'bg-slate-100 text-slate-700'
@@ -486,7 +400,11 @@ function TestimonyModal({
           <div className='flex items-start justify-between mb-4'>
             <div className='flex-1'>
               <div className='flex items-center gap-3 mb-3'>
-                <div className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 ${getCategoryColor(testimony.category)}`}>
+                <div
+                  className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 ${getCategoryColor(
+                    testimony.category,
+                  )}`}
+                >
                   {getCategoryIcon(testimony.category)}
                   {testimony.category}
                 </div>
@@ -495,11 +413,11 @@ function TestimonyModal({
                   <span className='text-sm'>{testimony.duration}</span>
                 </div>
               </div>
-              
+
               <h2 className='text-xl md:text-2xl font-bold mb-2 text-slate-900'>
                 {testimony.title}
               </h2>
-              
+
               <p className='text-slate-600 flex items-center gap-2 mb-3'>
                 <User className='w-4 h-4' />
                 <span className='font-medium'>{testimony.speaker}</span>
@@ -528,7 +446,9 @@ function TestimonyModal({
 
           {testimony.tags && testimony.tags.length > 0 && (
             <div className='border-t border-slate-200 pt-4 mt-4'>
-              <h4 className='text-sm font-semibold mb-2 text-slate-900'>Tags</h4>
+              <h4 className='text-sm font-semibold mb-2 text-slate-900'>
+                Tags
+              </h4>
               <div className='flex flex-wrap gap-2'>
                 {testimony.tags.map((tag, index) => (
                   <span
@@ -550,13 +470,14 @@ function TestimonyModal({
 export default function HJTestimoniesPage() {
   const [testimonies, setTestimonies] = useState<TestimonyVideo[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedTestimony, setSelectedTestimony] = useState<TestimonyVideo | null>(null)
+  const [selectedTestimony, setSelectedTestimony] =
+    useState<TestimonyVideo | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     // Simulate loading and use placeholder data for now
     setTimeout(() => {
-      setTestimonies(placeholderTestimonies)
+      setTestimonies(HJ_TESTIMONIES_CONTENT)
       setLoading(false)
     }, 1000)
   }, [])
@@ -572,10 +493,14 @@ export default function HJTestimoniesPage() {
   }
 
   // Filter testimonies by category
-  const personalTestimonies = testimonies.filter(t => t.category === 'personal')
-  const familyTestimonies = testimonies.filter(t => t.category === 'family')
-  const ministryTestimonies = testimonies.filter(t => t.category === 'ministry')
-  const blessingTestimonies = testimonies.filter(t => t.category === 'blessing')
+  const personalTestimonies = testimonies.filter(
+    (t) => t.category === 'personal',
+  )
+  const familyTestimonies = testimonies.filter((t) => t.category === 'family')
+  const parentingTestimonies = testimonies.filter(
+    (t) => t.category === 'parenting',
+  )
+  const couplesTestimonies = testimonies.filter((t) => t.category === 'couples')
 
   if (loading) {
     return (
@@ -595,9 +520,12 @@ export default function HJTestimoniesPage() {
       <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
         <div className='text-center text-slate-900'>
           <Mic className='w-24 h-24 text-slate-400 mx-auto mb-4' />
-          <h2 className='text-2xl font-semibold mb-2'>No Testimonies Available</h2>
+          <h2 className='text-2xl font-semibold mb-2'>
+            No Testimonies Available
+          </h2>
           <p className='text-slate-600'>
-            Personal stories and testimonies will appear here once they are added.
+            Personal stories and testimonies will appear here once they are
+            added.
           </p>
         </div>
       </div>
@@ -609,7 +537,7 @@ export default function HJTestimoniesPage() {
       {/* Header Section */}
       <section className='relative isolate overflow-hidden'>
         <Image
-          src='/church-community-gathering.png'
+          src='/hj-testimonies-cover-photo.png'
           alt='HJ Testimonies Banner'
           fill
           className='object-cover'
@@ -631,25 +559,42 @@ export default function HJTestimoniesPage() {
           <div className='relative z-10 mx-auto max-w-5xl space-y-7'>
             {/* Eyebrow */}
             <p className='mx-auto inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[10px] md:text-xs font-semibold uppercase tracking-widest text-white/90 ring-1 ring-white/30 backdrop-blur-sm [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]'>
-              <Mic className='w-4 h-4' />
+              <Image
+                src='/hj-testimonies-logo.jpg'
+                alt='HJ Testimonies'
+                width={16}
+                height={16}
+                className='rounded'
+              />
               Testimonies • Personal Stories & Faith
             </p>
 
             {/* Title */}
             <div className='space-y-3 text-left'>
-              <HighlightTitle
-                as='h1'
-                text='HJ Testimonies'
-                highlightedText='HJ Testimonies'
-                uppercase={true}
-                className='text-3xl md:text-5xl font-extrabold leading-tight tracking-wide text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.7)] whitespace-normal break-words text-balance'
-                gradientClassName='bg-gradient-to-r from-emerald-400 via-green-300 to-purple-400 bg-clip-text text-transparent [text-shadow:0_0_20px_rgba(34,197,94,0.6)]'
-              />
+              <div className='flex items-center gap-3 md:gap-4'>
+                <Image
+                  src='/hj-testimonies-logo.jpg' // use a square source if possible
+                  alt='HJ Testimonies logo'
+                  width={56}
+                  height={56}
+                  priority
+                  className='rounded-full bg-white/90 p-1 ring-1 ring-white/40 shadow-md'
+                />
+                <HighlightTitle
+                  as='h1'
+                  text='HJ Testimonies'
+                  highlightedText='HJ Testimonies'
+                  uppercase={true}
+                  className='text-3xl md:text-5xl font-extrabold leading-tight tracking-wide text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.7)]'
+                  gradientClassName='bg-gradient-to-r from-emerald-400 via-green-300 to-purple-400 bg-clip-text text-transparent [text-shadow:0_0_20px_rgba(34,197,94,0.6)]'
+                />
+              </div>
 
               <p className='text-base md:text-lg text-white/95 max-w-3xl leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]'>
-                Hear powerful personal stories of faith, transformation, and divine love. 
-                These heartfelt testimonies share experiences of finding purpose, building 
-                ideal families, and living lives centered on Heavenly Parent&apos;s love.
+                Hear powerful personal stories of faith, transformation, and
+                divine love. These heartfelt testimonies share experiences of
+                finding purpose, building ideal families, and living lives
+                centered on Heavenly Parent&apos;s love.
               </p>
             </div>
 
@@ -663,7 +608,9 @@ export default function HJTestimoniesPage() {
                   href='#testimonies'
                   onClick={(e) => {
                     e.preventDefault()
-                    document.getElementById('testimonies')?.scrollIntoView({ behavior: 'smooth' })
+                    document
+                      .getElementById('testimonies')
+                      ?.scrollIntoView({ behavior: 'smooth' })
                   }}
                 >
                   <span className='inline-flex items-center gap-2'>
@@ -680,34 +627,34 @@ export default function HJTestimoniesPage() {
       {/* Testimony Rows */}
       <div id='testimonies' className='py-16 bg-gray-50'>
         <div className='container mx-auto'>
-          {personalTestimonies.length > 0 && (
+          {couplesTestimonies.length > 0 && (
             <TestimonyRow
-              title='Personal Transformation'
-              testimonies={personalTestimonies}
-              onTestimonySelect={openTestimonyModal}
-            />
-          )}
-
-          {blessingTestimonies.length > 0 && (
-            <TestimonyRow
-              title='Blessing & Marriage'
-              testimonies={blessingTestimonies}
+              title='Couples & Marriage'
+              testimonies={couplesTestimonies}
               onTestimonySelect={openTestimonyModal}
             />
           )}
 
           {familyTestimonies.length > 0 && (
             <TestimonyRow
-              title='Family Life'
+              title='Family Stories'
               testimonies={familyTestimonies}
               onTestimonySelect={openTestimonyModal}
             />
           )}
 
-          {ministryTestimonies.length > 0 && (
+          {parentingTestimonies.length > 0 && (
             <TestimonyRow
-              title='Ministry & Service'
-              testimonies={ministryTestimonies}
+              title='Parenting & Guidance'
+              testimonies={parentingTestimonies}
+              onTestimonySelect={openTestimonyModal}
+            />
+          )}
+
+          {personalTestimonies.length > 0 && (
+            <TestimonyRow
+              title='Personal Journeys'
+              testimonies={personalTestimonies}
               onTestimonySelect={openTestimonyModal}
             />
           )}
