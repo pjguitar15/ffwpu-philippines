@@ -5,8 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
-
-// react-icons
 import {
   FiMenu,
   FiX,
@@ -24,10 +22,6 @@ import { Sparkles } from 'lucide-react'
 import { HeaderSearch } from './header-search'
 import { LiveIndicator } from '@/components/ui/live-indicator'
 
-/* ------------------------------
-   Nav Data + XL logic
--------------------------------*/
-// Routes that appear in the TOP NAV on XL (and therefore should be hidden from the drawer on XL)
 const IN_TOP_NAV_ON_XL = new Set<string>([
   '/about/true-parents',
   '/hj-testimonies',
@@ -99,7 +93,6 @@ export const extraNavItems = [
   },
 ] as const
 
-// Static splits (no hooks)
 const mediaItems = extraNavItems.filter(
   (i) => i.href === '/hj-media-works' || i.href === '/hj-testimonies',
 )
@@ -119,26 +112,18 @@ const leftoverExtras = extraNavItems.filter(
       '/true-father',
     ].includes(i.href),
 )
-
-// For top nav on XL only
 const desktopExtrasXL = extraNavItems.filter((i) =>
   IN_TOP_NAV_ON_XL.has(i.href),
 )
-
-// Drawer extras: these always remain in the drawer (all sizes)
 const drawerExtrasAlways = extraNavItems.filter(
   (i) => !IN_TOP_NAV_ON_XL.has(i.href),
 )
-// Drawer extras: hide on XL (they move to the top nav there)
 const drawerExtrasXLHidden = extraNavItems.filter((i) =>
   IN_TOP_NAV_ON_XL.has(i.href),
 )
 
 type NavItem = (typeof mainNavItems)[number] | (typeof extraNavItems)[number]
 
-/* ------------------------------
-   Drawer helpers
--------------------------------*/
 function DrawerList({
   items,
   onChoose,
@@ -148,7 +133,6 @@ function DrawerList({
 }) {
   const pathname = usePathname()
   const isActive = (href: string) => pathname === href
-
   return (
     <nav className='px-5 space-y-1'>
       {items.map((item) => {
@@ -191,7 +175,6 @@ function DrawerList({
   )
 }
 
-/** Collapsible group with clickable parent link + caret to expand children */
 function DrawerGroup({
   label,
   parent,
@@ -209,18 +192,15 @@ function DrawerGroup({
 }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(Boolean(defaultOpen))
-
   useEffect(() => {
     if (
       !open &&
       (parent?.href === pathname ||
         childrenItems.some((c) => c.href === pathname))
-    ) {
+    )
       setOpen(true)
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
-
   const groupActive =
     (parent && pathname === parent.href) ||
     childrenItems.some((c) => c.href === pathname)
@@ -233,7 +213,6 @@ function DrawerGroup({
           groupActive && 'ring-blue-300',
         )}
       >
-        {/* Parent clickable area */}
         <Link
           href={parent?.href || '#'}
           onClick={onChoose}
@@ -244,9 +223,7 @@ function DrawerGroup({
         >
           {Icon ? <Icon className='mt-0.5 h-5 w-5 text-foreground/80' /> : null}
           <div className='flex-1'>
-            <div className={cn('text-md font-semibold leading-none')}>
-              {label}
-            </div>
+            <div className='text-md font-semibold leading-none'>{label}</div>
             {parent?.desc && (
               <div className='mt-1 text-xs text-foreground/70'>
                 {parent.desc}
@@ -254,8 +231,6 @@ function DrawerGroup({
             )}
           </div>
         </Link>
-
-        {/* Caret toggle */}
         <button
           type='button'
           aria-label={open ? `Collapse ${label}` : `Expand ${label}`}
@@ -268,8 +243,6 @@ function DrawerGroup({
           />
         </button>
       </div>
-
-      {/* Children (gap = mt-1 to match DrawerList spacing) */}
       {open && (
         <div className='mt-1'>
           <DrawerList items={childrenItems} onChoose={onChoose} />
@@ -284,6 +257,20 @@ export function Header() {
   const pathname = usePathname()
   const isActive = (href: string) => pathname === href
 
+  // lock page scroll when drawer open
+  useEffect(() => {
+    if (!isOpen) return
+    const { body, documentElement: html } = document
+    const prevBody = body.style.overflow
+    const prevHtml = html.style.overflow
+    body.style.overflow = 'hidden'
+    html.style.overflow = 'hidden'
+    return () => {
+      body.style.overflow = prevBody
+      html.style.overflow = prevHtml
+    }
+  }, [isOpen])
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setIsOpen(false)
     window.addEventListener('keydown', onKey)
@@ -292,191 +279,183 @@ export function Header() {
 
   return (
     <>
-      {/* Info strip */}
-      <div className='bg-gradient-to-r from-blue-800 via-cyan-800 to-sky-800 text-white py-2 px-4 text-center text-sm shadow-sm'>
-        <p className='block lg:hidden font-medium tracking-wide'>
-          ✨ Sunday Service • 10:00 AM (Manila)
-        </p>
-        <p className='hidden lg:block font-medium tracking-wide'>
-          ✨ Join us for our{' '}
-          <span className='font-semibold'>Weekly Sunday Service</span> • Every
-          Sunday at 10:00 AM (Manila)
-        </p>
-      </div>
+      <div className='sticky top-[env(safe-area-inset-top,0px)] z-50'>
+        <div className='bg-gradient-to-r from-blue-800 via-cyan-800 to-sky-800 text-white py-2 px-4 text-center text-sm shadow-sm'>
+          <p className='block lg:hidden font-medium tracking-wide'>
+            ✨ Sunday Service • 10:00 AM (Manila)
+          </p>
+          <p className='hidden lg:block font-medium tracking-wide'>
+            ✨ Join us for our{' '}
+            <span className='font-semibold'>Weekly Sunday Service</span> • Every
+            Sunday at 10:00 AM (Manila)
+          </p>
+        </div>
 
-      <header className='sticky top-0 z-50 w-full bg-background border-b'>
-        <div className='container mx-auto flex h-16 items-center px-4 gap-3 min-w-0'>
-          {/* LEFT GROUP: Logo + Search */}
-          <div className='flex items-center gap-3 min-w-0'>
-            <Link href='/' className='flex items-center space-x-2 shrink-0'>
-              <Image
-                src='/ffwpu-ph-logo.webp'
-                alt='FFWPU Philippines Logo'
-                width={130}
-                height={130}
-                priority
-                className='h-8 w-auto md:h-7 lg:h-8 shrink-0'
-                sizes='(min-width: 1024px) 144px, (min-width: 768px) 128px, 112px'
-              />
-            </Link>
+        <header className='w-full bg-background border-b'>
+          <div className='container mx-auto flex h-16 items-center px-4 gap-3 min-w-0'>
+            <div className='flex items-center gap-3 min-w-0'>
+              <Link href='/' className='flex items-center space-x-2 shrink-0'>
+                <Image
+                  src='/ffwpu-ph-logo.webp'
+                  alt='FFWPU Philippines Logo'
+                  width={130}
+                  height={130}
+                  priority
+                  className='h-8 w-auto md:h-7 lg:h-8 shrink-0'
+                  sizes='(min-width: 1024px) 144px, (min-width: 768px) 128px, 112px'
+                />
+              </Link>
 
-            {/* Search (md+) */}
-            <Suspense
-              fallback={
-                <div className='hidden md:block h-9 w-[clamp(12rem,28vw,22rem)] rounded-full bg-muted/60' />
-              }
-            >
-              <div className='hidden md:block min-w-[12rem] w-[clamp(12rem,28vw,24rem)] ms-3'>
-                <HeaderSearch variant='desktop' className='h-9 w-full' />
-              </div>
-            </Suspense>
+              <Suspense
+                fallback={
+                  <div className='hidden md:block h-9 w-[clamp(12rem,28vw,22rem)] rounded-full bg-muted/60' />
+                }
+              >
+                <div className='hidden md:block min-w-[12rem] w-[clamp(12rem,28vw,24rem)] ms-3'>
+                  <HeaderSearch variant='desktop' className='h-9 w-full' />
+                </div>
+              </Suspense>
 
-            <LiveIndicator className='hidden md:inline-flex shrink-0' />
-          </div>
+              <LiveIndicator className='hidden md:inline-flex shrink-0' />
+            </div>
 
-          {/* RIGHT GROUP: Desktop nav + burger */}
-          <div className='ml-auto flex items-center gap-2 sm:gap-3 min-w-0'>
-            {/* Desktop (lg+): show only main items on lg; extras appear only on xl */}
-            <nav className='hidden lg:flex items-center gap-2'>
-              {/* Always on lg+ */}
-              {mainNavItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'text-sm font-medium hover:bg-blue-100 rounded-full px-3 py-2 flex items-center gap-2',
-                    isActive(item.href) ? 'font-bold' : 'text-foreground',
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))}
-
-              {/* Only on xl+ (True Parents + HJ Testimonies) */}
-              <div className='hidden xl:flex items-center gap-2'>
-                {desktopExtrasXL.map((item) => (
+            <div className='ml-auto flex items-center gap-2 sm:gap-3 min-w-0'>
+              <nav className='hidden lg:flex items-center gap-2'>
+                {mainNavItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      'text-sm font-medium hover:bg-blue-100 rounded-full p-3 flex items-center gap-2',
+                      'text-sm font-medium hover:bg-blue-100 rounded-full px-3 py-2 flex items-center gap-2',
                       isActive(item.href) ? 'font-bold' : 'text-foreground',
                     )}
                   >
                     {item.label}
                   </Link>
                 ))}
-              </div>
-            </nav>
-
-            {/* Burger (all sizes) */}
-            <button
-              type='button'
-              aria-label='Open menu'
-              onClick={() => setIsOpen(true)}
-              className='h-12 w-12 inline-flex items-center justify-center hover:bg-blue-100 rounded-full cursor-pointer shrink-0'
-            >
-              <FiMenu className='h-5 w-5' strokeWidth={2.5} />
-            </button>
-          </div>
-        </div>
-
-        {/* Drawer */}
-        {isOpen && (
-          <>
-            <button
-              aria-label='Close menu overlay'
-              onClick={() => setIsOpen(false)}
-              className='fixed inset-0 z-40 bg-black/40'
-            />
-            <div
-              className='fixed right-0 top-0 z-50 h-dvh w-[300px] sm:w-[400px] bg-background shadow-xl flex flex-col'
-              role='dialog'
-              aria-modal='true'
-            >
-              <div className='flex items-center justify-between p-4 border-b'>
-                <span className='text-lg font-semibold'>Menu</span>
-                <button
-                  type='button'
-                  aria-label='Close menu'
-                  onClick={() => setIsOpen(false)}
-                  className='h-10 w-10 inline-flex items-center justify-center hover:bg-blue-100 rounded-full'
-                >
-                  <FiX className='h-6 w-6' strokeWidth={2.5} />
-                </button>
-              </div>
-
-              <div className='flex-1 overflow-y-auto overscroll-contain'>
-                {/* Drawer search — mobile only */}
-                {isOpen && (
-                  <div className='md:hidden'>
-                    <Suspense
-                      fallback={
-                        <div className='p-4 border-b'>
-                          <div className='h-10 rounded-xl bg-muted/60' />
-                        </div>
-                      }
+                <div className='hidden xl:flex items-center gap-2'>
+                  {desktopExtrasXL.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'text-sm font-medium hover:bg-blue-100 rounded-full p-3 flex items-center gap-2',
+                        isActive(item.href) ? 'font-bold' : 'text-foreground',
+                      )}
                     >
-                      <div className='p-4 border-b'>
-                        <HeaderSearch variant='drawer' />
-                      </div>
-                    </Suspense>
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </nav>
+
+              <button
+                type='button'
+                aria-label='Open menu'
+                onClick={() => setIsOpen(true)}
+                className='h-12 w-12 inline-flex items-center justify-center hover:bg-blue-100 rounded-full cursor-pointer shrink-0'
+              >
+                <FiMenu className='h-5 w-5' strokeWidth={2.5} />
+              </button>
+            </div>
+          </div>
+        </header>
+      </div>
+
+      {isOpen && (
+        <>
+          <button
+            aria-label='Close menu overlay'
+            onClick={() => setIsOpen(false)}
+            className='fixed inset-0 z-40 bg-black/40'
+          />
+          <div
+            className='fixed right-0 top-0 z-50 h-dvh w-[300px] sm:w-[400px] bg-background shadow-xl flex flex-col overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]'
+            role='dialog'
+            aria-modal='true'
+          >
+            <div className='flex-1 overflow-y-auto overscroll-contain'>
+              <div className='sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b'>
+                <div className='flex items-center justify-between p-4'>
+                  <span className='text-lg font-semibold'>Menu</span>
+                  <button
+                    type='button'
+                    aria-label='Close menu'
+                    onClick={() => setIsOpen(false)}
+                    className='h-10 w-10 inline-flex items-center justify-center hover:bg-blue-100 rounded-full'
+                  >
+                    <FiX className='h-6 w-6' strokeWidth={2.5} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Drawer search — mobile only */}
+              <div className='md:hidden'>
+                <Suspense
+                  fallback={
+                    <div className='p-4 border-b'>
+                      <div className='h-10 rounded-xl bg-muted/60' />
+                    </div>
+                  }
+                >
+                  <div className='p-4 border-b'>
+                    {/* 👇 close drawer on any search navigation */}
+                    <HeaderSearch
+                      variant='drawer'
+                      onNavigate={() => setIsOpen(false)}
+                    />
+                  </div>
+                </Suspense>
+              </div>
+
+              {/* PRIMARY (mobile) */}
+              <div className='md:hidden space-y-1'>
+                <DrawerList
+                  items={mainNavItems}
+                  onChoose={() => setIsOpen(false)}
+                />
+                <DrawerGroup
+                  label='Media'
+                  childrenItems={mediaItems}
+                  onChoose={() => setIsOpen(false)}
+                  icon={FiVideo}
+                />
+                <DrawerGroup
+                  label='True Parents'
+                  parent={trueParentsParent}
+                  childrenItems={trueParentsKids}
+                  onChoose={() => setIsOpen(false)}
+                  icon={FiHeart}
+                />
+                {leftoverExtras.length > 0 && (
+                  <DrawerList
+                    items={leftoverExtras}
+                    onChoose={() => setIsOpen(false)}
+                  />
+                )}
+              </div>
+
+              {/* SECONDARY (drawer on md+) */}
+              <div className='hidden md:block space-y-1'>
+                {drawerExtrasAlways.length > 0 && (
+                  <DrawerList
+                    items={drawerExtrasAlways}
+                    onChoose={() => setIsOpen(false)}
+                  />
+                )}
+                {drawerExtrasXLHidden.length > 0 && (
+                  <div className='xl:hidden'>
+                    <DrawerList
+                      items={drawerExtrasXLHidden}
+                      onChoose={() => setIsOpen(false)}
+                    />
                   </div>
                 )}
-
-                {/* PRIMARY (mobile) — even gaps (space-y-1) */}
-                <div className='md:hidden space-y-1'>
-                  <DrawerList
-                    items={mainNavItems}
-                    onChoose={() => setIsOpen(false)}
-                  />
-
-                  <DrawerGroup
-                    label='Media'
-                    childrenItems={mediaItems}
-                    onChoose={() => setIsOpen(false)}
-                    icon={FiVideo}
-                  />
-
-                  <DrawerGroup
-                    label='True Parents'
-                    parent={trueParentsParent}
-                    childrenItems={trueParentsKids}
-                    onChoose={() => setIsOpen(false)}
-                    icon={FiHeart}
-                  />
-
-                  {leftoverExtras.length > 0 && (
-                    <DrawerList
-                      items={leftoverExtras}
-                      onChoose={() => setIsOpen(false)}
-                    />
-                  )}
-                </div>
-
-                {/* SECONDARY (drawer on md+) — even gaps (space-y-1) */}
-                <div className='hidden md:block space-y-1'>
-                  {drawerExtrasAlways.length > 0 && (
-                    <DrawerList
-                      items={drawerExtrasAlways}
-                      onChoose={() => setIsOpen(false)}
-                    />
-                  )}
-
-                  {drawerExtrasXLHidden.length > 0 && (
-                    <div className='xl:hidden'>
-                      <DrawerList
-                        items={drawerExtrasXLHidden}
-                        onChoose={() => setIsOpen(false)}
-                      />
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
-          </>
-        )}
-      </header>
+          </div>
+        </>
+      )}
     </>
   )
 }

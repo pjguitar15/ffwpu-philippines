@@ -11,6 +11,8 @@ type Props = {
   className?: string
   inputClassName?: string
   variant?: 'desktop' | 'drawer'
+  /** Called right before navigating (use to close the drawer on mobile) */
+  onNavigate?: () => void
 }
 
 type Suggestion = {
@@ -25,6 +27,7 @@ export function HeaderSearch({
   className,
   inputClassName,
   variant = 'desktop',
+  onNavigate,
 }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -42,6 +45,7 @@ export function HeaderSearch({
 
   const runSearch = () => {
     const term = searchTerm.trim()
+    onNavigate?.() // 👈 close sidebar if provided
     router.push(`/news${term ? `?q=${encodeURIComponent(term)}` : ''}`)
     setOpen(false)
   }
@@ -55,12 +59,9 @@ export function HeaderSearch({
       setLoading(false)
       return
     }
-
     setLoading(true)
     setOpen(true)
     setActiveIndex(-1)
-
-    // debounce
     const t = setTimeout(async () => {
       try {
         abortRef.current?.abort()
@@ -78,7 +79,6 @@ export function HeaderSearch({
         setLoading(false)
       }
     }, 200)
-
     return () => clearTimeout(t)
   }, [searchTerm])
 
@@ -108,12 +108,11 @@ export function HeaderSearch({
       setOpen(false)
     } else if (e.key === 'Enter') {
       e.preventDefault()
-      if (activeIndex === -1) {
-        runSearch()
-      } else if (activeIndex === suggestions.length) {
+      if (activeIndex === -1 || activeIndex === suggestions.length) {
         runSearch()
       } else {
         const s = suggestions[activeIndex]
+        onNavigate?.() // 👈 close sidebar for suggestion via Enter
         router.push(`/news/${s.slug}`)
         setOpen(false)
       }
@@ -185,7 +184,6 @@ export function HeaderSearch({
           id='news-suggest-listbox'
         >
           <div className='max-h-[60vh] overflow-auto'>
-            {/* loading state */}
             {loading && (
               <div className='flex items-center gap-2 px-3 py-3 text-sm text-slate-600'>
                 <Loader2 className='h-4 w-4 animate-spin' />
@@ -210,9 +208,12 @@ export function HeaderSearch({
                   )}
                   role='option'
                   aria-selected={i === activeIndex}
-                  // prevent blur before click fires
                   onMouseDown={(e) => e.preventDefault()}
                   onMouseEnter={() => setActiveIndex(i)}
+                  onClick={() => {
+                    onNavigate?.()
+                    setOpen(false)
+                  }} // 👈 close sidebar on click
                 >
                   <div className='font-medium line-clamp-1'>
                     {highlight(s.title, searchTerm)}
@@ -245,7 +246,7 @@ export function HeaderSearch({
               )}
               onMouseEnter={() => setActiveIndex(suggestions.length)}
               onMouseDown={(e) => e.preventDefault()}
-              onClick={runSearch}
+              onClick={runSearch} // 👈 calls onNavigate inside
             >
               See all results for “{searchTerm.trim()}”
             </button>

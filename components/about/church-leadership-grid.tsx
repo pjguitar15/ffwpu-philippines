@@ -6,8 +6,6 @@ import clsx from 'clsx'
 import { LEADERS } from '@/constants/chruch-leaders'
 import { JoinedLeader, Leader, Level, Role } from '@/types/church-leaders.type'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
-import { Search, X } from 'lucide-react'
 
 /* ──────────────────────────────────────────────────────────────────────────
  * Utils
@@ -126,7 +124,7 @@ export default function ChurchLeadershipGrid({
           <p className='mt-2 text-sm md:text-base text-gray-600'>{subtext}</p>
         </div>
 
-        {/* Filter / Search — Tabs + Search */}
+        {/* Filter / Search — Tabs */}
         {showFilter && (
           <div className='mx-auto mb-8 flex flex-col items-center gap-3'>
             <Tabs
@@ -134,7 +132,15 @@ export default function ChurchLeadershipGrid({
               onValueChange={(v) => setLevel(v as any)}
               className='w-full'
             >
-              <TabsList className='mx-auto flex flex-wrap gap-2 rounded-2xl border bg-white p-1 shadow-sm sm:max-w-3xl'>
+              {/* NOTE: force height to auto so wrapped rows are visible on small screens */}
+              <TabsList
+                className={clsx(
+                  'mx-auto w-full sm:max-w-3xl',
+                  'flex flex-wrap justify-center gap-x-2 gap-y-2',
+                  'rounded-2xl border bg-white p-1 shadow-sm',
+                  '!h-auto min-h-10 overflow-visible',
+                )}
+              >
                 {(
                   [
                     { v: 'All', label: 'All' },
@@ -148,8 +154,10 @@ export default function ChurchLeadershipGrid({
                     key={t.v}
                     value={t.v}
                     className={clsx(
-                      'px-3 sm:px-4 py-1.5 text-[12px] sm:text-sm rounded-xl data-[state=active]:bg-slate-900 data-[state=active]:text-white',
-                      'data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-slate-900/10 cursor-pointer',
+                      'px-3 sm:px-4 py-1.5 text-[12px] sm:text-sm rounded-xl',
+                      'data-[state=active]:bg-slate-900 data-[state=active]:text-white',
+                      'data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-slate-900/10',
+                      'cursor-pointer',
                     )}
                   >
                     {t.label}
@@ -309,7 +317,6 @@ function getPrimaryRole(roles: Role[]): Role {
 }
 
 function LeaderPortrait({ src, name }: { src?: string; name: string }) {
-  const [loaded, setLoaded] = useState(false)
   const sizes =
     '(max-width: 640px) 45vw, (max-width: 1024px) 28vw, (max-width: 1280px) 20vw, 220px'
   return (
@@ -322,13 +329,7 @@ function LeaderPortrait({ src, name }: { src?: string; name: string }) {
       blurDataURL={`data:image/svg+xml;base64,${toBase64(shimmer(300, 400))}`}
       loading='lazy'
       decoding='async'
-      onLoadingComplete={() => setLoaded(true)}
-      className={clsx(
-        'object-cover object-center transition duration-500 will-change-transform',
-        loaded
-          ? 'opacity-100 blur-0 scale-100'
-          : 'opacity-90 blur-[10px] scale-[1.02]',
-      )}
+      className='object-cover object-center'
     />
   )
 }
