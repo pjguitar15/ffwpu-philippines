@@ -317,19 +317,49 @@ function getPrimaryRole(roles: Role[]): Role {
 }
 
 function LeaderPortrait({ src, name }: { src?: string; name: string }) {
+  const [loaded, setLoaded] = useState(false)
+
+  // Animated shimmer as a data: URL (utf8; works client/SSR, no Buffer needed)
+  const shimmerSvg = useMemo(
+    () => `data:image/svg+xml;utf8,${encodeURIComponent(shimmer(300, 400))}`,
+    [],
+  )
+
   const sizes =
     '(max-width: 640px) 45vw, (max-width: 1024px) 28vw, (max-width: 1280px) 20vw, 220px'
+
   return (
-    <Image
-      src={(src || '/leaders/placeholder.png') as string}
-      alt={name}
-      fill
-      sizes={sizes}
-      placeholder='blur'
-      blurDataURL={`data:image/svg+xml;base64,${toBase64(shimmer(300, 400))}`}
-      loading='lazy'
-      decoding='async'
-      className='object-cover object-center'
-    />
+    <>
+      <img
+        src={shimmerSvg}
+        alt=''
+        className='absolute inset-0 h-full w-full object-cover'
+      />
+      {/* Shimmer layer (visible until the image loads) */}
+      {!loaded && (
+        <img
+          src={shimmerSvg}
+          alt=''
+          aria-hidden='true'
+          className='absolute inset-0 h-full w-full object-cover'
+        />
+      )}
+
+      {/* Real image */}
+      <Image
+        src={(src || '/leaders/placeholder.png') as string}
+        alt={name}
+        fill
+        sizes={sizes}
+        loading='lazy'
+        decoding='async'
+        onLoadingComplete={() => setLoaded(true)}
+        className={clsx(
+          'object-cover object-center transition-opacity duration-300',
+          loaded ? 'opacity-100' : 'opacity-0',
+        )}
+      />
+    </>
   )
 }
+
