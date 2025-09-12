@@ -14,27 +14,6 @@ function normalizeName(n: string) {
   return n.trim().toLowerCase().replace(/\s+/g, ' ')
 }
 
-// Tiny SVG shimmer used as blur placeholder
-function shimmer(w: number, h: number) {
-  return `
-  <svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-    <defs>
-      <linearGradient id="g">
-        <stop stop-color="#f3f4f6" offset="0%" />
-        <stop stop-color="#e5e7eb" offset="50%" />
-        <stop stop-color="#f3f4f6" offset="100%" />
-      </linearGradient>
-    </defs>
-    <rect width="${w}" height="${h}" fill="#f8fafc"/>
-    <rect id="r" width="${w}" height="${h}" fill="url(#g)"/>
-    <animate xlink:href="#r" attributeName="x" from="-${w}" to="${w}" dur="1.2s" repeatCount="indefinite"/>
-  </svg>`
-}
-const toBase64 = (str: string) =>
-  typeof window === 'undefined'
-    ? Buffer.from(str).toString('base64')
-    : window.btoa(str)
-
 /* ──────────────────────────────────────────────────────────────────────────
  * Component
  * ──────────────────────────────────────────────────────────────────────────*/
@@ -54,7 +33,7 @@ export default function ChurchLeadershipGrid({
   showFilter?: boolean
 }) {
   const [level, setLevel] = useState<Level | 'All'>('All')
-  const [q, setQ] = useState('')
+  const [q, setQ] = useState('') // (kept for future search UI)
 
   // Build merged (deduped) people with roles
   const joined = useMemo(() => joinLeaders(leaders), [leaders])
@@ -220,7 +199,10 @@ export default function ChurchLeadershipGrid({
                     {primary.title}
                   </p>
                   {primary.tag && (
-                    <span className='mt-1 inline-block rounded-full border bg-gray-50 px-2 py-0.5 text-[10px] tracking-wide uppercase text-gray-600'>
+                    <span
+                      title={primary.tag}
+                      className='mt-1 inline-block rounded-none sm:rounded-full border bg-gray-50 px-2 py-0.5 text-[10px] tracking-wide uppercase text-gray-600'
+                    >
                       {primary.tag}
                     </span>
                   )}
@@ -231,7 +213,7 @@ export default function ChurchLeadershipGrid({
                       {others.map((r, idx) => (
                         <span
                           key={idx}
-                          className='inline-flex items-center rounded-full bg-slate-50 px-2 py-0.5 text-[10px] text-slate-600 ring-1 ring-slate-200'
+                          className='inline-flex items-center rounded-none sm:rounded-full bg-slate-50 px-2 py-0.5 text-[10px] text-slate-600 ring-1 ring-slate-200'
                           title={`${r.title}${r.tag ? ` • ${r.tag}` : ''}`}
                         >
                           {r.level}: {r.tag ? `${r.tag} — ` : ''} {r.title}
@@ -319,33 +301,15 @@ function getPrimaryRole(roles: Role[]): Role {
 function LeaderPortrait({ src, name }: { src?: string; name: string }) {
   const [loaded, setLoaded] = useState(false)
 
-  // Animated shimmer as a data: URL (utf8; works client/SSR, no Buffer needed)
-  const shimmerSvg = useMemo(
-    () => `data:image/svg+xml;utf8,${encodeURIComponent(shimmer(300, 400))}`,
-    [],
-  )
-
   const sizes =
     '(max-width: 640px) 45vw, (max-width: 1024px) 28vw, (max-width: 1280px) 20vw, 220px'
 
   return (
     <>
-      <img
-        src={shimmerSvg}
-        alt=''
-        className='absolute inset-0 h-full w-full object-cover'
-      />
-      {/* Shimmer layer (visible until the image loads) */}
-      {!loaded && (
-        <img
-          src={shimmerSvg}
-          alt=''
-          aria-hidden='true'
-          className='absolute inset-0 h-full w-full object-cover'
-        />
-      )}
+      {/* neutral backdrop to avoid flash of white */}
+      <div className='absolute inset-0 bg-gray-100' aria-hidden='true' />
 
-      {/* Real image */}
+      {/* Single image: starts blurred & slightly zoomed, then sharpens */}
       <Image
         src={(src || '/leaders/placeholder.png') as string}
         alt={name}
@@ -355,11 +319,14 @@ function LeaderPortrait({ src, name }: { src?: string; name: string }) {
         decoding='async'
         onLoadingComplete={() => setLoaded(true)}
         className={clsx(
-          'object-cover object-center transition-opacity duration-300',
-          loaded ? 'opacity-100' : 'opacity-0',
+          'object-cover object-center',
+          'transition-[filter,transform,opacity] duration-500 ease-out',
+          loaded
+            ? 'opacity-100 blur-0 scale-100'
+            : 'opacity-80 blur-xl scale-105',
         )}
+        style={{ willChange: 'filter, transform, opacity' }}
       />
     </>
   )
 }
-

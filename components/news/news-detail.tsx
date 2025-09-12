@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Calendar, User, Home, ChevronRight } from 'lucide-react'
+import { Calendar, User, Home, ChevronRight, Eye } from 'lucide-react'
 import { sampleNews } from '@/data/news' // fallback
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -129,6 +129,12 @@ export default function NewsDetailClient() {
               })
               const result = await response.json()
               console.log('View tracking result:', result)
+              // Update local views count if API returned the new value
+              if (result && typeof result.views === 'number') {
+                setNewsItem((prev) =>
+                  prev ? { ...prev, views: result.views } : prev,
+                )
+              }
               
               // Store the current timestamp
               localStorage.setItem(viewedKey, now.toString())
@@ -363,6 +369,9 @@ export default function NewsDetailClient() {
                     <span className='inline-flex items-center gap-1'>
                       <Calendar className='h-4 w-4' />{' '}
                       {new Date(item.date).toLocaleDateString()}
+                    </span>
+                    <span className='inline-flex items-center gap-1'>
+                      <Eye className='h-4 w-4' /> {item.views ?? 0}
                     </span>
                   </div>
                 </FadeInItem>

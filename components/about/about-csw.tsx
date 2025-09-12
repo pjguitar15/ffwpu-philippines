@@ -37,14 +37,6 @@ export function AboutCheonShimWonSection() {
               <Users2 className='h-4 w-4' /> Community prayer
             </span>
           </div>
-          <div className='pt-2'>
-            <Link
-              href='/about/cheon-shim-won'
-              className='underline underline-offset-4'
-            >
-              Learn more about Cheon Shim Won
-            </Link>
-          </div>
         </div>
       </div>
     </SectionShell>

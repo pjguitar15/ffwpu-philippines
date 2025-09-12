@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Loader2 } from 'lucide-react'
 
 export default function DeleteEventDialog({
   open,
@@ -14,15 +15,17 @@ export default function DeleteEventDialog({
   subtitle,
   onCancel,
   onConfirm,
+  loading = false,
 }: {
   open: boolean
   title?: string
   subtitle?: string
   onCancel: () => void
   onConfirm: () => void
+  loading?: boolean
 }) {
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onCancel()}>
+    <Dialog open={open} onOpenChange={(v) => { if (!v && !loading) onCancel() }}>
       <DialogContent className='max-w-sm p-0 overflow-hidden'>
         <div className='h-1 w-full bg-rose-500' />
         <div className='px-6 pt-5 pb-3 bg-gradient-to-r from-rose-50 to-rose-100 dark:from-rose-950/20 dark:to-rose-900/10 border-b'>
@@ -46,15 +49,23 @@ export default function DeleteEventDialog({
             variant='secondary'
             onClick={onCancel}
             className='cursor-pointer'
+            disabled={loading}
           >
             Cancel
           </Button>
           <Button
             variant='destructive'
             onClick={onConfirm}
-            className='cursor-pointer'
+            className='cursor-pointer inline-flex items-center'
+            disabled={loading}
           >
-            Delete
+            {loading ? (
+              <>
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' /> Deleting…
+              </>
+            ) : (
+              'Delete'
+            )}
           </Button>
         </div>
       </DialogContent>

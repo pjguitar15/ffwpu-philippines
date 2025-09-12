@@ -66,7 +66,6 @@ function IconBubble({ children }: { children: React.ReactNode }) {
 export default function TrueParentsPage() {
   return (
     <div className='min-h-screen flex flex-col'>
-
       {/* HERO (royal dark) */}
       <SectionShell dark className='relative overflow-hidden'>
         <div
@@ -292,16 +291,16 @@ export default function TrueParentsPage() {
           >
             {[
               {
-                value: '400,000+',
+                value: 'Millions+',
                 label: 'Blessing Ceremonies',
                 sub: 'Couples blessed in marriage',
               },
               {
-                value: '194',
+                value: '190+',
                 label: 'Nations',
                 sub: 'Countries with FFWPU presence',
               },
-              { value: '50+', label: 'Years', sub: 'Of global peace mission' },
+              { value: '70+', label: 'Years', sub: 'Of global peace mission' },
             ].map((s) => (
               <motion.div
                 key={s.label}
@@ -350,18 +349,6 @@ export default function TrueParentsPage() {
             Join a Blessing preparation class, participate in Peace Road, or
             support youth and family programs.
           </p>
-          <div className='pt-2 flex justify-center gap-3'>
-            <Link href='/events'>
-              <Button className='rounded-xl bg-gradient-to-r from-amber-600 via-rose-600 to-pink-600 hover:from-amber-500 hover:to-pink-500'>
-                See Upcoming Events
-              </Button>
-            </Link>
-            <Link href='/donate'>
-              <Button variant='outline' className='rounded-xl'>
-                Donate / Volunteer
-              </Button>
-            </Link>
-          </div>
         </div>
       </SectionShell>
     </div>

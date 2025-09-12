@@ -170,7 +170,7 @@ export const LEADERS: Leader[] = [
     title: 'Metro Manila Church',
     photoUrl: '/leaders/john-rhodbert-gregorio.png',
     level: 'Region',
-    tag: 'NCR',
+    // tag: 'NCR',
     order: 1, // within Area 1
   },
   {
@@ -178,7 +178,7 @@ export const LEADERS: Leader[] = [
     title: 'Cabanatuan Church',
     photoUrl: '/leaders/froilan-ramos.png',
     level: 'Region',
-    tag: 'R3',
+    // tag: 'R3',
     order: 2, // within Area 1
   },
 
@@ -188,7 +188,7 @@ export const LEADERS: Leader[] = [
     title: 'La Union Church',
     photoUrl: '/leaders/blessie-ramos.png',
     level: 'Region',
-    tag: 'R1',
+    // tag: 'R1',
     order: 1, // within Area 2
   },
   {
@@ -196,7 +196,7 @@ export const LEADERS: Leader[] = [
     title: 'Cauayan Church',
     photoUrl: '/leaders/rene-lansangan.png',
     level: 'Region',
-    tag: 'R2',
+    // tag: 'R2',
     order: 2, // within Area 2
   },
   {
@@ -204,7 +204,7 @@ export const LEADERS: Leader[] = [
     title: 'Baguio Church',
     photoUrl: '/leaders/concepcion-gawec.png',
     level: 'Region',
-    tag: 'CAR',
+    // tag: 'CAR',
     order: 3, // within Area 2
   },
 
@@ -214,7 +214,7 @@ export const LEADERS: Leader[] = [
     title: 'Antipolo Church',
     photoUrl: '/leaders/froilan-matbagan.jpg',
     level: 'Region',
-    tag: 'R4A',
+    // tag: 'R4A',
     order: 1, // within Area 3
   },
   {
@@ -222,7 +222,7 @@ export const LEADERS: Leader[] = [
     title: 'Cavite Church',
     photoUrl: '/leaders/reynaldo-estoce.png',
     level: 'Region',
-    tag: 'R4A',
+    // tag: 'R4A',
     order: 2, // within Area 3
   },
   {
@@ -230,7 +230,7 @@ export const LEADERS: Leader[] = [
     title: 'Puerto Princesa Church',
     photoUrl: '/leaders/leopoldo-uba.png',
     level: 'Region',
-    tag: 'R4B',
+    // tag: 'R4B',
     order: 3, // within Area 3
   },
   {
@@ -238,7 +238,7 @@ export const LEADERS: Leader[] = [
     title: 'Legazpi Church',
     photoUrl: '/leaders/ariel-villafuerte.png',
     level: 'Region',
-    tag: 'R5',
+    // tag: 'R5',
     order: 4, // within Area 3
   },
 
@@ -248,7 +248,7 @@ export const LEADERS: Leader[] = [
     title: 'Iloilo Church',
     photoUrl: '/leaders/carlo-bartolo.png',
     level: 'Region',
-    tag: 'R6',
+    // tag: 'R6',
     order: 1, // within Area 4
   },
   {
@@ -256,7 +256,7 @@ export const LEADERS: Leader[] = [
     title: 'Cebu Church',
     photoUrl: '/leaders/romel-pinson.png',
     level: 'Region',
-    tag: 'R7',
+    // tag: 'R7',
     order: 2, // within Area 4
   },
   {
@@ -264,7 +264,7 @@ export const LEADERS: Leader[] = [
     title: 'Leyte Church',
     photoUrl: '/leaders/editha-cipriano.png',
     level: 'Region',
-    tag: 'R8',
+    // tag: 'R8',
     order: 3, // within Area 4
   },
 
@@ -274,7 +274,7 @@ export const LEADERS: Leader[] = [
     title: 'Zamboanga Church',
     photoUrl: '/leaders/elsa-catbay.png',
     level: 'Region',
-    tag: 'R9',
+    // tag: 'R9',
     order: 1, // within Area 5
   },
   {
@@ -282,7 +282,7 @@ export const LEADERS: Leader[] = [
     title: 'Cagayan de Oro Church',
     photoUrl: '/leaders/sylvia-deapera.png',
     level: 'Region',
-    tag: 'R10',
+    // tag: 'R10',
     order: 2, // within Area 5
   },
   // R11 Davao — leader not confirmed in sources; add when known.
@@ -291,7 +291,7 @@ export const LEADERS: Leader[] = [
     title: 'General Santos (SOCSKSARGEN) Church',
     photoUrl: '/leaders/john-bastol.png',
     level: 'Region',
-    tag: 'R12',
+    // tag: 'R12',
     order: 3, // within Area 5
   },
   {
@@ -299,7 +299,7 @@ export const LEADERS: Leader[] = [
     title: 'Butuan Church',
     photoUrl: '/leaders/percinita-apas.png',
     level: 'Region',
-    tag: 'R13',
+    // tag: 'R13',
     order: 4, // within Area 5
   },
 ]

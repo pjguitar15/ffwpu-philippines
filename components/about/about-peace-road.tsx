@@ -40,15 +40,6 @@ export function AboutPeaceRoadSection() {
               </li>
             ))}
           </ul>
-          <div className='pt-2 flex gap-3'>
-            <Link
-              href='https://familyfedihq.org/2017/08/philippines-peace-road-2017/'
-              target='_blank'
-              className='underline underline-offset-4 opacity-90 hover:opacity-100'
-            >
-              See Peace Road stories
-            </Link>
-          </div>
         </div>
 
         <div className='order-1 md:order-2 relative'>

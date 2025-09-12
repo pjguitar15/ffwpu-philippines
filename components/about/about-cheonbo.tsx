@@ -29,16 +29,6 @@ export function AboutCheonBoSection() {
               <Globe2 className='h-4 w-4' /> National gatherings
             </span>
           </div>
-
-          {/* CTA */}
-          <div className='pt-2'>
-            <Link
-              href='/events/cheonbo'
-              className='underline underline-offset-4 text-white/90 hover:text-white'
-            >
-              Attend a CheonBo program
-            </Link>
-          </div>
         </div>
 
         {/* Image column */}

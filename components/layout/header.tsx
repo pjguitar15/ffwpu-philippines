@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
@@ -217,7 +217,7 @@ function DrawerGroup({
           href={parent?.href || '#'}
           onClick={onChoose}
           className={cn(
-            'flex-1 flex items-center gap-3 px-6 py-4 cursor-pointer bg-transparent hover:bg-blue-100',
+            'flex-1 flex items-center gap-3 px-6 py-4 cursor-pointer hover:bg-blue-100',
             groupActive && 'bg-blue-100',
           )}
         >
@@ -258,6 +258,22 @@ export function Header() {
   const isActive = (href: string) => pathname === href
   const isHome = pathname === '/'
 
+  // FIX: make header fixed and measured, overlay/drawer use full viewport (under header by z-index)
+  const headerRef = useRef<HTMLDivElement>(null)
+  const [headerH, setHeaderH] = useState(0)
+  useEffect(() => {
+    const measure = () =>
+      setHeaderH(headerRef.current?.getBoundingClientRect().height ?? 0)
+    measure()
+    const ro = new ResizeObserver(measure)
+    if (headerRef.current) ro.observe(headerRef.current)
+    window.addEventListener('resize', measure)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', measure)
+    }
+  }, [])
+
   // lock page scroll when drawer open
   useEffect(() => {
     if (!isOpen) return
@@ -280,7 +296,8 @@ export function Header() {
 
   return (
     <>
-      <div className='sticky top-[env(safe-area-inset-top,0px)] z-50'>
+      {/* FIXED header above everything */}
+      <div ref={headerRef} className='fixed inset-x-0 top-0 z-[900]'>
         {isHome && (
           <div className='bg-gradient-to-r from-blue-800 via-cyan-800 to-sky-800 text-white py-2 px-4 text-center text-sm shadow-sm'>
             <p className='block lg:hidden font-medium tracking-wide'>
@@ -293,7 +310,7 @@ export function Header() {
             </p>
           </div>
         )}
-        <header className='w-full bg-background border-b'>
+        <header className='relative z-[900] w-full bg-background border-b'>
           <div className='container mx-auto flex h-16 items-center px-4 gap-3 min-w-0'>
             <div className='flex items-center gap-3 min-w-0'>
               <Link href='/' className='flex items-center space-x-2 shrink-0'>
@@ -364,15 +381,21 @@ export function Header() {
         </header>
       </div>
 
+      {/* Spacer so content starts below the fixed header (prevents layout jump) */}
+      <div aria-hidden style={{ height: headerH }} />
+
       {isOpen && (
         <>
+          {/* Overlay UNDER header, full screen */}
           <button
             aria-label='Close menu overlay'
             onClick={() => setIsOpen(false)}
-            className='fixed inset-0 z-40 bg-black/40'
+            className='fixed inset-0 z-[800] bg-black/40'
           />
+
+          {/* Drawer ABOVE header */}
           <div
-            className='fixed right-0 top-0 z-50 h-dvh w-[300px] sm:w-[400px] bg-background shadow-xl flex flex-col overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]'
+            className='fixed top-0 right-0 bottom-0 z-[1000] w-[300px] sm:w-[400px] bg-background shadow-xl flex flex-col overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]'
             role='dialog'
             aria-modal='true'
           >
@@ -401,7 +424,6 @@ export function Header() {
                   }
                 >
                   <div className='p-4 border-b'>
-                    {/* 👇 close drawer on any search navigation */}
                     <HeaderSearch
                       variant='drawer'
                       onNavigate={() => setIsOpen(false)}
@@ -411,7 +433,7 @@ export function Header() {
               </div>
 
               {/* PRIMARY (mobile) */}
-              <div className='md:hidden space-y-1'>
+              <div className='md:hidden space-y-1 pt-3'>
                 <DrawerList
                   items={mainNavItems}
                   onChoose={() => setIsOpen(false)}
@@ -438,7 +460,7 @@ export function Header() {
               </div>
 
               {/* SECONDARY (drawer on md+) */}
-              <div className='hidden md:block space-y-1'>
+              <div className='hidden md:block space-y-1 pt-3'>
                 {drawerExtrasAlways.length > 0 && (
                   <DrawerList
                     items={drawerExtrasAlways}

@@ -274,7 +274,7 @@ export function NewsIndex({
                 key={item.slug}
                 delay={(i % 3) * 0.04 + Math.random() * 0.06}
                 duration={0.22}
-                className='group relative rounded-xl overflow-hidden ring-1 ring-black/10 hover:shadow-lg transition'
+                className='group relative rounded-md overflow-hidden ring-1 ring-black/10 hover:shadow-lg transition'
               >
                 <Link href={`/news/${item.slug}`} className='block bg-white'>
                   <div className='relative h-44 md:h-52'>
@@ -330,7 +330,7 @@ export function NewsIndex({
                 key={item.slug}
                 delay={(i % 4) * 0.05 + Math.random() * 0.08}
                 duration={0.22}
-                className='group grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4 rounded-xl overflow-hidden ring-1 ring-black/10 hover:shadow-lg transition'
+                className='group grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4 rounded-md overflow-hidden ring-1 ring-black/10 hover:shadow-lg transition'
               >
                 <Link href={`/news/${item.slug}`} className='contents bg-white'>
                   <div className='relative h-44 md:h-full'>

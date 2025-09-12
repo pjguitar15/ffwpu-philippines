@@ -149,10 +149,6 @@ export default function HomePage() {
                   label: 'Learn More about PCLC',
                   href: 'https://pclc-asiapacific.org/',
                 },
-                {
-                  label: 'Read Field Report',
-                  href: 'https://familyfedihq.org/2024/09/philippines-3-asia-pacific-clergy-nation-building-seminar/',
-                },
               ]}
             />
           </section>
@@ -206,14 +202,6 @@ export default function HomePage() {
                   label: '40-Day AP Completion',
                   href: 'https://www.instagram.com/p/DNUXOLdyP6H/',
                 },
-                {
-                  label: 'PH Workshop Field Report',
-                  href: 'https://familyfedihq.org/2024/11/philippine-divine-principle-workshop/',
-                },
-                {
-                  label: 'HTG Vision for Youth',
-                  href: 'https://familyfedihq.org/2024/03/philippines-national-unified-sunday-service/',
-                },
               ]}
             />
           </section>
@@ -237,7 +225,7 @@ export default function HomePage() {
                   href: 'https://www.facebook.com/hjtestimonies/',
                 },
                 {
-                  label: 'Inspiring Stories',
+                  label: 'HJ Testimonies YouTube',
                   href: 'https://www.youtube.com/@hjtestimonies25',
                 },
               ]}

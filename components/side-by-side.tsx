@@ -109,18 +109,24 @@ export function SideBySide({
 
               {bottomLinks.length > 0 && (
                 <div className='mt-8 flex flex-wrap items-center gap-x-10 gap-y-4'>
-                  {bottomLinks.map((l) => (
-                    <Link
-                      key={l.label}
-                      href={l.href}
-                      className='group relative inline-flex flex-col'
-                    >
-                      <span className='text-base md:text-lg font-extrabold tracking-wider uppercase text-slate-900'>
-                        {l.label}
-                      </span>
-                      <span className='mt-2 h-1 w-10 bg-amber-300 transition-all group-hover:w-14' />
-                    </Link>
-                  ))}
+                  {bottomLinks.map((l) => {
+                    const isWatchTestimonies =
+                      l.label?.trim().toLowerCase() === 'watch testimonies' ||
+                      /facebook\.com\/hjtestimonies/i.test(l.href || '')
+                    const href = isWatchTestimonies ? '/hj-testimonies' : l.href
+                    return (
+                      <Link
+                        key={l.label}
+                        href={href}
+                        className='group relative inline-flex flex-col'
+                      >
+                        <span className='text-base md:text-lg font-extrabold tracking-wider uppercase text-slate-900'>
+                          {l.label}
+                        </span>
+                        <span className='mt-2 h-1 w-10 bg-amber-300 transition-all group-hover:w-14' />
+                      </Link>
+                    )
+                  })}
                 </div>
               )}
             </motion.div>

@@ -22,6 +22,7 @@ export default function AdminEventsPage() {
   const [editItem, setEditItem] = useState<EventItem | null>(null)
   const [deleteItem, setDeleteItem] = useState<EventItem | null>(null)
   const [viewItem, setViewItem] = useState<EventItem | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   const [page, setPage] = useState(1)
   const pageSize = 8
@@ -110,9 +111,15 @@ export default function AdminEventsPage() {
             onCancel={() => setDeleteItem(null)}
             onConfirm={async () => {
               if (!deleteItem?._id) return
-              await remove(deleteItem._id)
-              setDeleteItem(null)
+              try {
+                setDeleting(true)
+                await remove(deleteItem._id)
+                setDeleteItem(null)
+              } finally {
+                setDeleting(false)
+              }
             }}
+            loading={deleting}
           />
 
           {/* Create/Edit modal */}

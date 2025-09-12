@@ -391,18 +391,6 @@ export function HolyMotherHanCTA() {
           Join a vigil, support family Blessings, or volunteer with youth and
           women’s initiatives. Your devotion can bless many.
         </p>
-        <div className='pt-2 flex justify-center gap-3'>
-          <Link href='/events'>
-            <Button className='rounded-xl bg-gradient-to-r from-fuchsia-600 via-rose-600 to-pink-600 hover:from-fuchsia-500 hover:to-pink-500'>
-              See Upcoming Events
-            </Button>
-          </Link>
-          <Link href='/donate'>
-            <Button variant='outline' className='rounded-xl'>
-              Donate / Volunteer
-            </Button>
-          </Link>
-        </div>
       </div>
     </SectionShell>
   )
