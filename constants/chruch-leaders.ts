@@ -13,7 +13,7 @@ export const LEADERS: Leader[] = [
     order: 1,
   },
   {
-    name: 'Ms. Maraia Aparece',
+    name: 'Ms. Maraia Carry A. Aparece',
     title: 'National Secretary',
     photoUrl: '/leaders/maraia-aparece.png',
     level: 'National',
