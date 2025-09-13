@@ -119,10 +119,10 @@ export default function EventModal({
             <X className='h-6 w-6 md:h-5 md:w-5' />
           </button>
 
-          {/* Content stack (vertically centered) */}
-          <div className='relative z-10 min-h-[100svh] grid place-items-center py-6 md:py-12'>
+          {/* Content stack (vertically centered). Avoid forcing scrollbar by not adding vertical padding here. */}
+          <div className='relative z-10 min-h-[100svh] grid place-items-center'>
             <MotionDiv
-              className='w-full max-w-6xl px-3 md:px-6'
+              className='w-full max-w-6xl px-3 md:px-6 my-6 md:my-12'
               onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}

@@ -25,7 +25,7 @@ export default function AdminEventsPage() {
   const [deleting, setDeleting] = useState(false)
 
   const [page, setPage] = useState(1)
-  const pageSize = 8
+  const pageSize = 6
   const { toast } = useToast()
 
   useEffect(() => {
@@ -76,14 +76,7 @@ export default function AdminEventsPage() {
       <AdminSidebar />
       <main className='flex-1 overflow-auto'>
         <div className='p-8'>
-          <EventToolbar
-            q={q}
-            setQ={setQ}
-            onCreate={() => {
-              setEditItem(null)
-              setOpenForm(true)
-            }}
-          />
+          <EventToolbar />
 
           <EventListTable
             loading={loading}
@@ -92,6 +85,12 @@ export default function AdminEventsPage() {
             page={page}
             totalPages={totalPages}
             pageSize={pageSize}
+            q={q}
+            setQ={setQ}
+            onCreate={() => {
+              setEditItem(null)
+              setOpenForm(true)
+            }}
             onPrev={() => setPage((p) => Math.max(1, p - 1))}
             onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
             onGoto={(p) => setPage(p)}

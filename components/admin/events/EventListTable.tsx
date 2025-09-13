@@ -18,6 +18,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Plus } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Calendar,
@@ -44,6 +46,9 @@ export default function EventListTable({
   page,
   totalPages,
   pageSize,
+  q,
+  setQ,
+  onCreate,
   onPrev,
   onNext,
   onGoto,
@@ -57,6 +62,9 @@ export default function EventListTable({
   page: number
   totalPages: number
   pageSize: number
+  q: string
+  setQ: (v: string) => void
+  onCreate: () => void
   onPrev: () => void
   onNext: () => void
   onGoto: (p: number) => void
@@ -69,12 +77,36 @@ export default function EventListTable({
     <Card className='shadow-sm overflow-hidden border-0 bg-gradient-to-br from-white to-slate-50 dark:from-background dark:to-slate-950/20'>
       <div className='h-1 w-full bg-indigo-500' />
       <CardHeader>
-        <CardTitle>All Events</CardTitle>
-        <CardDescription>Create, edit, and delete events</CardDescription>
+        <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
+          <div>
+            <CardTitle>All Events</CardTitle>
+            <CardDescription>Create, edit, and delete events</CardDescription>
+          </div>
+          <div className='flex items-center gap-2 w-full md:w-auto'>
+            <Input
+              placeholder='Search title, location, region, area…'
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              className='h-10 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0 w-full md:w-[clamp(14rem,28vw,22rem)]'
+            />
+            <Button
+              onClick={onCreate}
+              className='cursor-pointer bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap'
+            >
+              <Plus className='mr-2 h-4 w-4' /> Create Event
+            </Button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className='relative -mx-2 md:mx-0 overflow-auto rounded-xl border border-border/60'>
-          <Table className='min-w-[980px]'>
+        <div
+          className={
+            'relative -mx-2 md:mx-0 rounded-xl border border-border/60 ' +
+            'overflow-y-hidden'
+          }
+          style={{ minHeight: '360px' }}
+        >
+          <Table>
             <TableHeader className='sticky top-0 z-[1] bg-gradient-to-r from-slate-50 to-sky-50 dark:from-slate-900/60 dark:to-sky-950/40 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
               <TableRow className='h-14'>
                 <TableHead className='text-slate-700 py-3 w-20'></TableHead>
@@ -175,13 +207,13 @@ export default function EventListTable({
 
                       <TableCell className='py-4'>
                         <div
-                          className='font-medium cursor-pointer hover:underline transition-all duration-200 ease-in-out'
+                          className='font-medium cursor-pointer hover:underline transition-all duration-200 ease-in-out whitespace-normal break-words max-w-[520px]'
                           onClick={() => onView(e)}
                         >
                           {e.title}
                         </div>
                         {e.church && (
-                          <div className='text-sm text-muted-foreground line-clamp-1'>
+                          <div className='text-sm text-muted-foreground line-clamp-1 max-w-[520px]'>
                             {e.church}
                           </div>
                         )}
@@ -195,8 +227,11 @@ export default function EventListTable({
                       </TableCell>
 
                       <TableCell className='py-4'>
-                        <div className='flex items-center gap-2'>
-                          <MapPin className='h-4 w-4' /> {e.location}
+                        <div className='flex items-start gap-2 whitespace-normal break-words max-w-[480px]'>
+                          <MapPin className='h-4 w-4 mt-0.5 shrink-0' />
+                          <span className='whitespace-normal break-words'>
+                            {e.location}
+                          </span>
                         </div>
                       </TableCell>
 
