@@ -3,9 +3,9 @@ import Image from 'next/image'
 import { Separator } from '@/components/ui/separator'
 import { extraNavItems, mainNavItems } from './header'
 
-function dedupe(items: { href: string; label: string }[]) {
+function dedupe(items: any) {
   const seen = new Set<string>()
-  return items.filter((i) =>
+  return items.filter((i: any) =>
     seen.has(i.href) ? false : (seen.add(i.href), true),
   )
 }
@@ -13,7 +13,7 @@ function dedupe(items: { href: string; label: string }[]) {
 export function Footer() {
   const explore = dedupe(mainNavItems)
   const more = dedupe(extraNavItems).filter(
-    (l) => !explore.some((e) => e.href === l.href),
+    (l: any) => !explore.some((e: any) => e.href === l.href),
   )
 
   return (
@@ -83,7 +83,7 @@ export function Footer() {
           <nav className='space-y-4' aria-label='Explore'>
             <h4 className='font-heading font-semibold'>Explore</h4>
             <ul className='space-y-2 text-sm'>
-              {explore.map((link) => (
+              {explore.map((link: any) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -100,7 +100,7 @@ export function Footer() {
           <nav className='space-y-4' aria-label='More'>
             <h4 className='font-heading font-semibold'>More</h4>
             <ul className='space-y-2 text-sm'>
-              {more.map((link) => (
+              {more.map((link: any) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -120,10 +120,10 @@ export function Footer() {
               <p>Quezon City, Philippines</p>
               <p>
                 <a
-                  href='mailto:info@ffwpu.ph'
+                  href='mailto:familyfedphils@ffwpuph.com'
                   className='hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded'
                 >
-                  info@ffwpu.ph
+                  familyfedphils@ffwpuph.com
                 </a>
               </p>
             </div>

@@ -273,10 +273,10 @@ export default function ContactPage() {
                   <div>
                     <p className='font-medium'>Email</p>
                     <p className='text-sm text-muted-foreground'>
-                      info@ffwpu.ph
+                      executivesec@ffwpuph.com
                     </p>
                     <p className='text-sm text-muted-foreground'>
-                      admin@ffwpu.ph
+                      familyfedphils@ffwpuph.com
                     </p>
                   </div>
                 </div>
