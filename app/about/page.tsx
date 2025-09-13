@@ -22,14 +22,14 @@ export default function AboutPage() {
             <FadeIn delay={0.1}>
               <AboutIntroSection />
             </FadeIn>
-            <FadeIn delay={0.14}>
-              <AboutPeaceRoadSection />
+            <FadeIn delay={0.18}>
+              <AboutCheonBoSection />
             </FadeIn>
             <FadeIn delay={0.16}>
               <AboutCheonShimWonSection />
             </FadeIn>
-            <FadeIn delay={0.18}>
-              <AboutCheonBoSection />
+            <FadeIn delay={0.14}>
+              <AboutPeaceRoadSection />
             </FadeIn>
             <FadeIn delay={0.2}>
               <AboutWorldCarpSection />

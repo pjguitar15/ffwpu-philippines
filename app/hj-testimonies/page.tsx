@@ -378,7 +378,9 @@ function TestimonyModal({
           p-0 bg-white border border-slate-200 overflow-hidden
           sm:max-w-[92vw] md:max-w-4xl lg:max-w-6xl
           w-[92vw] md:w-auto
+          z-[9999] fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
         '
+        style={{ zIndex: 9999 }}
       >
         <DialogTitle className='sr-only'>{testimony.title}</DialogTitle>
 
