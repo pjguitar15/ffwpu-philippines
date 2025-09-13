@@ -149,7 +149,24 @@ export function UpcomingEventsSection({
             area: safeArea,
           }
         })
-        setItems(normalized)
+
+        // Hide past events (anything before today's date)
+        const now = new Date()
+        const startOfToday = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+          0,
+          0,
+          0,
+          0,
+        )
+        const upcomingOnly = normalized.filter((e) => {
+          const start = new Date(e.date)
+          return !Number.isNaN(start.getTime()) && start >= startOfToday
+        })
+
+        setItems(upcomingOnly)
       }
     } catch (e: any) {
       console.error('[home] failed to load /api/events', e)

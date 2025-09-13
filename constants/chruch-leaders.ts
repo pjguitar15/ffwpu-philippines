@@ -259,14 +259,14 @@ export const LEADERS: Leader[] = [
     // tag: 'R7',
     order: 2, // within Area 4
   },
-  {
-    name: 'Rev. Editha Cipriano',
-    title: 'Leyte Church',
-    photoUrl: '/leaders/editha-cipriano.png',
-    level: 'Region',
-    // tag: 'R8',
-    order: 3, // within Area 4
-  },
+  // {
+  //   name: 'Rev. Editha Cipriano',
+  //   title: 'Leyte Church',
+  //   photoUrl: '/leaders/editha-cipriano.png',
+  //   level: 'Region',
+  //   // tag: 'R8',
+  //   order: 3, // within Area 4
+  // },
 
   // AREA 5 → R9, R10, (R11 Davao—tbd), R12, R13
   {

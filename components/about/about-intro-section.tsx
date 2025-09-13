@@ -6,6 +6,8 @@ import { Eyebrow } from "../ui/eyebrow";
 import { HighlightTitle } from "../ui/highlight-title";
 
 export function AboutIntroSection() {
+  const CTA_SIZE =
+    'h-11 md:h-12 px-6 md:px-8 min-w-[200px] whitespace-nowrap leading-none'
   return (
     <SectionShell className='overflow-hidden'>
       <div className='max-w-5xl mx-auto text-center space-y-6 relative'>
@@ -25,15 +27,19 @@ export function AboutIntroSection() {
         </p>
         <div className='flex items-center justify-center gap-3 pt-2'>
           <Link href='#peace-road' className='inline-block'>
-            <EpicButton className='bg-gradient-to-r from-sky-700 via-blue-700 to-indigo-800 hover:from-blue-700 hover:to-indigo-700'>
+            <EpicButton
+              className={`bg-gradient-to-r from-sky-700 via-blue-700 to-indigo-800 hover:from-blue-700 hover:to-indigo-700 ${CTA_SIZE}`}
+            >
               Explore Highlights
             </EpicButton>
           </Link>
+
           <Link
             href='/contact'
-            className='inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm md:text-base hover:bg-accent/50'
+            className={`inline-flex items-center justify-center gap-2 rounded-full border text-sm md:text-base hover:bg-accent/50 ${CTA_SIZE}`}
           >
-            <HeartHandshake className='h-4 w-4' /> Connect with us
+            <HeartHandshake className='h-4 w-4' />
+            Connect with us
           </Link>
         </div>
       </div>

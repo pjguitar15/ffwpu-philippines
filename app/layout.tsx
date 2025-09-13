@@ -107,21 +107,17 @@ export default function RootLayout({
       className={`${montserrat.variable} ${inter.variable} antialiased scrollbar-thin scroll-smooth light`}
     >
       <head>
-        <link rel='icon' href='/favicon.webp' />
-        <link rel='favicon' sizes='180x180' href='/favicon.webp' />
+        {/* Favicons */}
+        <link rel='icon' type='image/png' href='/ffwpu-ph-logo.png' />
+        <link rel='icon' type='image/webp' href='/favicon.webp' />
         <link
-          rel='icon'
-          type='image/png'
-          sizes='32x32'
-          href='/favicon-32x32.png'
-        />
-        <link
-          rel='icon'
-          type='image/png'
-          sizes='16x16'
-          href='/favicon-16x16.png'
+          rel='apple-touch-icon'
+          sizes='180x180'
+          href='/ffwpu-ph-logo.png'
         />
         <link rel='manifest' href='/site.webmanifest' />
+
+        {/* Theme + viewport */}
         <meta name='theme-color' content='#3b82f6' />
         <meta
           name='viewport'

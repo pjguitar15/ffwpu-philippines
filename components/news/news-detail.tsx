@@ -4,8 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Calendar, User, Home, ChevronRight, Eye } from 'lucide-react'
-import { sampleNews } from '@/data/news' // fallback
+import { Calendar, User, Home, ChevronRight, Eye, AlertTriangle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { ArticleBody } from './article-body'
@@ -94,10 +93,8 @@ export default function NewsDetailClient() {
           return
         }
       } catch {}
-      const local = sampleNews.find((i) => i.slug === slug) as
-        | NewsItem
-        | undefined
-      if (mounted) setNewsItem(local)
+      // On failure, do not fallback to sample; show error UI
+      if (mounted) setNewsItem(undefined)
       if (mounted) setLoading(false)
     })()
     return () => {
@@ -171,14 +168,6 @@ export default function NewsDetailClient() {
           return
         }
       } catch {}
-      // Fallback to bundled sample if API fails
-      if (mounted)
-        setAllNews(
-          [...sampleNews].sort(
-            (a, b) =>
-              new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime(),
-          ) as NewsItem[],
-        )
     })()
     return () => {
       mounted = false
@@ -192,7 +181,7 @@ export default function NewsDetailClient() {
 
   const related = useMemo(() => {
     if (!newsItem) return []
-    const source = allNews.length ? allNews : (sampleNews as NewsItem[])
+    const source = allNews
     const firstTag = newsItem.tags?.[0]
     const pool = source.filter((n) => n.slug !== newsItem.slug)
     const tagged = firstTag
@@ -203,7 +192,7 @@ export default function NewsDetailClient() {
 
   const moreRandomBelow = useMemo(() => {
     if (!newsItem) return []
-    const source = allNews.length ? allNews : (sampleNews as NewsItem[])
+    const source = allNews
     const ids = new Set([newsItem.slug, ...related.map((r) => r.slug)])
     const pool = source.filter((n) => !ids.has(n.slug))
     return pickRandom(pool, 3) as NewsItem[]
@@ -267,11 +256,26 @@ export default function NewsDetailClient() {
 
   if (!newsItem && !loading) {
     return (
-      <div className='min-h-screen flex flex-col'>
+      <div className='min-h-screen flex flex-col bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950'>
         <main className='flex-1 flex items-center justify-center'>
-          <div className='text-center'>
-            <h2 className='text-2xl font-bold mb-4'>Update Not Found</h2>
-            <Button onClick={() => router.back()}>Go Back</Button>
+          <div className='max-w-md mx-auto text-center px-6'>
+            <div className='mx-auto w-14 h-14 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 flex items-center justify-center shadow-sm ring-1 ring-rose-200/60 dark:ring-rose-900/40'>
+              <AlertTriangle className='w-7 h-7' />
+            </div>
+            <h2 className='mt-4 text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white'>
+              Something's wrong to the page
+            </h2>
+            <p className='mt-2 text-slate-600 dark:text-slate-300'>
+              We couldn’t load this news article. It might be unavailable or there was a connection hiccup.
+            </p>
+            <div className='mt-6 flex items-center justify-center gap-3'>
+              <Button variant='default' onClick={() => router.refresh()}>
+                Try again
+              </Button>
+              <Link href='/news'>
+                <Button variant='outline'>Back to news</Button>
+              </Link>
+            </div>
           </div>
         </main>
       </div>
