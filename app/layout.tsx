@@ -87,7 +87,7 @@ export const metadata: Metadata = {
     title: 'FFWPU Philippines - Building World Peace and Unity',
     description:
       "Join us in creating a world of peace, love, and unity through True Parents' teachings.",
-    images: ['/true-parents-portrait.png'],
+    images: ['/true-parents-portrait.jpg'],
   },
   verification: {
     google: 'your-google-verification-code',
@@ -108,11 +108,7 @@ export default function RootLayout({
     >
       <head>
         <link rel='icon' href='/favicon.webp' />
-        <link
-          rel='apple-touch-icon'
-          sizes='180x180'
-          href='/apple-touch-icon.png'
-        />
+        <link rel='favicon' sizes='180x180' href='/favicon.webp' />
         <link
           rel='icon'
           type='image/png'

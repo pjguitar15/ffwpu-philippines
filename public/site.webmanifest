@@ -4,19 +4,19 @@
   "description": "Family Federation for World Peace and Unification Philippines",
   "icons": [
     {
-      "src": "/favicon-16x16.png",
+      "src": "/favicon.webp",
       "sizes": "16x16",
-      "type": "image/png"
+      "type": "image/webp"
     },
     {
-      "src": "/favicon-32x32.png",
+      "src": "/favicon.webp",
       "sizes": "32x32",
-      "type": "image/png"
+      "type": "image/webp"
     },
     {
-      "src": "/apple-touch-icon.png",
+      "src": "/favicon.webp",
       "sizes": "180x180",
-      "type": "image/png"
+      "type": "image/webp"
     }
   ],
   "theme_color": "#3b82f6",
