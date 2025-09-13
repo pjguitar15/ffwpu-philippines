@@ -9,6 +9,7 @@ export interface EventDoc extends mongoose.Document {
   region: string
   church?: string
   image: string
+  description?: string
   button?: string
   href?: string
   createdAt: Date
@@ -29,11 +30,24 @@ const EventSchema = new Schema<EventDoc>(
     region: { type: String, required: true },
     church: { type: String },
     image: { type: String, required: true },
+    description: { type: String },
     button: { type: String },
     href: { type: String },
   },
   { timestamps: true },
 )
 
-export const Event = (models.Event as mongoose.Model<EventDoc>) ||
-  model<EventDoc>('Event', EventSchema)
+// Handle Next.js dev HMR: if the model exists but schema is outdated (e.g. missing
+// newly added fields like `description`), recompile the model in development.
+let EventModel: mongoose.Model<EventDoc>
+if (models.Event) {
+  EventModel = models.Event as mongoose.Model<EventDoc>
+  if (!EventModel.schema.path('description') && process.env.NODE_ENV !== 'production') {
+    delete (mongoose.models as any).Event
+    EventModel = model<EventDoc>('Event', EventSchema)
+  }
+} else {
+  EventModel = model<EventDoc>('Event', EventSchema)
+}
+
+export const Event = EventModel

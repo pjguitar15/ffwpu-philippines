@@ -4,9 +4,12 @@ import { Event } from '@/models/Event'
 import mongoose from 'mongoose'
 import { recordAudit } from '@/lib/audit'
 
-export async function GET(_: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  _: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   await dbConnect()
-  const { id } = params
+  const { id } = await params
   const item = mongoose.Types.ObjectId.isValid(id)
     ? await Event.findById(id).lean()
     : null
@@ -16,12 +19,36 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   await dbConnect()
-  const { id } = params
+  const { id } = await params
   const body = await req.json()
-  const updated = await Event.findByIdAndUpdate(id, body, { new: true }).lean()
+  const ALLOWED_FIELDS = [
+    'title',
+    'date',
+    'end',
+    'location',
+    'area',
+    'region',
+    'church',
+    'image',
+    'description',
+    'button',
+    'href',
+  ] as const
+  type AllowedField = (typeof ALLOWED_FIELDS)[number]
+  const payload: Partial<Record<AllowedField, any>> = {}
+  for (const key of ALLOWED_FIELDS) {
+    if (Object.prototype.hasOwnProperty.call(body, key)) {
+      const v = (body as any)[key]
+      payload[key] = typeof v === 'string' ? v.trim() : v
+    }
+  }
+  const updated = await Event.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  }).lean()
   if (!updated)
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   // Audit log
@@ -38,10 +65,10 @@ export async function PUT(
 
 export async function DELETE(
   _: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   await dbConnect()
-  const { id } = params
+  const { id } = await params
   const before = await Event.findById(id).lean()
   await Event.findByIdAndDelete(id)
   // Audit log

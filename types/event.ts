@@ -18,6 +18,7 @@ export type EventItem = {
   region: string // 'NCR' | 'Region 1' | ... | 'Region 13'
   church?: string
   image: string
+  description?: string
   button?: string
   href?: string
 }

@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { X, Calendar, Clock, MapPin, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
+const MotionDiv = motion.div
 
 type EventItem = {
   id: number | string
@@ -11,8 +12,10 @@ type EventItem = {
   end?: string
   location: string
   image: string
-  button?: string // if it looks like a URL (/ or http), we’ll render an <a>
+  // If it looks like a URL (/ or http), we'll treat it as a link
+  button?: string
   region: string
+  description?: string
 }
 
 type EventModalProps = {
@@ -58,8 +61,8 @@ export default function EventModal({
     : event.button
 
   return (
-    <motion.div
-      className='fixed inset-0 z-[100]'
+    <MotionDiv
+      className='fixed inset-0 z-[2000]'
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
@@ -80,7 +83,7 @@ export default function EventModal({
       >
         <div className='relative h-full w-full overflow-y-auto'>
           {/* Full-screen blurred background (click to close) */}
-          <motion.div
+          <MotionDiv
             className='absolute inset-0 z-0 overflow-hidden cursor-pointer'
             onClick={onClose}
             aria-hidden='true'
@@ -97,7 +100,7 @@ export default function EventModal({
             {/* Gentle vignette and bottom wash for readability */}
             <div className='absolute inset-0 bg-[radial-gradient(900px_420px_at_80%_-10%,rgba(59,130,246,0.08),transparent_60%)]' />
             <div className='absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white/90 via-white/70 to-transparent' />
-          </motion.div>
+          </MotionDiv>
 
           {/* Click-catcher over background, under content */}
           <button
@@ -118,16 +121,18 @@ export default function EventModal({
 
           {/* Content stack (vertically centered) */}
           <div className='relative z-10 min-h-[100svh] grid place-items-center py-6 md:py-12'>
-            <motion.div
+            <MotionDiv
               className='w-full max-w-6xl px-3 md:px-6'
               onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             >
-              {/* Media area (no background; rounded image) */}
-              <div className='relative w-full'>
-                <div className='relative flex justify-center'>
+              {/* Two-column on large screens: image left, info right */}
+              <div className='lg:grid lg:grid-cols-2 lg:items-start lg:gap-8'>
+                {/* Media area (no background; rounded image) */}
+                <div className='relative w-full'>
+                  <div className='relative flex justify-center'></div>
                   <img
                     src={event.image}
                     alt={event.title}
@@ -148,106 +153,112 @@ export default function EventModal({
                     }}
                   />
                 </div>
+                {/* Info card overlaps image on md; side-by-side on lg */}
+                <MotionDiv
+                  className='relative mx-auto w-full md:max-w-3xl mt-4 md:-mt-16 md:-translate-y-3 lg:mt-0 lg:translate-y-0 lg:mx-0'
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.3,
+                    ease: [0.16, 1, 0.3, 1],
+                    delay: 0.05,
+                  }}
+                >
+                  <div className='rounded-xl md:rounded-2xl bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85 ring-1 ring-slate-200 shadow-lg p-4 md:p-7 text-slate-800'>
+                    {/* Region pill */}
+                    <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1 md:px-3 text-[9px] md:text-[10px] lg:text-xs font-semibold uppercase tracking-widest ring-1 ring-slate-200 text-slate-700'>
+                      {event.region}
+                    </div>
+
+                    {/* Title */}
+                    <h3 className='mt-3 text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wide text-slate-900 leading-tight'>
+                      {event.title}
+                    </h3>
+
+                    {/* Meta chips */}
+                    <div className='mt-4 flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-3 text-sm'>
+                      <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1.5 md:px-3 md:py-1 ring-1 ring-slate-200 text-slate-700 text-xs md:text-sm'>
+                        <Calendar className='h-3.5 w-3.5 md:h-4 md:w-4' />
+                        <span className='whitespace-nowrap'>
+                          {new Intl.DateTimeFormat('en-PH', {
+                            timeZone: 'Asia/Manila',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          }).format(start)}
+                        </span>
+                      </div>
+
+                      <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1.5 md:px-3 md:py-1 ring-1 ring-slate-200 text-slate-700 text-xs md:text-sm'>
+                        <Clock className='h-3.5 w-3.5 md:h-4 md:w-4' />
+                        <span className='whitespace-nowrap'>
+                          {new Intl.DateTimeFormat('en-PH', {
+                            timeZone: 'Asia/Manila',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          }).format(start)}
+                          {end
+                            ? ` – ${new Intl.DateTimeFormat('en-PH', {
+                                timeZone: 'Asia/Manila',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              }).format(end)}`
+                            : ''}
+                        </span>
+                      </div>
+
+                      <div className='inline-flex w-full sm:w-auto max-w-full items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1.5 md:px-3 md:py-1 ring-1 ring-slate-200 text-slate-700 text-xs md:text-sm'>
+                        <MapPin className='h-3.5 w-3.5 md:h-4 md:w-4 shrink-0' />
+                        <span className='truncate'>{event.location}</span>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    {event.description && (
+                      <p className='mt-4 text-slate-700 text-sm'>
+                        {event.description}
+                      </p>
+                    )}
+
+                    {/* Footer actions */}
+                    <div className='mt-5 md:mt-6 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3'>
+                      {buttonLabel &&
+                        (hasUrl ? (
+                          <a
+                            href={formatUrl((event as any).href!)}
+                            target={
+                              (event as any).href!.startsWith('/')
+                                ? '_self'
+                                : '_blank'
+                            }
+                            rel='noreferrer'
+                            className='inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2.5 md:py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95 text-center'
+                          >
+                            {buttonLabel} <ArrowRight className='h-4 w-4' />
+                          </a>
+                        ) : (
+                          <button
+                            className='inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2.5 md:py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95 cursor-pointer'
+                            onClick={onClose}
+                          >
+                            {buttonLabel} <ArrowRight className='h-4 w-4' />
+                          </button>
+                        ))}
+
+                      <button
+                        onClick={onClose}
+                        className='inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-2.5 md:py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 cursor-pointer'
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </MotionDiv>
               </div>
-
-              {/* Info card overlaps image on md+; no negative offset on small screens */}
-              <motion.div
-                className='relative mx-auto w-full md:max-w-3xl mt-4 md:-mt-16 md:-translate-y-3'
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.3,
-                  ease: [0.16, 1, 0.3, 1],
-                  delay: 0.05,
-                }}
-              >
-                <div className='rounded-xl md:rounded-2xl bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85 ring-1 ring-slate-200 shadow-lg p-4 md:p-7 text-slate-800'>
-                  {/* Region pill */}
-                  <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1 md:px-3 text-[9px] md:text-[10px] lg:text-xs font-semibold uppercase tracking-widest ring-1 ring-slate-200 text-slate-700'>
-                    {event.region}
-                  </div>
-
-                  {/* Title */}
-                  <h3 className='mt-3 text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wide text-slate-900 leading-tight'>
-                    {event.title}
-                  </h3>
-
-                  {/* Meta chips */}
-                  <div className='mt-4 flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-3 text-sm'>
-                    <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1.5 md:px-3 md:py-1 ring-1 ring-slate-200 text-slate-700 text-xs md:text-sm'>
-                      <Calendar className='h-3.5 w-3.5 md:h-4 md:w-4' />
-                      <span className='whitespace-nowrap'>
-                        {new Intl.DateTimeFormat('en-PH', {
-                          timeZone: 'Asia/Manila',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        }).format(start)}
-                      </span>
-                    </div>
-
-                    <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1.5 md:px-3 md:py-1 ring-1 ring-slate-200 text-slate-700 text-xs md:text-sm'>
-                      <Clock className='h-3.5 w-3.5 md:h-4 md:w-4' />
-                      <span className='whitespace-nowrap'>
-                        {new Intl.DateTimeFormat('en-PH', {
-                          timeZone: 'Asia/Manila',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        }).format(start)}
-                        {end
-                          ? ` – ${new Intl.DateTimeFormat('en-PH', {
-                              timeZone: 'Asia/Manila',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            }).format(end)}`
-                          : ''}
-                      </span>
-                    </div>
-
-                    <div className='inline-flex w-full sm:w-auto max-w-full items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1.5 md:px-3 md:py-1 ring-1 ring-slate-200 text-slate-700 text-xs md:text-sm'>
-                      <MapPin className='h-3.5 w-3.5 md:h-4 md:w-4 shrink-0' />
-                      <span className='truncate'>{event.location}</span>
-                    </div>
-                  </div>
-
-                  {/* Footer actions */}
-                  <div className='mt-5 md:mt-6 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3'>
-                    {buttonLabel &&
-                      (hasUrl ? (
-                        <a
-                          href={formatUrl((event as any).href!)}
-                          target={
-                            (event as any).href!.startsWith('/')
-                              ? '_self'
-                              : '_blank'
-                          }
-                          rel='noreferrer'
-                          className='inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2.5 md:py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95 text-center'
-                        >
-                          {buttonLabel} <ArrowRight className='h-4 w-4' />
-                        </a>
-                      ) : (
-                        <button
-                          className='inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-rose-500 px-4 py-2.5 md:py-2 text-sm font-semibold text-white shadow-lg ring-1 ring-white/15 transition hover:opacity-95 cursor-pointer'
-                          onClick={onClose}
-                        >
-                          {buttonLabel} <ArrowRight className='h-4 w-4' />
-                        </button>
-                      ))}
-
-                    <button
-                      onClick={onClose}
-                      className='inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-2.5 md:py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 cursor-pointer'
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
+            </MotionDiv>
           </div>
         </div>
       </div>
-    </motion.div>
+    </MotionDiv>
   )
 }

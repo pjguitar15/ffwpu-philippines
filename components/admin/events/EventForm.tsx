@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -60,6 +61,7 @@ export default function EventForm({
     region: '',
     church: '',
     image: '',
+    description: '',
     button: '',
     href: '',
   })
@@ -135,6 +137,7 @@ export default function EventForm({
       region: initial?.region || '',
       church: initial?.church || '',
       image: initial?.image || '',
+      description: (initial as any)?.description || '',
       button: initial?.button || '',
       href: initial?.href || '',
       _id: (initial as any)?._id,
@@ -189,6 +192,7 @@ export default function EventForm({
 
       if (!payload.end) delete (payload as any).end
       if (!payload.church) delete (payload as any).church
+      if (!payload.description) delete (payload as any).description
       if (!payload.button) delete (payload as any).button
       if (!payload.href) delete (payload as any).href
 
@@ -200,14 +204,28 @@ export default function EventForm({
           body: JSON.stringify(payload),
         },
       )
-      if (!res.ok) throw new Error(await res.text())
+      if (!res.ok) {
+        let message = 'Failed to save event'
+        try {
+          const ct = res.headers.get('content-type') || ''
+          if (ct.includes('application/json')) {
+            const j = await res.json()
+            message = (j && (j.error || j.message)) || message
+          } else {
+            const t = await res.text()
+            message = t || message
+          }
+        } catch {}
+        throw new Error(message)
+      }
       const saved = await res.json()
       toast({ title: isEdit ? 'Event updated' : 'Event created' })
       onSaved?.(saved)
       onOpenChange(false)
     } catch (e) {
       console.error(e)
-      toast({ title: 'Save failed', variant: 'destructive' as any })
+      const message = (e as any)?.message || 'Save failed'
+      toast({ title: 'Save failed', description: message, variant: 'destructive' as any })
     }
   }
 
@@ -454,6 +472,22 @@ export default function EventForm({
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+
+                {/* Description */}
+                <div className='col-span-12'>
+                  <label className='block text-[11px] font-semibold tracking-wider uppercase text-muted-foreground mb-1.5'>
+                    Description (optional)
+                  </label>
+                  <Textarea
+                    placeholder='Short description about the event'
+                    value={values.description || ''}
+                    onChange={(e) =>
+                      setValues({ ...values, description: e.target.value })
+                    }
+                    className='bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+                    rows={4}
+                  />
                 </div>
 
                 {/* Upload Image (dropzone + preview) */}

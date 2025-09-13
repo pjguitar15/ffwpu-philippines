@@ -9,10 +9,37 @@ export async function GET() {
   return NextResponse.json(items)
 }
 
+const ALLOWED_FIELDS = [
+  'title',
+  'date',
+  'end',
+  'location',
+  'area',
+  'region',
+  'church',
+  'image',
+  'description',
+  'button',
+  'href',
+] as const
+type AllowedField = (typeof ALLOWED_FIELDS)[number]
+
+function sanitizeEventBody(body: any) {
+  const out: Partial<Record<AllowedField, any>> = {}
+  for (const key of ALLOWED_FIELDS) {
+    if (Object.prototype.hasOwnProperty.call(body, key)) {
+      const v = (body as any)[key]
+      out[key] = typeof v === 'string' ? v.trim() : v
+    }
+  }
+  return out
+}
+
 export async function POST(req: Request) {
   await dbConnect()
   const body = await req.json()
-  const created = await Event.create(body)
+  const payload = sanitizeEventBody(body)
+  const created = await Event.create(payload)
   // Audit log
   try {
     const title = (body?.title as string) || 'Event'

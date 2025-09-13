@@ -62,6 +62,7 @@ export type Event = {
   region: string
   church?: string
   image: string
+  description?: string
   button?: string
   href?: string
 }
@@ -404,6 +405,12 @@ export function UpcomingEventsSection({
                             <MapPin className='h-3.5 w-3.5' />
                             {event.location}
                           </p>
+
+                          {event.description && (
+                            <p className='mt-2 text-xs text-slate-700 line-clamp-2'>
+                              {event.description}
+                            </p>
+                          )}
 
                           {/* Chips: Region + Church */}
                           <div className='mt-3 flex flex-wrap gap-2'>
