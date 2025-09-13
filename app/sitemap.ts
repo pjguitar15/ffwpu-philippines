@@ -14,8 +14,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/contact',
     '/privacy',
     '/terms',
-    '/holy-mother-han',
-    '/true-father',
     '/hj-media-works',
     '/hj-testimonies',
   ].map((path) => ({ url: `${siteUrl}${path}` }))
@@ -34,4 +32,3 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [...staticRoutes, ...dynamicNews]
 }
-

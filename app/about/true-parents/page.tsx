@@ -24,6 +24,18 @@ import {
   type Easing,
   type Transition,
 } from 'framer-motion'
+import {
+  TrueFatherEssentials,
+  TrueFatherToday,
+  TrueFatherTimeline,
+  TrueFatherCTA,
+} from '@/components/true-father/true-father'
+import {
+  HolyMotherHanEssentials,
+  HolyMotherHanToday,
+  HolyMotherHanTimeline,
+  HolyMotherHanCTA,
+} from '@/components/holy-mother-han/HolyMotherHan'
 
 // ---------- Animations (typed so TS is happy)
 const easeOut: Easing = [0.16, 1, 0.3, 1]
@@ -351,6 +363,19 @@ export default function TrueParentsPage() {
           </p>
         </div>
       </SectionShell>
+
+      {/* Combined Sections (moved from individual pages) */}
+      {/* True Mother */}
+      <HolyMotherHanEssentials />
+      <HolyMotherHanToday />
+      <HolyMotherHanTimeline />
+      <HolyMotherHanCTA />
+
+      {/* True Father */}
+      <TrueFatherEssentials />
+      <TrueFatherToday />
+      <TrueFatherTimeline />
+      <TrueFatherCTA />
     </div>
   )
 }

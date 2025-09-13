@@ -15,10 +15,9 @@ import {
   FiPhone,
   FiClock,
   FiHeart,
-  FiShield,
   FiChevronDown,
 } from 'react-icons/fi'
-import { Sparkles } from 'lucide-react'
+//
 import { HeaderSearch } from './header-search'
 import { LiveIndicator } from '@/components/ui/live-indicator'
 
@@ -62,18 +61,6 @@ export const extraNavItems = [
     icon: FiHeart,
   },
   {
-    href: '/holy-mother-han',
-    label: 'Holy Mother Han',
-    desc: 'Learn about Holy Mother Han',
-    icon: Sparkles,
-  },
-  {
-    href: '/true-father',
-    label: 'True Father',
-    desc: 'Rev. Sun Myung Moon',
-    icon: FiShield,
-  },
-  {
     href: '/about/history',
     label: 'Our History',
     desc: 'Roots of our movement',
@@ -99,17 +86,12 @@ const mediaItems = extraNavItems.filter(
 const trueParentsParent = extraNavItems.find(
   (i) => i.href === '/about/true-parents',
 )
-const trueParentsKids = extraNavItems.filter(
-  (i) => i.href === '/holy-mother-han' || i.href === '/true-father',
-)
 const leftoverExtras = extraNavItems.filter(
   (i) =>
     ![
       '/hj-media-works',
       '/hj-testimonies',
       '/about/true-parents',
-      '/holy-mother-han',
-      '/true-father',
     ].includes(i.href),
 )
 const desktopExtrasXL = extraNavItems.filter((i) =>
@@ -444,13 +426,12 @@ export function Header() {
                   onChoose={() => setIsOpen(false)}
                   icon={FiVideo}
                 />
-                <DrawerGroup
-                  label='True Parents'
-                  parent={trueParentsParent}
-                  childrenItems={trueParentsKids}
-                  onChoose={() => setIsOpen(false)}
-                  icon={FiHeart}
-                />
+                {trueParentsParent && (
+                  <DrawerList
+                    items={[trueParentsParent]}
+                    onChoose={() => setIsOpen(false)}
+                  />
+                )}
                 {leftoverExtras.length > 0 && (
                   <DrawerList
                     items={leftoverExtras}

@@ -23,9 +23,9 @@ type NavItem = {
 
 const mainNavItems: NavItem[] = [
   {
-    href: '/holy-mother-han',
-    label: 'Holy Mother Han',
-    desc: 'Learn about Holy Mother Han',
+    href: '/about/true-parents',
+    label: 'True Parents',
+    desc: 'Rev. Moon & Holy Mother Han',
     icon: Sparkles,
   },
   {
