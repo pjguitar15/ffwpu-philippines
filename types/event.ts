@@ -15,7 +15,6 @@ export type EventItem = {
   end?: string
   location: string
   area: Area
-  region: string // 'NCR' | 'Region 1' | ... | 'Region 13'
   church?: string
   image: string
   description?: string

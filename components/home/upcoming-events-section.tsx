@@ -59,7 +59,6 @@ export type Event = {
   end?: string
   location: string
   area: 'Area 1' | 'Area 2' | 'Area 3' | 'Area 4' | 'Area 5' | 'Nationwide'
-  region: string
   church?: string
   image: string
   description?: string
@@ -412,11 +411,8 @@ export function UpcomingEventsSection({
                             </p>
                           )}
 
-                          {/* Chips: Region + Church */}
+                          {/* Chips: Church (optional) */}
                           <div className='mt-3 flex flex-wrap gap-2'>
-                            <span className='inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200 px-2 py-0.5 text-[10px] font-semibold'>
-                              {event.region}
-                            </span>
                             {event.church && (
                               <span className='inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200 px-2 py-0.5 text-[10px] font-semibold'>
                                 <Building2 className='h-3 w-3' />

@@ -84,7 +84,7 @@ export default function EventListTable({
           </div>
           <div className='flex items-center gap-2 w-full md:w-auto'>
             <Input
-              placeholder='Search title, location, region, area…'
+              placeholder='Search title, location, area…'
               value={q}
               onChange={(e) => setQ(e.target.value)}
               className='h-10 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0 w-full md:w-[clamp(14rem,28vw,22rem)]'
@@ -114,7 +114,7 @@ export default function EventListTable({
                 <TableHead className='text-slate-700 py-3'>Date</TableHead>
                 <TableHead className='text-slate-700 py-3'>Location</TableHead>
                 <TableHead className='text-slate-700 py-3'>Area</TableHead>
-                <TableHead className='text-slate-700 py-3'>Region</TableHead>
+                
                 <TableHead className='py-3 w-0'></TableHead>
               </TableRow>
             </TableHeader>
@@ -241,7 +241,7 @@ export default function EventListTable({
                         </Badge>
                       </TableCell>
 
-                      <TableCell className='py-4'>{e.region}</TableCell>
+                      
 
                       <TableCell className='py-4 text-right'>
                         <DropdownMenu>

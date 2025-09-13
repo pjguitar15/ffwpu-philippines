@@ -6,7 +6,6 @@ export interface EventDoc extends mongoose.Document {
   end?: string // ISO datetime string
   location: string
   area: 'Area 1' | 'Area 2' | 'Area 3' | 'Area 4' | 'Area 5' | 'Nationwide'
-  region: string
   church?: string
   image: string
   description?: string
@@ -27,7 +26,6 @@ const EventSchema = new Schema<EventDoc>(
       enum: ['Area 1', 'Area 2', 'Area 3', 'Area 4', 'Area 5', 'Nationwide'],
       required: true,
     },
-    region: { type: String, required: true },
     church: { type: String },
     image: { type: String, required: true },
     description: { type: String },
@@ -42,7 +40,13 @@ const EventSchema = new Schema<EventDoc>(
 let EventModel: mongoose.Model<EventDoc>
 if (models.Event) {
   EventModel = models.Event as mongoose.Model<EventDoc>
-  if (!EventModel.schema.path('description') && process.env.NODE_ENV !== 'production') {
+  const needsRecompile =
+    // Region was removed from the schema; if present, recompile in dev
+    Boolean(EventModel.schema.path('region')) ||
+    // Also recompile if description missing (older schema)
+    !EventModel.schema.path('description')
+
+  if (needsRecompile && process.env.NODE_ENV !== 'production') {
     delete (mongoose.models as any).Event
     EventModel = model<EventDoc>('Event', EventSchema)
   }

@@ -30,7 +30,6 @@ export async function PUT(
     'end',
     'location',
     'area',
-    'region',
     'church',
     'image',
     'description',

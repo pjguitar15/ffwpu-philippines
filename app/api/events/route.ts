@@ -15,7 +15,6 @@ const ALLOWED_FIELDS = [
   'end',
   'location',
   'area',
-  'region',
   'church',
   'image',
   'description',

@@ -14,7 +14,6 @@ type EventItem = {
   image: string
   // If it looks like a URL (/ or http), we'll treat it as a link
   button?: string
-  region: string
   description?: string
 }
 
@@ -165,10 +164,6 @@ export default function EventModal({
                   }}
                 >
                   <div className='rounded-xl md:rounded-2xl bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85 ring-1 ring-slate-200 shadow-lg p-4 md:p-7 text-slate-800'>
-                    {/* Region pill */}
-                    <div className='inline-flex items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1 md:px-3 text-[9px] md:text-[10px] lg:text-xs font-semibold uppercase tracking-widest ring-1 ring-slate-200 text-slate-700'>
-                      {event.region}
-                    </div>
 
                     {/* Title */}
                     <h3 className='mt-3 text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wide text-slate-900 leading-tight'>

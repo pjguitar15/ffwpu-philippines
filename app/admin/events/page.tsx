@@ -50,7 +50,6 @@ export default function AdminEventsPage() {
       (e) =>
         e.title.toLowerCase().includes(s) ||
         e.location.toLowerCase().includes(s) ||
-        e.region.toLowerCase().includes(s) ||
         (e.area as any).toLowerCase().includes(s),
     )
     setFiltered(next)
@@ -150,7 +149,6 @@ export default function AdminEventsPage() {
                 const matches =
                   evt.title.toLowerCase().includes(s) ||
                   evt.location.toLowerCase().includes(s) ||
-                  evt.region.toLowerCase().includes(s) ||
                   (evt.area as any).toLowerCase().includes(s)
                 return matches ? [evt, ...prev] : prev
               })

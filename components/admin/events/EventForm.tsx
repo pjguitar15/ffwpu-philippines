@@ -43,7 +43,7 @@ import {
   toMMDDYYYY,
   parseMMDDYYYY,
 } from '@/lib/date-input'
-import { AREA_REGION_MAP, AREAS, CHURCHES, Region, REGION_CHURCHES, REGIONS } from '@/constants/events.constants'
+import { AREA_REGION_MAP, AREAS, CHURCHES, REGION_CHURCHES } from '@/constants/events.constants'
 
 export default function EventForm({
   open,
@@ -62,7 +62,7 @@ export default function EventForm({
     end: '',
     location: '',
     area: 'Area 1',
-    region: '',
+    region: 'Nationwide',
     church: '',
     image: '',
     description: '',
@@ -86,35 +86,16 @@ export default function EventForm({
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  // Allowed regions for selected area
-  const allowedRegions = useMemo<readonly Region[]>(() => {
-    const base = (AREA_REGION_MAP[values.area as Area] ?? []) as readonly Region[]
-    const withNationwide = (['Nationwide', ...base] as unknown as Region[])
-    return Array.from(new Set(withNationwide)) as readonly Region[]
-  }, [values.area])
-
-  // Clear region if it no longer fits the area
-  useEffect(() => {
-    if (values.region && !allowedRegions.includes(values.region as Region)) {
-      setValues((v) => ({ ...v, region: '' }))
-    }
-  }, [allowedRegions])
+  // Region will be auto-set to 'Nationwide' by default; user no longer selects region.
 
   // Allowed churches, driven by Region if chosen; otherwise all churches in the Area
   const allowedChurches = useMemo<string[]>(() => {
     const uniq = new Set<string>()
-    if (values.region) {
-      ;(REGION_CHURCHES[values.region as Region] ?? []).forEach((c) =>
-        uniq.add(c),
-      )
-    } else {
-      // gather all churches from all regions under the selected area
-      ;(AREA_REGION_MAP[values.area as Area] ?? []).forEach((r) => {
-        ;(REGION_CHURCHES[r] ?? []).forEach((c) => uniq.add(c))
-      })
-    }
+    ;(AREA_REGION_MAP[values.area as Area] ?? []).forEach((r) => {
+      ;(REGION_CHURCHES[r] ?? []).forEach((c) => uniq.add(c))
+    })
     return Array.from(uniq)
-  }, [values.area, values.region])
+  }, [values.area])
 
   // Clear church if it no longer fits the (area, region) combination
   useEffect(() => {
@@ -140,7 +121,7 @@ export default function EventForm({
       end: '',
       location: initial?.location || '',
       area: (initial?.area as EventItem['area']) || 'Area 1',
-      region: initial?.region || '',
+      region: initial?.region || 'Nationwide',
       church: initial?.church || '',
       image: initial?.image || '',
       description: (initial as any)?.description || '',
@@ -179,7 +160,6 @@ export default function EventForm({
     return (
       values.title.trim() &&
       values.location.trim() &&
-      values.region.trim() &&
       values.image.trim() &&
       values.area &&
       startOk &&
@@ -278,7 +258,7 @@ export default function EventForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='w-[96vw] sm:max-w-3xl md:max-w-4xl lg:max-w-5xl p-0 overflow-hidden rounded-xl'>
+      <DialogContent className='w-[96vw] sm:max-w-3xl md:max-w-4xl lg:max-w-5xl h-[90svh] max-h-[90vh] p-0 overflow-hidden rounded-xl'>
         <div className='flex flex-col h-full min-h-0'>
           <div className='sticky top-0 z-10'>
             <div className='h-1 w-full bg-indigo-500' />
@@ -466,7 +446,7 @@ export default function EventForm({
                 </div>
 
                 {/* Area */}
-                <div className='col-span-12 md:col-span-3'>
+                <div className='col-span-12 md:col-span-6'>
                   <label className='block text-[11px] font-semibold tracking-wider uppercase text-muted-foreground mb-1.5'>
                     Area
                   </label>
@@ -489,38 +469,6 @@ export default function EventForm({
                   </Select>
                 </div>
 
-                {/* Region (dropdown) */}
-                <div className='col-span-12 md:col-span-3'>
-                  <label className='block text-[11px] font-semibold tracking-wider uppercase text-muted-foreground mb-1.5'>
-                    Region
-                  </label>
-                  <Select
-                    value={values.region}
-                    onValueChange={(v) => setValues({ ...values, region: v })}
-                    disabled={allowedRegions.length === 0}
-                  >
-                    <SelectTrigger className='h-10 w-full cursor-pointer border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'>
-                      <SelectValue placeholder='Select region' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {allowedRegions.map((r) => {
-                        const churches = REGION_CHURCHES[r] ?? []
-                        return (
-                          <SelectItem key={r} value={r}>
-                            <div className='flex flex-col'>
-                              <span className='font-medium'>{r}</span>
-                              {churches.length > 0 && (
-                                <span className='text-xs text-muted-foreground'>
-                                  {churches.join(', ')}
-                                </span>
-                              )}
-                            </div>
-                          </SelectItem>
-                        )
-                      })}
-                    </SelectContent>
-                  </Select>
-                </div>
 
                 {/* Church (dropdown, optional) */}
                 <div className='col-span-12 md:col-span-6'>
@@ -749,3 +697,4 @@ export default function EventForm({
     </Dialog>
   )
 }
+
