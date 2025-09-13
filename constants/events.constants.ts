@@ -10,6 +10,7 @@ export const AREAS = [
 export type Area = (typeof AREAS)[number]
 
 export const REGIONS = [
+  'Nationwide',
   'NCR',
   'R1',
   'R2',
@@ -55,6 +56,7 @@ export const AREA_REGION_MAP: Record<Area, readonly Region[]> = {
 
 // ✅ Region → Churches
 export const REGION_CHURCHES: Record<Region, readonly string[]> = {
+  Nationwide: [],
   NCR: ['Metro Manila Family Church'],
   R1: ['La Union Church', 'Baguio Church'], // (Baguio in Area 2 on your chart)
   R2: ['Cauayan Family Church/Region 2'],

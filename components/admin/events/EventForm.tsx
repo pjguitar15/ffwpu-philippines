@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar as DateCalendar } from '@/components/ui/calendar'
 import {
   Select,
   SelectContent,
@@ -20,7 +22,7 @@ import {
 } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
 import {
-  Calendar,
+  Calendar as CalendarIcon,
   Clock,
   MapPin,
   Upload,
@@ -30,6 +32,7 @@ import {
   XCircle,
   CheckCircle2,
   Building2,
+  Plus,
 } from 'lucide-react'
 
 import type { Area, EventItem } from '@/types/event'
@@ -38,6 +41,7 @@ import {
   combineLocalISOShort,
   splitToDateTimeStrings,
   toMMDDYYYY,
+  parseMMDDYYYY,
 } from '@/lib/date-input'
 import { AREA_REGION_MAP, AREAS, CHURCHES, Region, REGION_CHURCHES, REGIONS } from '@/constants/events.constants'
 
@@ -73,6 +77,7 @@ export default function EventForm({
   const [startTime, setStartTime] = useState<string>(DEFAULT_TIME)
   const [endDate, setEndDate] = useState<string>('')
   const [endTime, setEndTime] = useState<string>(DEFAULT_TIME)
+  const [hasEnd, setHasEnd] = useState<boolean>(false)
 
   // upload
   const [uploading, setUploading] = useState(false)
@@ -82,10 +87,11 @@ export default function EventForm({
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   // Allowed regions for selected area
-  const allowedRegions = useMemo<readonly Region[]>(
-    () => AREA_REGION_MAP[values.area as Area] ?? [],
-    [values.area],
-  )
+  const allowedRegions = useMemo<readonly Region[]>(() => {
+    const base = (AREA_REGION_MAP[values.area as Area] ?? []) as readonly Region[]
+    const withNationwide = (['Nationwide', ...base] as unknown as Region[])
+    return Array.from(new Set(withNationwide)) as readonly Region[]
+  }, [values.area])
 
   // Clear region if it no longer fits the area
   useEffect(() => {
@@ -156,9 +162,11 @@ export default function EventForm({
       const { dateStr, timeStr } = splitToDateTimeStrings(initial.end)
       setEndDate(dateStr)
       setEndTime(timeStr || DEFAULT_TIME)
+      setHasEnd(true)
     } else {
-      setEndDate((d) => d || toMMDDYYYY(new Date()))
+      setEndDate('')
       setEndTime(DEFAULT_TIME)
+      setHasEnd(false)
     }
   }, [open, initial])
 
@@ -312,17 +320,24 @@ export default function EventForm({
                   </label>
                   <div className='grid grid-cols-12 gap-3'>
                     <div className='col-span-7 relative'>
-                      <Calendar className='h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-sky-600 dark:text-sky-300 pointer-events-none' />
-                      <Input
-                        placeholder='MM/DD/YYYY'
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        inputMode='numeric'
-                        pattern='^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d\d$'
-                        title='Use MM/DD/YYYY'
-                        required
-                        className='h-10 pl-9 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
-                      />
+                      <CalendarIcon className='h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-sky-600 dark:text-sky-300 pointer-events-none' />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            type='button'
+                            className='h-10 w-full text-left pl-9 pr-3 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500'
+                          >
+                            {startDate || 'MM/DD/YYYY'}
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent align='start' className='w-auto p-0'>
+                          <DateCalendar
+                            mode='single'
+                            selected={startDate ? parseMMDDYYYY(startDate) || undefined : undefined}
+                            onSelect={(d) => d && setStartDate(toMMDDYYYY(d))}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
                     <div className='col-span-5 relative'>
                       <Clock className='h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-sky-600 dark:text-sky-300 pointer-events-none' />
@@ -338,23 +353,79 @@ export default function EventForm({
                   </div>
                 </div>
 
-                {/* End: MM/DD/YYYY + time */}
+                {/* End: optional date/time toggle */}
                 <div className='col-span-12 md:col-span-6'>
-                  <label className='block text-[11px] font-semibold tracking-wider uppercase text-muted-foreground mb-1.5'>
-                    End
-                  </label>
-                  <div className='grid grid-cols-12 gap-3'>
+                  <div className='relative mb-1.5'>
+                    <label className='block text-[11px] font-semibold tracking-wider uppercase text-muted-foreground'>
+                      End
+                    </label>
+                    <div className='absolute right-0 top-0'>
+                      {!hasEnd ? (
+                        <Button
+                          type='button'
+                          size='sm'
+                          variant='outline'
+                          className='cursor-pointer rounded-full border-dashed text-slate-700 hover:text-sky-700 hover:border-sky-500'
+                          onClick={() => {
+                            setHasEnd(true)
+                            // default end to same as start
+                            setEndDate(startDate)
+                            setEndTime(startTime || DEFAULT_TIME)
+                          }}
+                        >
+                          <Plus className='h-4 w-4 mr-1' /> Add end date
+                        </Button>
+                      ) : (
+                        <div className='flex items-center gap-2'>
+                          <span className='inline-flex items-center gap-1 rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-[10px] ring ring-emerald-200/70'>
+                            <CheckCircle2 className='h-3 w-3' /> End enabled
+                          </span>
+                          <Button
+                            type='button'
+                            size='icon'
+                            variant='ghost'
+                            className='cursor-pointer h-7 w-7'
+                            onClick={() => {
+                              setHasEnd(false)
+                              setEndDate('')
+                              setEndTime(DEFAULT_TIME)
+                            }}
+                            title='Remove end date'
+                            aria-label='Remove end date'
+                          >
+                            <XCircle className='h-3.5 w-3.5' />
+                            <span className='sr-only'>Remove end</span>
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {hasEnd && (
+                  <div className='mt-2 grid grid-cols-12 gap-3'>
                     <div className='col-span-7 relative'>
-                      <Calendar className='h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-sky-600 dark:text-sky-300 pointer-events-none' />
-                      <Input
-                        placeholder='MM/DD/YYYY'
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        inputMode='numeric'
-                        pattern='^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d\d$'
-                        title='Use MM/DD/YYYY'
-                        className='h-10 pl-9 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
-                      />
+                      <CalendarIcon className='h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-sky-600 dark:text-sky-300 pointer-events-none' />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            type='button'
+                            className='h-10 w-full text-left pl-9 pr-3 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500'
+                          >
+                            {endDate || 'MM/DD/YYYY'}
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent align='start' className='w-auto p-0'>
+                          <DateCalendar
+                            mode='single'
+                            selected={endDate ? parseMMDDYYYY(endDate) || undefined : undefined}
+                            onSelect={(d) => setEndDate(d ? toMMDDYYYY(d) : '')}
+                            disabled={
+                              startDate
+                                ? [{ before: (parseMMDDYYYY(startDate) as Date) }]
+                                : undefined
+                            }
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
                     <div className='col-span-5 relative'>
                       <Clock className='h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-sky-600 dark:text-sky-300 pointer-events-none' />
@@ -367,6 +438,12 @@ export default function EventForm({
                       />
                     </div>
                   </div>
+                  )}
+                  {hasEnd && (
+                    <p className='text-xs text-muted-foreground mt-1'>
+                      Optional. Leave blank for one-day events.
+                    </p>
+                  )}
                 </div>
 
                 {/* Location */}
