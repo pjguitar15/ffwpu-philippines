@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { HighlightTitle } from '@/components/ui/highlight-title'
 import { TestimonyVideo } from '@/types/hj-testimonies.types'
 import { HJ_TESTIMONIES_CONTENT } from '@/constants/hj-testimonies'
+import HjMediaLoader from '@/components/HjMediaLoader'
 
 function TestimonyRow({
   title,
@@ -505,16 +506,7 @@ export default function HJTestimoniesPage() {
   const couplesTestimonies = testimonies.filter((t) => t.category === 'couples')
 
   if (loading) {
-    return (
-      <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
-        <div className='text-center'>
-          <div className='animate-pulse'>
-            <div className='w-16 h-16 bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 rounded-full mx-auto mb-4'></div>
-          </div>
-          <p className='text-slate-700 text-lg'>Loading HJ Testimonies...</p>
-        </div>
-      </div>
-    )
+    return <HjMediaLoader name='HJ Testimonies' />
   }
 
   if (testimonies.length === 0) {

@@ -16,6 +16,7 @@ import {
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { HighlightTitle } from '@/components/ui/highlight-title'
+import HjMediaLoader from '../../components/HjMediaLoader'
 
 interface YouTubeVideo {
   _id: string
@@ -375,16 +376,7 @@ export default function HJMediaWorksPage() {
   }
 
   if (loading) {
-    return (
-      <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
-        <div className='text-center'>
-          <div className='animate-pulse'>
-            <div className='w-16 h-16 bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 rounded-full mx-auto mb-4'></div>
-          </div>
-          <p className='text-slate-700 text-lg'>Loading HJ Media Works...</p>
-        </div>
-      </div>
-    )
+    return <HjMediaLoader name='HJ Media Works' />
   }
 
   if (videos.length === 0) {
