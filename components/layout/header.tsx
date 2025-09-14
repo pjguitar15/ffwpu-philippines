@@ -16,7 +16,21 @@ import {
   FiClock,
   FiHeart,
   FiChevronDown,
+  FiUsers,
+  FiStar,
+  FiMail,
+  FiUser,
 } from 'react-icons/fi'
+import {
+  FaChurch,
+  FaUsers,
+  FaStar,
+  FaPrayingHands,
+  FaCalendarAlt,
+  FaLaptop,
+  FaRocket,
+  FaHeart,
+} from 'react-icons/fa'
 //
 import { HeaderSearch } from './header-search'
 import { LiveIndicator } from '@/components/ui/live-indicator'
@@ -26,18 +40,93 @@ const IN_TOP_NAV_ON_XL = new Set<string>([
   '/hj-testimonies',
 ])
 
-export const mainNavItems = [
+type DropdownNavItem = {
+  label: string
+  href: string
+  icon?: any
+}
+
+type MainNavItem = {
+  href: string
+  label: string
+  desc: string
+  icon: any
+  dropdown?: DropdownNavItem[]
+}
+
+export const mainNavItems: MainNavItem[] = [
   {
     href: '/',
     label: 'Home',
     desc: 'Welcome & featured highlights',
     icon: FiFileText,
   },
+  // About dropdown nav
   {
     href: '/about',
     label: 'About',
     desc: 'Who we are & our mission',
     icon: FiInfo,
+    dropdown: [
+      {
+        label: 'FFWPU Philippines',
+        href: '/about',
+        icon: FiInfo,
+      },
+      // {
+      //   label: 'Blessed Family Department',
+      //   href: '/about/bfd/blessed-family-department',
+      //   icon: FiUsers,
+      // },
+      // {
+      //   label: 'Cosmic Blessing',
+      //   href: '/about/bfd/cosmic-blessing',
+      //   icon: FiStar,
+      // },
+      // {
+      //   label: 'Cheon Shim Won',
+      //   href: '/about/cheon-shim-won/what-is-csw',
+      //   icon: FiHeart,
+      // },
+      // {
+      //   label: 'CSW Schedules',
+      //   href: '/about/cheon-shim-won/schedules',
+      //   icon: FiClock,
+      // },
+      // {
+      //   label: 'How to Join CSW Online',
+      //   href: '/about/cheon-shim-won/how-to-join-online',
+      //   icon: FiInfo,
+      // },
+      // {
+      //   label: 'Heavenly Top Gun',
+      //   href: '/about/htg/about-heavenly-top-gun',
+      //   icon: FiInfo,
+      // },
+      {
+        label: 'True Parents',
+        href: '/about/true-parents',
+        icon: FiUsers,
+      },
+    ],
+  },
+  {
+    href: '/media',
+    label: 'Media',
+    desc: 'Videos & testimonies',
+    icon: FiVideo,
+    dropdown: [
+      {
+        label: 'HJ MediaWorks',
+        href: '/hj-media-works',
+        icon: FiVideo,
+      },
+      {
+        label: 'HJ Testimonies',
+        href: '/hj-testimonies',
+        icon: FiBookOpen,
+      },
+    ],
   },
   {
     href: '/news',
@@ -46,53 +135,31 @@ export const mainNavItems = [
     icon: FiFileText,
   },
   {
-    href: '/contact',
-    label: 'Contact',
-    desc: 'Reach out to our team',
-    icon: FiPhone,
+    href: '/messages',
+    label: 'Messages',
+    desc: 'Important communications',
+    icon: FiMail,
+    dropdown: [
+      {
+        label: 'Regional Director',
+        href: '/messages/regional-director',
+        icon: FiUser,
+      },
+    ],
   },
-] as const
+]
 
 export const extraNavItems = [
-  {
-    href: '/about/true-parents',
-    label: 'True Parents',
-    desc: 'Rev. Moon & Holy Mother Han',
-    icon: FiHeart,
-  },
   {
     href: '/about/history',
     label: 'Our History',
     desc: 'Roots of our movement',
     icon: FiClock,
   },
-  {
-    href: '/hj-media-works',
-    label: 'HJ MediaWorks',
-    desc: 'Videos & media content',
-    icon: FiVideo,
-  },
-  {
-    href: '/hj-testimonies',
-    label: 'HJ Testimonies',
-    desc: 'Personal stories & interviews',
-    icon: FiBookOpen,
-  },
 ] as const
 
-const mediaItems = extraNavItems.filter(
-  (i) => i.href === '/hj-media-works' || i.href === '/hj-testimonies',
-)
-const trueParentsParent = extraNavItems.find(
-  (i) => i.href === '/about/true-parents',
-)
 const leftoverExtras = extraNavItems.filter(
-  (i) =>
-    ![
-      '/hj-media-works',
-      '/hj-testimonies',
-      '/about/true-parents',
-    ].includes(i.href),
+  (i) => !['/hj-media-works', '/hj-testimonies'].includes(i.href),
 )
 const desktopExtrasXL = extraNavItems.filter((i) =>
   IN_TOP_NAV_ON_XL.has(i.href),
@@ -118,7 +185,7 @@ function DrawerList({
   return (
     <nav className='px-5 space-y-1'>
       {items.map((item) => {
-        const Icon = item.icon as any
+        const Icon = item.icon ? item.icon : FiInfo
         const active = isActive(item.href)
         return (
           <Link
@@ -192,14 +259,14 @@ function DrawerGroup({
       <div
         className={cn(
           'flex items-stretch rounded-xl overflow-hidden ring-1 ring-transparent hover:ring-blue-200',
-          groupActive && 'ring-blue-300',
+          groupActive && 'ring-blue-100',
         )}
       >
         <Link
           href={parent?.href || '#'}
           onClick={onChoose}
           className={cn(
-            'flex-1 flex items-center gap-3 px-6 py-4 cursor-pointer hover:bg-blue-100',
+            'flex-1 flex items-center gap-3 px-6 py-4 cursor-pointer hover:bg-gray-100',
             groupActive && 'bg-blue-100',
           )}
         >
@@ -218,7 +285,7 @@ function DrawerGroup({
           aria-label={open ? `Collapse ${label}` : `Expand ${label}`}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          className='px-4 py-4 cursor-pointer hover:bg-blue-100 border-l'
+          className='px-4 py-4 cursor-pointer hover:bg-gray-100 border-l'
         >
           <FiChevronDown
             className={cn('h-5 w-5 transition-transform', open && 'rotate-180')}
@@ -309,10 +376,10 @@ export function Header() {
 
               <Suspense
                 fallback={
-                  <div className='hidden md:block h-9 w-[clamp(12rem,28vw,22rem)] rounded-full bg-muted/60' />
+                  <div className='hidden lg:block h-9 w-[clamp(12rem,28vw,22rem)] rounded-full bg-muted/60' />
                 }
               >
-                <div className='hidden md:block min-w-[12rem] w-[clamp(12rem,28vw,24rem)] ms-3'>
+                <div className='hidden lg:block min-w-[12rem] w-[clamp(12rem,28vw,24rem)] ms-3'>
                   <HeaderSearch variant='desktop' className='h-9 w-full' />
                 </div>
               </Suspense>
@@ -321,27 +388,70 @@ export function Header() {
             </div>
 
             <div className='ml-auto flex items-center gap-2 sm:gap-3 min-w-0'>
-              <nav className='hidden lg:flex items-center gap-2'>
-                {mainNavItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      'text-sm font-medium hover:bg-blue-100 rounded-full px-3 py-2 flex items-center gap-2',
-                      isActive(item.href) ? 'font-bold' : 'text-foreground',
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+              <nav className='hidden md:flex items-center gap-2'>
+                {mainNavItems.map((item) =>
+                  item.dropdown ? (
+                    <div className='relative group' key={item.href}>
+                      <button
+                        className={cn(
+                          'text-sm font-medium rounded-full px-3 py-2 flex items-center gap-2 text-slate-700 transition-all duration-150 cursor-pointer',
+                          'hover:-translate-y-0.5 hover:text-slate-800',
+                          isActive(item.href) ? 'font-bold text-slate-900' : '',
+                        )}
+                        type='button'
+                        aria-haspopup='menu'
+                        aria-expanded='false'
+                        tabIndex={0}
+                      >
+                        {item.label}
+                        <FiChevronDown className='ml-1 h-3 w-3' />
+                      </button>
+                      {/* Dropdown menu, visible instantly on hover */}
+                      <div className='absolute left-0 top-full z-50 min-w-[240px] bg-white shadow-2xl py-2 px-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 flex flex-col gap-0'>
+                        {item.dropdown.map((sub) => {
+                          const active = isActive(sub.href)
+                          const Icon = sub.icon ? sub.icon : FiInfo
+                          return (
+                            <Link
+                              key={sub.href}
+                              href={sub.href}
+                              className={cn(
+                                'flex items-center gap-3 px-4 py-3 text-sm transition-all duration-150',
+                                active
+                                  ? 'bg-gray-100 text-slate-900 font-bold'
+                                  : 'text-slate-700 hover:bg-gray-100',
+                              )}
+                            >
+                              <Icon className='h-5 w-5 text-blue-400 shrink-0' />
+                              <span className='flex-1'>{sub.label}</span>
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'text-sm font-medium rounded-full px-3 py-2 flex items-center gap-2 text-slate-700 transition-all duration-150',
+                        'hover:-translate-y-0.5 hover:text-slate-800',
+                        isActive(item.href) ? 'font-bold text-slate-900' : '',
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  ),
+                )}
                 <div className='hidden xl:flex items-center gap-2'>
                   {desktopExtrasXL.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        'text-sm font-medium hover:bg-blue-100 rounded-full p-3 flex items-center gap-2',
-                        isActive(item.href) ? 'font-bold' : 'text-foreground',
+                        'text-sm font-medium rounded-full p-3 flex items-center gap-2 text-slate-700 transition-all duration-150',
+                        'hover:-translate-y-0.5 hover:text-slate-800',
+                        isActive(item.href) ? 'font-bold text-slate-900' : '',
                       )}
                     >
                       {item.label}
@@ -354,7 +464,7 @@ export function Header() {
                 type='button'
                 aria-label='Open menu'
                 onClick={() => setIsOpen(true)}
-                className='h-12 w-12 inline-flex items-center justify-center hover:bg-blue-100 rounded-full cursor-pointer shrink-0'
+                className='h-12 w-12 inline-flex items-center justify-center hover:bg-gray-100 rounded-full cursor-pointer shrink-0'
               >
                 <FiMenu className='h-5 w-5' strokeWidth={2.5} />
               </button>
@@ -377,7 +487,7 @@ export function Header() {
 
           {/* Drawer ABOVE header */}
           <div
-            className='fixed top-0 right-0 bottom-0 z-[1000] w-[300px] sm:w-[400px] bg-background shadow-xl flex flex-col overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]'
+            className='fixed top-0 right-0 bottom-0 z-[1000] w-full sm:w-[400px] bg-background shadow-xl flex flex-col overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]'
             role='dialog'
             aria-modal='true'
           >
@@ -389,15 +499,15 @@ export function Header() {
                     type='button'
                     aria-label='Close menu'
                     onClick={() => setIsOpen(false)}
-                    className='h-10 w-10 inline-flex items-center justify-center hover:bg-blue-100 rounded-full'
+                    className='h-10 w-10 inline-flex items-center justify-center hover:bg-gray-100 rounded-full'
                   >
                     <FiX className='h-6 w-6' strokeWidth={2.5} />
                   </button>
                 </div>
               </div>
 
-              {/* Drawer search — mobile only */}
-              <div className='md:hidden'>
+              {/* Drawer search — md and below */}
+              <div className='md:block lg:hidden'>
                 <Suspense
                   fallback={
                     <div className='p-4 border-b'>
@@ -416,22 +526,75 @@ export function Header() {
 
               {/* PRIMARY (mobile) */}
               <div className='md:hidden space-y-1 pt-3'>
+                {/* Home link */}
                 <DrawerList
-                  items={mainNavItems}
+                  items={mainNavItems.filter((item) => item.label === 'Home')}
                   onChoose={() => setIsOpen(false)}
                 />
+                {/* About dropdown */}
+                <DrawerGroup
+                  label='About'
+                  parent={mainNavItems.find((item) => item.label === 'About')}
+                  childrenItems={(
+                    mainNavItems.find((item) => item.label === 'About')
+                      ?.dropdown || []
+                  ).map((sub) => ({
+                    ...sub,
+                    desc: '',
+                    icon: sub.icon || FiInfo,
+                  }))}
+                  onChoose={() => setIsOpen(false)}
+                  icon={FiInfo}
+                />
+                {/* News link */}
+                <DrawerList
+                  items={mainNavItems.filter((item) => item.label === 'News')}
+                  onChoose={() => setIsOpen(false)}
+                />
+                {/* Messages dropdown */}
+                <DrawerGroup
+                  label='Messages'
+                  parent={mainNavItems.find(
+                    (item) => item.label === 'Messages',
+                  )}
+                  childrenItems={(
+                    mainNavItems.find((item) => item.label === 'Messages')
+                      ?.dropdown || []
+                  ).map((sub) => ({
+                    ...sub,
+                    desc: '',
+                    icon: sub.icon || FiInfo,
+                  }))}
+                  onChoose={() => setIsOpen(false)}
+                  icon={FiUsers}
+                />
+                {/* Contact link only in burger menu */}
+                <DrawerList
+                  items={[
+                    {
+                      href: '/contact',
+                      label: 'Contact',
+                      desc: 'Reach out to our team',
+                      icon: FiPhone,
+                    },
+                  ]}
+                  onChoose={() => setIsOpen(false)}
+                />
+                {/* Media dropdown */}
                 <DrawerGroup
                   label='Media'
-                  childrenItems={mediaItems}
+                  parent={mainNavItems.find((item) => item.label === 'Media')}
+                  childrenItems={(
+                    mainNavItems.find((item) => item.label === 'Media')
+                      ?.dropdown || []
+                  ).map((sub) => ({
+                    ...sub,
+                    desc: '',
+                    icon: sub.icon || FiVideo,
+                  }))}
                   onChoose={() => setIsOpen(false)}
                   icon={FiVideo}
                 />
-                {trueParentsParent && (
-                  <DrawerList
-                    items={[trueParentsParent]}
-                    onChoose={() => setIsOpen(false)}
-                  />
-                )}
                 {leftoverExtras.length > 0 && (
                   <DrawerList
                     items={leftoverExtras}
@@ -442,6 +605,18 @@ export function Header() {
 
               {/* SECONDARY (drawer on md+) */}
               <div className='hidden md:block space-y-1 pt-3'>
+                {/* Contact link in large screen drawer */}
+                <DrawerList
+                  items={[
+                    {
+                      href: '/contact',
+                      label: 'Contact',
+                      desc: 'Reach out to our team',
+                      icon: FiPhone,
+                    },
+                  ]}
+                  onChoose={() => setIsOpen(false)}
+                />
                 {drawerExtrasAlways.length > 0 && (
                   <DrawerList
                     items={drawerExtrasAlways}

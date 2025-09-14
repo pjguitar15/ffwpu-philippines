@@ -35,7 +35,7 @@ export const LEADERS: Leader[] = [
   // ─────────────────────────────────────────
   {
     name: 'Mrs. Kinu Nuyana',
-    title: 'Finance Director (Finance Committee)',
+    title: 'Head of accounting',
     photoUrl: '/leaders/kinu-nuyana.png',
     level: 'Department',
     tag: 'Finance',

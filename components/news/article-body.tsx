@@ -30,7 +30,7 @@ export function ArticleBody({ content }: { content: string }) {
   return (
     <div className='mt-6 text-slate-800 dark:text-slate-100'>
       <article
-        className='news-article max-w-none'
+        className='news-article max-w-none font-serif'
         dangerouslySetInnerHTML={{ __html: html }}
       />
 
