@@ -373,18 +373,17 @@ export function Header() {
                   sizes='(min-width: 1024px) 144px, (min-width: 768px) 128px, 112px'
                 />
               </Link>
+              <LiveIndicator className='hidden md:inline-flex shrink-0' />
 
               <Suspense
                 fallback={
                   <div className='hidden lg:block h-9 w-[clamp(12rem,28vw,22rem)] rounded-full bg-muted/60' />
                 }
               >
-                <div className='hidden lg:block min-w-[12rem] w-[clamp(12rem,28vw,24rem)] ms-3'>
+                <div className='hidden lg:block min-w-[12rem] ms-3'>
                   <HeaderSearch variant='desktop' className='h-9 w-full' />
                 </div>
               </Suspense>
-
-              <LiveIndicator className='hidden md:inline-flex shrink-0' />
             </div>
 
             <div className='ml-auto flex items-center gap-2 sm:gap-3 min-w-0'>
