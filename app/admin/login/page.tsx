@@ -124,6 +124,30 @@ export default function AdminLoginPage() {
 
   return (
     <div className='min-h-screen grid grid-cols-1 md:grid-cols-2'>
+      {/* Back to homepage link */}
+      <div className='fixed top-4 left-4 z-20'>
+        <a
+          href='/'
+          className='inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-slate-200 bg-white/70 text-slate-700 text-sm font-medium shadow-sm transition hover:bg-slate-100 hover:text-blue-700 hover:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-200 cursor-pointer'
+        >
+          {/* Subtle Home Icon */}
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            viewBox='0 0 24 24'
+            strokeWidth={1.5}
+            stroke='currentColor'
+            className='h-4 w-4 mr-1 opacity-70'
+          >
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              d='M3 12l9-8 9 8M4 10v10a1 1 0 001 1h5m4-11v11a1 1 0 001 1h5a1 1 0 001-1V10'
+            />
+          </svg>
+          <span className='font-normal tracking-normal'>Home</span>
+        </a>
+      </div>
       {/* Left: Form */}
       <div className='relative flex items-center justify-center p-6 md:p-10'>
         <div className='absolute left-6 top-6 hidden md:flex items-center gap-3'>
