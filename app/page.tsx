@@ -157,7 +157,7 @@ export default function HomePage() {
               imgUrl='/pure-water.webp'
               imgAlt='FFWPU Pure Water youth assembly'
               eyebrow='Pure Water • Heavenly Parent’s Holy Community'
-              title='Pure Water: Live a Life Without Shadow'
+              title='Become like the pure water the world needs'
               highlightedText='Pure Water'
               highlightedGradientClassName='bg-gradient-to-r from-sky-400 via-sky-500 to-blue-600 bg-clip-text text-transparent'
               sideText='PURE WATER'

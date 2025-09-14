@@ -128,7 +128,7 @@ export default function AdminLoginPage() {
       <div className='relative flex items-center justify-center p-6 md:p-10'>
         <div className='absolute left-6 top-6 hidden md:flex items-center gap-3'>
           <Image
-            src='/ffwpu-ph-logo.webp'
+            src='/logos/ffwpu-ph-white-logo.png'
             alt='FFWPU Philippines'
             width={130}
             height={40}
@@ -259,11 +259,11 @@ export default function AdminLoginPage() {
         {/* content */}
         <div className='relative z-10 h-full w-full flex flex-col items-center justify-center p-10 text-white'>
           <Image
-            src='/ffwpu-ph-logo.png'
+            src='/logos/ffwpu-ph-white-logo.png'
             alt='FFWPU Philippines'
             width={120}
             height={120}
-            className='mb-6 opacity-95 drop-shadow filter brightness-0 invert'
+            className='mb-6'
             priority
           />
           <h2 className='text-3xl font-extrabold tracking-wide uppercase text-center drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]'>

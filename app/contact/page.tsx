@@ -123,8 +123,8 @@ export default function ContactPage() {
                   gradientClassName='bg-gradient-to-r from-cyan-300 via-sky-300 to-blue-300 bg-clip-text text-transparent'
                 />
                 <p className='text-white/80 max-w-xl'>
-                  Questions about our community, events, or Cheon Shim Won? Send
-                  us a message and our team will get back to you.
+                  Have a question about FFWPU Philippines or our programs? Reach
+                  out and we’ll respond shortly.
                 </p>
               </div>
 
