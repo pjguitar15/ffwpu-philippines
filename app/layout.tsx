@@ -6,6 +6,7 @@ import UnderConstruction from '@/components/under-construction'
 import { SiteShell } from '@/components/layout/site-shell'
 import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from '@/components/theme-provider'
+import { OgAuto } from '@/components/og-auto'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -20,8 +21,7 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ffwpu-philippines.vercel.app'
+const siteUrl = 'https://ffwpuph.com/'
 
 export const metadata: Metadata = {
   title:
@@ -132,6 +132,7 @@ export default function RootLayout({
           forcedTheme='light'
           enableColorScheme={false}
         >
+          <OgAuto />
           <SiteShell
             isUnderConstruction={process.env.IS_UNDER_CONSTRUCTION === 'true'}
           >
