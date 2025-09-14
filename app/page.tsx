@@ -144,12 +144,6 @@ export default function HomePage() {
               highlightedGradientClassName='bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-700 bg-clip-text text-transparent'
               sideText='PCLC'
               description={`The Pacific Christian Leadership Conference (PCLC) is a coalition of Christian leaders and organizations across the Asia-Pacific region. Under FFWPU Philippines, PCLC unites clergy and faith communities to strengthen marriages, families, and nation-building through seminars and conferences. Its vision is to restore communities of faith and fulfill Christianity’s destiny as One Family under God.`}
-              bottomLinks={[
-                {
-                  label: 'Learn More about PCLC',
-                  href: 'https://pclc-asiapacific.org/',
-                },
-              ]}
             />
           </section>
 
