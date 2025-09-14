@@ -31,9 +31,15 @@ export function NationalLeadersGrid() {
         }}
       />
       <div className='text-center mb-8'>
-        <p className='text-amber-300/80 text-sm tracking-wider uppercase'>Leadership</p>
-        <h2 className='font-heading text-3xl md:text-4xl font-bold'>National Leaders</h2>
-        <p className='text-slate-400 mt-1'>A modern, responsive grid. Images and bios are placeholders for now.</p>
+        <p className='text-amber-300/80 text-sm tracking-wider uppercase'>
+          Leadership
+        </p>
+        <h2 className='font-heading text-3xl md:text-4xl font-bold'>
+          National Leaders
+        </h2>
+        <p className='text-slate-400 mt-1'>
+          A modern, responsive grid. Images and bios are placeholders for now.
+        </p>
       </div>
       <motion.div
         className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
@@ -71,7 +77,7 @@ export function NationalLeadersGrid() {
               </CardHeader>
               <CardContent>
                 <p className='text-slate-300 text-sm leading-relaxed'>
-                  {leader.description || 'Photo & description coming soon.'}
+                  {leader.description}
                 </p>
               </CardContent>
             </Card>

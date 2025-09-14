@@ -7,24 +7,74 @@ export function ArticleBody({ content }: { content: string }) {
   const html = useMemo(() => {
     let s = (content || '').trim()
     if (!s) return ''
-    // If there are no common block-level tags, try to normalize
-    const hasBlocks = /<(p|h[1-6]|ul|ol|li|blockquote)\b/i.test(s)
-    if (!hasBlocks) {
+
+    // Normalize Windows newlines
+    s = s.replace(/\r\n?/g, '\n')
+
+    // If it already has standard block tags, keep as-is
+    const hasStandardBlocks = /<(p|h[1-6]|ul|ol|li|blockquote)\b/i.test(s)
+
+    if (!hasStandardBlocks) {
       if (/<div\b/i.test(s)) {
-        // Treat divs as paragraphs so spacing applies
-        s = s.replace(/<div[^>]*>/gi, '<p>').replace(/<\/div>/gi, '</p>')
+        // Merge consecutive non-empty divs into one paragraph.
+        // New paragraph only when there's an intentionally blank div (or a div that only has <br/>).
+        const container = document.createElement('div')
+        container.innerHTML = s
+
+        const paras: string[] = []
+        let buf: string[] = []
+
+        const flush = () => {
+          if (!buf.length) return
+          // Join fragments with a single space; collapse extra whitespace
+          const inner = buf.join(' ').replace(/\s+/g, ' ').trim()
+          if (inner) paras.push(`<p>${inner}</p>`)
+          buf = []
+        }
+
+        Array.from(container.childNodes).forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const el = node as HTMLElement
+            if (el.tagName === 'DIV') {
+              const html = el.innerHTML.trim()
+              // Blank div if no text content and no media/embedded content
+              const isBlank =
+                (el.textContent || '').replace(/\u00A0/g, ' ').trim() === '' &&
+                !/<(img|iframe|video|audio|svg|canvas)\b/i.test(html)
+
+              if (isBlank) {
+                flush()
+              } else {
+                buf.push(html)
+              }
+            } else {
+              // Other elements: treat as inline fragments of current paragraph
+              buf.push(el.outerHTML || '')
+            }
+          } else if (node.nodeType === Node.TEXT_NODE) {
+            const txt = (node.textContent || '').trim()
+            if (txt) buf.push(txt)
+          }
+        })
+        flush()
+
+        // If we built paragraphs, use them; otherwise fall back to original
+        s = paras.length ? paras.join('\n') : container.innerHTML
       } else {
-        // Convert plain text to paragraphs, preserving single newlines as <br/>
+        // Plain text: split on blank lines into paragraphs;
+        // single newlines are just spaces (no <br/>).
         s = s
-          .split(/\n\s*\n/g)
+          .split(/\n{2,}|\n\s*\n/g)
           .map((p) => p.trim())
           .filter(Boolean)
-          .map((p) => `<p>${p.replace(/\n/g, '<br/>')}</p>`)
+          .map((p) => `<p>${p}</p>`)
           .join('\n')
       }
     }
+
     return s
   }, [content])
+
   if (!html) return null
 
   return (
@@ -36,7 +86,6 @@ export function ArticleBody({ content }: { content: string }) {
 
       {/* Cute & fun CTA under the article */}
       <div className='relative mt-10'>
-        {/* sparkles */}
         <span className='hidden sm:block absolute -top-2 right-6 select-none cta-sparkle'>
           ✨
         </span>
@@ -45,8 +94,8 @@ export function ArticleBody({ content }: { content: string }) {
         </span>
 
         <div className='rounded-2xl border border-sky-200/70 bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-900/30 dark:to-indigo-900/20 p-4 sm:p-5 flex items-center gap-4 shadow-[0_8px_20px_-8px_rgba(2,132,199,0.35)]'>
-          {/* Cute owl avatar (inline SVG) */}
           <div className='h-12 w-12 sm:h-14 sm:w-14 rounded-full ring-2 ring-sky-300 bg-white flex items-center justify-center overflow-hidden'>
+            {/* owl svg */}
             <svg viewBox='0 0 64 64' className='h-10 w-10 sm:h-12 sm:w-12'>
               <defs>
                 <clipPath id='owlCircle'>
@@ -151,14 +200,13 @@ export function ArticleBody({ content }: { content: string }) {
           text-decoration: underline;
         }
         :global(.news-article blockquote) {
-          border-left: 3px solid rgb(203 213 225); /* slate-300 */
+          border-left: 3px solid rgb(203 213 225);
           padding-left: 0.75rem;
           margin: 0.75rem 0 1rem;
           color: rgb(100 116 139);
           font-style: italic;
           background: rgba(241, 245, 249, 0.35);
         }
-        /* Cute CTA micro-animations */
         .cta-sparkle {
           animation: floaty 4.8s ease-in-out infinite;
           opacity: 0.9;
@@ -168,13 +216,13 @@ export function ArticleBody({ content }: { content: string }) {
         }
         @keyframes floaty {
           0% {
-            transform: translateY(0) rotate(0deg);
+            transform: translateY(0) rotate(0);
           }
           50% {
             transform: translateY(-6px) rotate(6deg);
           }
           100% {
-            transform: translateY(0) rotate(0deg);
+            transform: translateY(0) rotate(0);
           }
         }
         .cta-wiggle:hover {
@@ -183,7 +231,7 @@ export function ArticleBody({ content }: { content: string }) {
         @keyframes wiggle {
           0%,
           100% {
-            transform: rotate(0deg);
+            transform: rotate(0);
           }
           25% {
             transform: rotate(-2deg);

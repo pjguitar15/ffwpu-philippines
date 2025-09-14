@@ -117,7 +117,7 @@ export function AdminSidebar() {
   const menuItems = useMemo(
     () => [
       { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-      { href: '/admin/news', label: 'News Management', icon: FileText },
+      { href: '/admin/news', label: 'News', icon: FileText },
       { href: '/admin/events', label: 'Events', icon: Megaphone },
       { href: '/admin/livestream', label: 'Livestream', icon: Radio },
       { href: '/admin/newsletter', label: 'Newsletter', icon: Megaphone },
