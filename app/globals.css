@@ -4,7 +4,9 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0); /* Pure   @keyframes scroll-left {
+  --background: oklch(
+    1 0 0
+  ); /* Pure   @keyframes scroll-left {
     0% {
       transform: translateX(0);
     }
@@ -271,8 +273,12 @@
 
 @layer utilities {
   @keyframes marquee-left {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); } /* move by half, because we render two copies */
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    } /* move by half, because we render two copies */
   }
 
   .animate-marquee {
@@ -282,11 +288,11 @@
 
   /* Scrollbar hide utility for Netflix-style horizontal scrolling */
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
   }
-  .scrollbar-hide::-webkit-scrollbar { 
-    display: none;  /* Safari and Chrome */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
   }
 
   /* Smooth scrolling enhancement */
@@ -314,4 +320,13 @@
   /* .animate-marquee:hover {
     animation-play-state: paused;
   } */
+
+  .scrollbar-hidden {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 }

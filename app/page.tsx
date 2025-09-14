@@ -94,16 +94,18 @@ export default function HomePage() {
               highlightedGradientClassName='bg-gradient-to-r from-pink-500 via-fuchsia-600 to-purple-700 bg-clip-text text-transparent'
               sideText='MATCHING & BLESSING'
               description={`The Blessing in FFWPU Philippines is the joyous culmination of a guided Matching process. Couples, rooted in God's love and supported by dedicated Matching supporters, enter into a sacred union that restores Divine family ideals. This ceremony unites partners under Heavenly Parent and True Parents, marking the birth of Blessed Central Families, with a mission of faith, harmony, and legacy.`}
-              bottomLinks={[
-                {
-                  label: 'Learn About Matching Support',
-                  href: 'https://bfm.familyfed.org/resources',
-                },
-                {
-                  label: 'Blessing Process Guide',
-                  href: 'https://bfm.familyfed.org/hj-blessing-guide',
-                },
-              ]}
+              bottomLinks={
+                [
+                  // {
+                  //   label: 'Learn About Matching Support',
+                  //   href: 'https://bfm.familyfed.org/resources',
+                  // },
+                  // {
+                  //   label: 'Blessing Process Guide',
+                  //   href: 'https://bfm.familyfed.org/hj-blessing-guide',
+                  // },
+                ]
+              }
             />
           </section>
 
