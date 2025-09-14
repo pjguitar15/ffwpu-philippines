@@ -415,13 +415,13 @@ export function Header() {
                               key={sub.href}
                               href={sub.href}
                               className={cn(
-                                'flex items-center gap-3 px-4 py-3 text-sm transition-all duration-150',
+                                'flex items-center gap-3 px-4 py-3 text-sm transition-all duration-150 font-semibold',
                                 active
                                   ? 'bg-gray-100 text-slate-900 font-bold'
                                   : 'text-slate-700 hover:bg-gray-100',
                               )}
                             >
-                              <Icon className='h-5 w-5 text-blue-400 shrink-0' />
+                              <Icon className='h-5 w-5 text-gray-600 shrink-0' />
                               <span className='flex-1'>{sub.label}</span>
                             </Link>
                           )
