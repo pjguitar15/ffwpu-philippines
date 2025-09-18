@@ -1,12 +1,14 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Separator } from '@/components/ui/separator'
-import { mainNavItems } from './header'
+import { mainNavItems, type DropdownNavItem, type MainNavItem } from './header'
+
 type NavItem = {
   href: string
   label: string
   [key: string]: any
 }
+
 function dedupe(items: NavItem[] | undefined | null): NavItem[] {
   if (!Array.isArray(items)) return []
   const seen = new Set<string>()
@@ -15,9 +17,47 @@ function dedupe(items: NavItem[] | undefined | null): NavItem[] {
   )
 }
 
+function flattenNavItems(items: MainNavItem[]): NavItem[] {
+  const flattened: NavItem[] = []
+
+  items.forEach((item) => {
+    // Add the main item
+    flattened.push({
+      href: item.href,
+      label: item.label,
+    })
+
+    // Add dropdown items if they exist
+    if (item.dropdown && item.dropdown.length > 0) {
+      item.dropdown.forEach((dropdownItem: DropdownNavItem) => {
+        flattened.push({
+          href: dropdownItem.href,
+          label: dropdownItem.label,
+        })
+
+        // Handle nested dropdown items (like Messages > Regional Director)
+        if (dropdownItem.dropdown && dropdownItem.dropdown.length > 0) {
+          dropdownItem.dropdown.forEach((nestedItem: DropdownNavItem) => {
+            flattened.push({
+              href: nestedItem.href,
+              label: nestedItem.label,
+            })
+          })
+        }
+      })
+    }
+  })
+
+  return flattened
+}
+
 export function Footer() {
-  const explore: NavItem[] = dedupe(mainNavItems)
-  const more: NavItem[] = []
+  const allNavLinks: NavItem[] = dedupe(flattenNavItems(mainNavItems))
+
+  // Split navigation links into two columns
+  const midPoint = Math.ceil(allNavLinks.length / 2)
+  const exploreLinks = allNavLinks.slice(0, midPoint)
+  const moreLinks = allNavLinks.slice(midPoint)
   return (
     <footer className='border-t bg-muted/30'>
       <div className='container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12'>
@@ -73,12 +113,12 @@ export function Footer() {
               </div>
             </div>
           </div>
-          {/* Explore */}
+          {/* Navigation Column 1 */}
           <div>
-            <nav className='space-y-4' aria-label='Explore'>
-              <h4 className='font-heading font-semibold'>Explore</h4>
+            <nav className='space-y-4' aria-label='Navigate'>
+              <h4 className='font-heading font-semibold'>Navigate</h4>
               <ul className='space-y-2 text-sm'>
-                {explore.map((link: NavItem) => (
+                {exploreLinks.map((link: NavItem) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
@@ -91,12 +131,12 @@ export function Footer() {
               </ul>
             </nav>
           </div>
-          {/* More */}
+          {/* Navigation Column 2 */}
           <div>
-            <nav className='space-y-4' aria-label='More'>
+            <nav className='space-y-4' aria-label='More Links'>
               <h4 className='font-heading font-semibold'>More</h4>
               <ul className='space-y-2 text-sm'>
-                {more.map((link: NavItem) => (
+                {moreLinks.map((link: NavItem) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}

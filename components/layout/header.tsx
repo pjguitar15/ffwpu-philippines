@@ -134,14 +134,14 @@ const IN_TOP_NAV_ON_XL = new Set<string>([
   '/hj-testimonies',
 ])
 
-type DropdownNavItem = {
+export type DropdownNavItem = {
   label: string
   href: string
   icon?: any
   dropdown?: DropdownNavItem[]
 }
 
-type MainNavItem = {
+export type MainNavItem = {
   href: string
   label: string
   desc: string
@@ -180,7 +180,7 @@ export const mainNavItems: MainNavItem[] = [
       },
       {
         label: 'Messages',
-        href: '/messages',
+        href: '/messages/regional-director',
         icon: FiMail,
         dropdown: [
           {
@@ -193,7 +193,7 @@ export const mainNavItems: MainNavItem[] = [
     ],
   },
   {
-    href: '/media',
+    href: '/hj-media-works',
     label: 'Media',
     desc: 'Videos & testimonies',
     icon: FiVideo,
@@ -443,6 +443,18 @@ export function Header() {
 
             <div className='ml-auto flex items-center gap-2 sm:gap-3 min-w-0'>
               <nav className='hidden md:flex items-center gap-2'>
+                {/* Home link - full text on lg+ screens */}
+                <Link
+                  href='/'
+                  className={cn(
+                    'hidden lg:flex text-sm font-medium rounded-full px-3 py-2 items-center gap-2 text-slate-700 transition-all duration-150',
+                    'hover:-translate-y-0.5 hover:text-slate-800',
+                    isActive('/') ? 'font-bold text-slate-900' : '',
+                  )}
+                >
+                  Home
+                </Link>
+
                 {mainNavItems
                   .filter(
                     (item) =>
@@ -494,18 +506,6 @@ export function Header() {
                       </Link>
                     ),
                   )}
-
-                {/* Home link - full text on lg+ screens */}
-                <Link
-                  href='/'
-                  className={cn(
-                    'hidden lg:flex text-sm font-medium rounded-full px-3 py-2 items-center gap-2 text-slate-700 transition-all duration-150',
-                    'hover:-translate-y-0.5 hover:text-slate-800',
-                    isActive('/') ? 'font-bold text-slate-900' : '',
-                  )}
-                >
-                  Home
-                </Link>
 
                 {/* News link - full text on lg+ screens */}
                 <Link
