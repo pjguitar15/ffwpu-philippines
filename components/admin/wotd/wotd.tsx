@@ -572,7 +572,7 @@ export default function WotdAdmin({
                   const pageItems = filtered.slice(start, end)
                   return (
                     <>
-                      <div className='space-y-4'>
+                      <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
                         {pageItems.map((q) => (
                           <div
                             key={q.id}
@@ -588,7 +588,7 @@ export default function WotdAdmin({
                             )}
                             {/* inline current chip handled in top-right cluster */}
 
-                            <div className='relative flex items-start justify-between gap-3'>
+                            <div className='relative flex items-start justify-between gap-3 p-4'>
                               <div className='min-w-0'>
                                 <div className='font-medium line-clamp-1'>
                                   “{q.text}”
@@ -603,6 +603,19 @@ export default function WotdAdmin({
                                     <Sparkles className='h-3.5 w-3.5' />
                                     Current
                                   </div>
+                                )}
+                                {currentId !== q.id && (
+                                  <Button
+                                    size='sm'
+                                    onClick={() => setCurrent(q.id)}
+                                    className='cursor-pointer bg-slate-900/90 hover:bg-slate-900 text-white shadow-sm disabled:opacity-60 dark:bg-slate-100/10 dark:hover:bg-slate-100/20 h-7 px-2.5 text-xs'
+                                    disabled={updatingCurrent}
+                                  >
+                                    {updatingCurrent ? (
+                                      <Loader2 className='h-3 w-3 mr-1 animate-spin' />
+                                    ) : null}
+                                    Set current
+                                  </Button>
                                 )}
                                 {/* Kebab is the last item */}
                                 <DropdownMenu>
@@ -637,21 +650,6 @@ export default function WotdAdmin({
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </div>
-                            </div>
-                            <div className='mt-3 flex flex-wrap gap-2 items-center'>
-                              {currentId !== q.id && (
-                                <Button
-                                  size='sm'
-                                  onClick={() => setCurrent(q.id)}
-                                  className='cursor-pointer bg-slate-900/90 hover:bg-slate-900 text-white shadow-sm disabled:opacity-60 dark:bg-slate-100/10 dark:hover:bg-slate-100/20 h-7 px-2.5 text-xs'
-                                  disabled={updatingCurrent}
-                                >
-                                  {updatingCurrent ? (
-                                    <Loader2 className='h-3 w-3 mr-1 animate-spin' />
-                                  ) : null}
-                                  Set current
-                                </Button>
-                              )}
                             </div>
                           </div>
                         ))}

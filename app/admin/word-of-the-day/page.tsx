@@ -28,15 +28,15 @@ export default function Page() {
     <div className='flex min-h-screen bg-background'>
       <AdminSidebar />
       <main className='flex-1 overflow-y-auto'>
-        <div className='p-8 mx-auto max-w-screen-2xl'>
+        <div className='container mx-auto px-4 py-6 max-w-7xl'>
           {/* Themed header */}
-          <div className='mb-8 rounded-xl border bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/20 dark:to-indigo-950/20'>
-            <div className='px-6 py-6 flex items-center justify-between'>
+          <div className='mb-6 rounded-xl border bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/20 dark:to-indigo-950/20'>
+            <div className='px-6 py-4 flex items-center justify-between'>
               <div>
-                <h1 className='font-heading text-3xl font-bold'>
+                <h1 className='font-heading text-2xl font-bold'>
                   Word of the Day
                 </h1>
-                <p className='text-muted-foreground'>
+                <p className='text-muted-foreground text-sm mt-1'>
                   Manage daily quotes, set today’s word, and schedule changes
                 </p>
               </div>

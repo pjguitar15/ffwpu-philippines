@@ -159,7 +159,7 @@ export function AdminSidebar() {
     : ''
 
   return (
-    <div className='w-64 bg-card border-r h-screen flex flex-col'>
+    <div className='w-64 bg-card border-r h-screen flex flex-col sticky top-0'>
       {/* Brand bar (logo lockup: round emblem + text) */}
       <div className='ps-8 pt-7 pb-6 border-b flex justify-start items-center'>
         <Link href='/' className='flex items-center gap-3 group'>

@@ -17,6 +17,7 @@ import {
   Megaphone,
 } from 'lucide-react'
 import OwlCta from '@/components/admin/owl-cta'
+import { StatsCardSkeleton } from '@/components/admin/stats-card-skeleton'
 
 interface DashboardStats {
   totalNews: number
@@ -43,7 +44,9 @@ export default function AdminDashboardPage() {
   const [admins, setAdmins] = useState<
     Array<{ id: string; name: string; email: string; role: string }>
   >([])
-  const [loadingRecent, setLoadingRecent] = useState<boolean>(false)
+  // Loading state
+  const [loadingRecent, setLoadingRecent] = useState(true)
+  const [loadingStats, setLoadingStats] = useState(true)
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -73,7 +76,7 @@ export default function AdminDashboardPage() {
             ).length
           }
         } else {
-          const alt = await(await fetch('/data/news.json')).json()
+          const alt = await (await fetch('/data/news.json')).json()
           if (Array.isArray(alt)) {
             // Count only published articles from fallback data
             totalNews = alt.filter(
@@ -95,7 +98,7 @@ export default function AdminDashboardPage() {
           const data = await subsRes.value.json()
           totalSubscribers = Number(data?.total || 0)
         } else {
-          const alt = await(await fetch('/data/newsletters.json')).json()
+          const alt = await (await fetch('/data/newsletters.json')).json()
           totalSubscribers = Math.max(
             ...alt.map((n: any) => n.subscribers ?? 0),
             0,
@@ -120,7 +123,7 @@ export default function AdminDashboardPage() {
           if (Array.isArray(arr)) setAdmins(arr)
         } else {
           try {
-            const alt = await(await fetch('/data/admins.json')).json()
+            const alt = await (await fetch('/data/admins.json')).json()
             totalAdmins = alt.filter((a: any) => a.status === 'active').length
             setAdmins(alt)
           } catch {}
@@ -152,6 +155,7 @@ export default function AdminDashboardPage() {
         console.error('Failed to load dashboard data:', error)
       } finally {
         setLoadingRecent(false)
+        setLoadingStats(false)
       }
     }
 
@@ -174,98 +178,121 @@ export default function AdminDashboardPage() {
 
           {/* Stats Grid */}
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8'>
-            {[
-              {
-                title: 'Total News',
-                value: stats.totalNews,
-                subtitle: 'Published articles',
-                Icon: FileText,
-                c: {
-                  bar: 'bg-white/40',
-                  customCardClass:
-                    'bg-gradient-to-br from-indigo-600 via-blue-600 to-sky-500 text-white',
-                  iconBg: 'bg-white/20',
-                  iconText: 'text-white',
-                  valueText: 'text-white text-4xl md:text-5xl',
-                  subtitleText: 'text-white/85',
+            {loadingStats ? (
+              // Loading skeleton cards
+              <>
+                <StatsCardSkeleton
+                  customCardClass='bg-gradient-to-br from-indigo-600 via-blue-600 to-sky-500 text-white'
+                  iconBg='bg-white/20'
+                />
+                <StatsCardSkeleton
+                  customCardClass='bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-500 text-white'
+                  iconBg='bg-white/20'
+                />
+                <StatsCardSkeleton
+                  customCardClass='bg-gradient-to-br from-sky-600 via-cyan-500 to-teal-500 text-white'
+                  iconBg='bg-white/20'
+                />
+                <StatsCardSkeleton
+                  customCardClass='bg-gradient-to-br from-emerald-600 via-green-600 to-teal-500 text-white'
+                  iconBg='bg-white/20'
+                />
+              </>
+            ) : (
+              // Actual stats cards
+              [
+                {
+                  title: 'Total News',
+                  value: stats.totalNews,
+                  subtitle: 'Published articles',
+                  Icon: FileText,
+                  c: {
+                    bar: 'bg-white/40',
+                    customCardClass:
+                      'bg-gradient-to-br from-indigo-600 via-blue-600 to-sky-500 text-white',
+                    iconBg: 'bg-white/20',
+                    iconText: 'text-white',
+                    valueText: 'text-white text-4xl md:text-5xl',
+                    subtitleText: 'text-white/85',
+                  },
                 },
-              },
-              {
-                title: 'Total Events',
-                value: stats.totalEvents,
-                subtitle: 'In the calendar',
-                Icon: Calendar,
-                c: {
-                  bar: 'bg-white/40',
-                  customCardClass:
-                    'bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-500 text-white',
-                  iconBg: 'bg-white/20',
-                  iconText: 'text-white',
-                  valueText: 'text-white text-4xl md:text-5xl',
-                  subtitleText: 'text-white/85',
+                {
+                  title: 'Total Events',
+                  value: stats.totalEvents,
+                  subtitle: 'In the calendar',
+                  Icon: Calendar,
+                  c: {
+                    bar: 'bg-white/40',
+                    customCardClass:
+                      'bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-500 text-white',
+                    iconBg: 'bg-white/20',
+                    iconText: 'text-white',
+                    valueText: 'text-white text-4xl md:text-5xl',
+                    subtitleText: 'text-white/85',
+                  },
                 },
-              },
-              {
-                title: 'Subscribed Emails',
-                value: stats.totalSubscribers.toLocaleString(),
-                subtitle: 'Newsletter subscribers',
-                Icon: Users,
-                c: {
-                  bar: 'bg-white/40',
-                  customCardClass:
-                    'bg-gradient-to-br from-sky-600 via-cyan-500 to-teal-500 text-white',
-                  iconBg: 'bg-white/20',
-                  iconText: 'text-white',
-                  valueText: 'text-white text-4xl md:text-5xl',
-                  subtitleText: 'text-white/85',
+                {
+                  title: 'Subscribed Emails',
+                  value: stats.totalSubscribers.toLocaleString(),
+                  subtitle: 'Newsletter subscribers',
+                  Icon: Users,
+                  c: {
+                    bar: 'bg-white/40',
+                    customCardClass:
+                      'bg-gradient-to-br from-sky-600 via-cyan-500 to-teal-500 text-white',
+                    iconBg: 'bg-white/20',
+                    iconText: 'text-white',
+                    valueText: 'text-white text-4xl md:text-5xl',
+                    subtitleText: 'text-white/85',
+                  },
                 },
-              },
-              {
-                title: 'Total Admins',
-                value: stats.totalAdmins,
-                subtitle: 'Administrators',
-                Icon: ShieldCheck,
-                c: {
-                  bar: 'bg-white/40',
-                  customCardClass:
-                    'bg-gradient-to-br from-emerald-600 via-green-600 to-teal-500 text-white',
-                  iconBg: 'bg-white/20',
-                  iconText: 'text-white',
-                  valueText: 'text-white text-4xl md:text-5xl',
-                  subtitleText: 'text-white/85',
+                {
+                  title: 'Total Admins',
+                  value: stats.totalAdmins,
+                  subtitle: 'Administrators',
+                  Icon: ShieldCheck,
+                  c: {
+                    bar: 'bg-white/40',
+                    customCardClass:
+                      'bg-gradient-to-br from-emerald-600 via-green-600 to-teal-500 text-white',
+                    iconBg: 'bg-white/20',
+                    iconText: 'text-white',
+                    valueText: 'text-white text-4xl md:text-5xl',
+                    subtitleText: 'text-white/85',
+                  },
                 },
-              },
-            ].map(({ title, value, subtitle, Icon, c }) => (
-              <Card
-                key={title}
-                className={`overflow-hidden border-0 shadow-sm transition-all duration-300 ${c.customCardClass} hover:shadow-xl hover:shadow-black/10 hover:-translate-y-0.5 hover:ring-1 hover:ring-white/30`}
-              >
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-0.5 pt-2.5 px-5'>
-                  <div className='flex-1'>
-                    <CardTitle className='text-sm font-medium'>
-                      {title}
-                    </CardTitle>
-                    <div className='mt-1 h-px w-10 bg-white/40 rounded-full' />
-                  </div>
-                  <div className={`p-2.5 rounded-full ${c.iconBg}`}>
-                    <Icon className={`h-6 w-6 ${c.iconText}`} />
-                  </div>
-                </CardHeader>
+              ].map(({ title, value, subtitle, Icon, c }) => (
+                <Card
+                  key={title}
+                  className={`overflow-hidden border-0 shadow-sm transition-all duration-300 ${c.customCardClass} hover:shadow-xl hover:shadow-black/10 hover:-translate-y-0.5 hover:ring-1 hover:ring-white/30`}
+                >
+                  <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-0.5 pt-2.5 px-5'>
+                    <div className='flex-1'>
+                      <CardTitle className='text-sm font-medium'>
+                        {title}
+                      </CardTitle>
+                      <div className='mt-1 h-px w-10 bg-white/40 rounded-full' />
+                    </div>
+                    <div className={`p-2.5 rounded-full ${c.iconBg}`}>
+                      <Icon className={`h-6 w-6 ${c.iconText}`} />
+                    </div>
+                  </CardHeader>
 
-                <CardContent className='pt-0.5 pb-2.5 px-5'>
-                  <div className={`font-bold ${c.valueText} truncate`}>
-                    {value}
-                  </div>
-                  <p
-                    className={
-                      c.subtitleText ?? 'text-xs text-muted-foreground'
-                    }
-                  >
-                    {subtitle}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+                  <CardContent className='pt-0.5 pb-2.5 px-5'>
+                    <div className={`font-bold ${c.valueText} truncate`}>
+                      {value}
+                    </div>
+                    <p
+                      className={
+                        c.subtitleText ?? 'text-xs text-muted-foreground'
+                      }
+                    >
+                      {subtitle}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
 
           {/* CTA + Word of the Day side-by-side */}
@@ -279,24 +306,37 @@ export default function AdminDashboardPage() {
             />
 
             <div className='flex-1 relative overflow-hidden rounded-2xl border shadow-sm bg-gradient-to-r from-sky-50 via-indigo-50 to-emerald-50 dark:from-sky-900/20 dark:via-indigo-900/20 dark:to-emerald-900/20 px-5 md:px-6 py-5 md:py-6'>
-              <div className='flex items-start gap-4'>
-                <div className='p-2.5 rounded-full bg-white/60 dark:bg-white/10 ring-1 ring-black/5 dark:ring-white/10'>
-                  <Sparkles className='h-5 w-5 text-indigo-600 dark:text-indigo-300' />
-                </div>
-                <div className='flex-1'>
-                  <div className='text-slate-900 dark:text-slate-100 font-semibold'>
-                    Word of the Day
+              {loadingStats ? (
+                <div className='flex items-start gap-4 animate-pulse'>
+                  <div className='p-2.5 rounded-full bg-white/60 dark:bg-white/10'>
+                    <div className='h-5 w-5 bg-gray-300 dark:bg-gray-600 rounded'></div>
                   </div>
-                  <div className='mt-1 text-xs md:text-sm text-slate-600 dark:text-slate-300'>
-                    <span className=''>{stats.wotdShort}</span>
-                    {stats.wotdAuthor && (
-                      <span className='ml-2 text-slate-500 dark:text-slate-400'>
-                        — {stats.wotdAuthor}
-                      </span>
-                    )}
+                  <div className='flex-1'>
+                    <div className='h-5 w-32 bg-gray-300 dark:bg-gray-600 rounded mb-2'></div>
+                    <div className='h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-1'></div>
+                    <div className='h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded'></div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className='flex items-start gap-4'>
+                  <div className='p-2.5 rounded-full bg-white/60 dark:bg-white/10 ring-1 ring-black/5 dark:ring-white/10'>
+                    <Sparkles className='h-5 w-5 text-indigo-600 dark:text-indigo-300' />
+                  </div>
+                  <div className='flex-1'>
+                    <div className='text-slate-900 dark:text-slate-100 font-semibold'>
+                      Word of the Day
+                    </div>
+                    <div className='mt-1 text-xs md:text-sm text-slate-600 dark:text-slate-300'>
+                      <span className=''>{stats.wotdShort}</span>
+                      {stats.wotdAuthor && (
+                        <span className='ml-2 text-slate-500 dark:text-slate-400'>
+                          — {stats.wotdAuthor}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
