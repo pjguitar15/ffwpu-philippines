@@ -7,6 +7,7 @@ import { HeroSection } from '@/components/home/hero-section'
 import { RecentNewsSection } from '@/components/home/recent-news-section'
 import { UpcomingEventsSection } from '@/components/home/upcoming-events-section'
 import { QuickLinksSection } from '@/components/home/quick-links-section'
+import { HistorySection } from '@/components/home/history-section'
 import { SideBySide } from '@/components/side-by-side'
 import AffiliatedOrganizationsLogos from '@/components/home/affiliated-organizations'
 import WordOfTheDayModal from '@/components/word-of-the-day/word-of-the-day'
@@ -176,7 +177,13 @@ export default function HomePage() {
               }
             />
           </section>
+        </div>
 
+        <section>
+          <HistorySection />
+        </section>
+
+        <div className='container mx-auto py-12 space-y-16'>
           <section className='relative'>
             <SectionGlare />
             <SideBySide
