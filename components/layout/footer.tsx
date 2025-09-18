@@ -1,31 +1,27 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Separator } from '@/components/ui/separator'
-import { extraNavItems, mainNavItems } from './header'
-
-function dedupe(items: any) {
+import { mainNavItems } from './header'
+type NavItem = {
+  href: string
+  label: string
+  [key: string]: any
+}
+function dedupe(items: NavItem[] | undefined | null): NavItem[] {
+  if (!Array.isArray(items)) return []
   const seen = new Set<string>()
-  return items.filter((i: any) =>
+  return items.filter((i: NavItem) =>
     seen.has(i.href) ? false : (seen.add(i.href), true),
   )
 }
 
 export function Footer() {
-  const explore = dedupe(mainNavItems)
-  const more = dedupe(extraNavItems).filter(
-    (l: any) => !explore.some((e: any) => e.href === l.href),
-  )
-
+  const explore: NavItem[] = dedupe(mainNavItems)
+  const more: NavItem[] = []
   return (
     <footer className='border-t bg-muted/30'>
-      {/* top area */}
       <div className='container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12'>
-        <div
-          className='
-            grid gap-10
-            grid-cols-1 sm:grid-cols-2 lg:grid-cols-4
-          '
-        >
+        <div className='grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'>
           {/* Brand / Mission */}
           <div className='space-y-4 max-w-md'>
             <Link href='/' className='inline-flex items-center space-x-3'>
@@ -42,7 +38,6 @@ export function Footer() {
               Building a world of peace, love, and unity through the teachings
               of True Parents.
             </p>
-
             {/* Socials */}
             <div className='pt-1'>
               <div
@@ -78,60 +73,61 @@ export function Footer() {
               </div>
             </div>
           </div>
-
           {/* Explore */}
-          <nav className='space-y-4' aria-label='Explore'>
-            <h4 className='font-heading font-semibold'>Explore</h4>
-            <ul className='space-y-2 text-sm'>
-              {explore.map((link: any) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className='text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded'
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
+          <div>
+            <nav className='space-y-4' aria-label='Explore'>
+              <h4 className='font-heading font-semibold'>Explore</h4>
+              <ul className='space-y-2 text-sm'>
+                {explore.map((link: NavItem) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className='text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded'
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
           {/* More */}
-          <nav className='space-y-4' aria-label='More'>
-            <h4 className='font-heading font-semibold'>More</h4>
-            <ul className='space-y-2 text-sm'>
-              {more.map((link: any) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className='text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded'
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
+          <div>
+            <nav className='space-y-4' aria-label='More'>
+              <h4 className='font-heading font-semibold'>More</h4>
+              <ul className='space-y-2 text-sm'>
+                {more.map((link: NavItem) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className='text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded'
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
           {/* Contact */}
-          <address className='not-italic space-y-4'>
-            <h4 className='font-heading font-semibold'>Contact</h4>
-            <div className='space-y-2 text-sm text-muted-foreground'>
-              <p>Quezon City, Philippines</p>
-              <p>
-                <a
-                  href='mailto:familyfedphils@ffwpuph.com'
-                  className='hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded'
-                >
-                  familyfedphils@ffwpuph.com
-                </a>
-              </p>
-            </div>
-          </address>
+          <div>
+            <address className='not-italic space-y-4'>
+              <h4 className='font-heading font-semibold'>Contact</h4>
+              <div className='space-y-2 text-sm text-muted-foreground'>
+                <p>Quezon City, Philippines</p>
+                <p>
+                  <a
+                    href='mailto:familyfedphils@ffwpuph.com'
+                    className='hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 rounded'
+                  >
+                    familyfedphils@ffwpuph.com
+                  </a>
+                </p>
+              </div>
+            </address>
+          </div>
         </div>
-
         <Separator className='my-8' />
-
         {/* bottom bar */}
         <div className='flex flex-col md:flex-row items-center justify-between gap-3 px-1'>
           <p className='text-sm text-muted-foreground text-center md:text-left'>
