@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Montserrat, Inter } from "next/font/google"
+import { Suspense } from "react"
 import './globals.css'
 import UnderConstruction from '@/components/under-construction'
 import { SiteShell } from '@/components/layout/site-shell'
@@ -132,7 +133,9 @@ export default function RootLayout({
           forcedTheme='light'
           enableColorScheme={false}
         >
-          <OgAuto />
+          <Suspense fallback={null}>
+            <OgAuto />
+          </Suspense>
           <SiteShell
             isUnderConstruction={process.env.IS_UNDER_CONSTRUCTION === 'true'}
           >
