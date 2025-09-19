@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { X, Sparkles } from 'lucide-react'
-import clsx from 'clsx'
+import Image from 'next/image'
+import { clsx } from 'clsx'
 
 /** =========================
  *  CONFIG (edit as needed)
@@ -11,7 +12,12 @@ const SHOW_INTERVAL_HOURS = 5 // cooldown before auto-show again
 const STORAGE_KEY = 'wotd_seen_meta_v1'
 const SHOW_LAUNCHER = true // toggle floating launcher visibility
 
-type WotdData = { id: string; title: string; text: string; attribution?: string }
+type WotdData = {
+  id: string
+  title: string
+  text: string
+  attribution?: string
+}
 
 /** Utility */
 const hoursToMs = (h: number) => Math.max(0, h) * 60 * 60 * 1000
@@ -168,7 +174,17 @@ export default function WordOfTheDayModal() {
             {/* subtle gradient header bar */}
             <div className='absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-400 via-indigo-500 to-fuchsia-500 opacity-80' />
 
-            <div className='relative'>
+            <div className='relative border border-red-500'>
+              {/* Absolute image in bottom right */}
+              <Image
+                src='/tp-laughing.png'
+                alt='True Parents laughing'
+                width={96}
+                height={96}
+                className='w-30 sm:w-40 h-auto absolute bottom-0 right-0 z-10 pointer-events-none opacity-90'
+                priority={false}
+              />
+
               {/* content */}
               <div className='px-6 sm:px-8 pt-6 sm:pt-8 pb-5'>
                 <div className='flex items-center gap-2 text-sky-700/90'>

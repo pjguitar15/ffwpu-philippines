@@ -47,7 +47,8 @@ export function NationalLeadersGrid() {
           National Leaders
         </h2>
         <p className='text-slate-400 mt-1'>
-          A modern, responsive grid. Images and bios are placeholders for now.
+          A record of our National Leaders through the years, honoring their
+          dedication and service to the Philippine providence.
         </p>
       </div>
       <motion.div
