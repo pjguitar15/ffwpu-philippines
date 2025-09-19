@@ -47,7 +47,7 @@ export function HeroSection() {
       <div className='container mx-auto px-4 md:px-6 min-h-[56vh] md:min-h-[60vh] grid place-items-center py-14 md:py-16'>
         <div className='relative z-10 mx-auto max-w-5xl text-center space-y-7'>
           {/* Eyebrow */}
-          <p className='mx-auto inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[10px] md:text-xs font-semibold uppercase tracking-widest text-white/80 ring-1 ring-white/20 backdrop-blur'>
+          <p className='mx-auto inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[10px] md:text-xs font-semibold uppercase tracking-widest text-white/80 ring-1 ring-white/20 backdrop-blur [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.8))]'>
             <Sparkles className='h-3.5 w-3.5' />
             FFWPU Philippines
           </p>
@@ -62,11 +62,11 @@ export function HeroSection() {
               text='Families Centered on Heavenly Parent'
               highlightedText='Heavenly Parent'
               uppercase={true}
-              className='text-4xl md:text-5xl font-extrabold leading-tight tracking-wide text-white [text-shadow:0_1px_0_rgba(0,0,0,0.28)] whitespace-normal break-words text-balance'
-              gradientClassName='bg-gradient-to-r from-sky-400 via-cyan-300 to-fuchsia-400 bg-clip-text text-transparent [text-shadow:0_0_20px_rgba(56,189,248,0.6)]'
+              className='text-4xl md:text-5xl font-extrabold leading-tight tracking-wide text-white [filter:drop-shadow(0_3px_6px_rgba(0,0,0,0.8))] whitespace-normal break-words text-balance'
+              gradientClassName='bg-gradient-to-r from-sky-400 via-cyan-300 to-fuchsia-400 bg-clip-text text-transparent [filter:drop-shadow(0_1px_3px_rgba(0,0,0,0.6))]'
             />
 
-            <p className='mx-auto mt-4 max-w-3xl text-base md:text-lg text-white font-medium leading-relaxed'>
+            <p className='mx-auto mt-4 max-w-3xl text-base md:text-lg text-white font-medium leading-relaxed [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.8))]'>
               FFWPU Philippines is a Heavenly Parent–centered family, deepening
               faith through Cheon Shim Won devotion, cherishing the Blessing as
               the foundation of true families, advancing the Philippine
@@ -116,7 +116,7 @@ export function HeroSection() {
       <a
         href='#updates'
         aria-label='Scroll to recent news'
-        className='group absolute bottom-6 left-1/2 -translate-x-1/2 inline-flex items-center gap-2 text-white/80 transition hover:text-white'
+        className='group absolute bottom-6 left-1/2 -translate-x-1/2 inline-flex items-center gap-2 text-white/80 transition hover:text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.8)]'
       >
         <ChevronDown className='h-5 w-5 animate-bounce' />
       </a>
