@@ -95,6 +95,9 @@ export function Timeline({ timeline, forceYear, setForceYear }: TimelineProps) {
                                 fill
                                 sizes='96px'
                                 className='object-cover object-top'
+                                loading='lazy'
+                                placeholder='blur'
+                                blurDataURL='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
                               />
                             ) : (
                               <div className='absolute inset-0 grid place-items-center'>
@@ -107,7 +110,11 @@ export function Timeline({ timeline, forceYear, setForceYear }: TimelineProps) {
                           <div className='min-w-0'>
                             <p className='text-slate-300'>
                               <span className='font-semibold'>{t.title}</span>{' '}
-                              was appointed <span className='font-medium'>National Leader</span>.
+                              was appointed{' '}
+                              <span className='font-medium'>
+                                National Leader
+                              </span>
+                              .
                             </p>
                             <p className='text-slate-400 text-sm mt-1'>
                               Tenure: {t.content.split('• Tenure: ')[1] || ''}
@@ -124,7 +131,9 @@ export function Timeline({ timeline, forceYear, setForceYear }: TimelineProps) {
                                 fill
                                 sizes='(min-width: 768px) 720px, 100vw'
                                 className='object-cover'
-                                priority={false}
+                                loading='lazy'
+                                placeholder='blur'
+                                blurDataURL='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
                               />
                               <div className='pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/10 via-transparent to-transparent' />
                             </div>

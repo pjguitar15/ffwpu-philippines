@@ -51,11 +51,13 @@ export function NationalLeadersGrid() {
         </p>
       </div>
       <motion.div
-        className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${isVisible ? 'opacity-100' : ''}`}
+        className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${
+          isVisible ? 'opacity-100' : ''
+        }`}
         variants={container}
         initial='hidden'
         whileInView='show'
-        viewport={{ once: true, amount: 0.1, margin: "100px" }}
+        viewport={{ once: true, amount: 0.1, margin: '100px' }}
         onAnimationComplete={() => setIsVisible(true)}
       >
         {LEADERS.map((leader: Leader) => (
@@ -63,10 +65,15 @@ export function NationalLeadersGrid() {
             <Card className='h-full overflow-hidden border-slate-800 bg-slate-900/60 hover:bg-slate-900/80 transition-colors'>
               <div className='relative aspect-[4/3] bg-gradient-to-br from-slate-800 to-slate-900 grid place-items-center'>
                 {leader.imageUrl ? (
-                  <img
+                  <Image
                     src={leader.imageUrl}
                     alt={leader.name}
+                    fill
                     className='absolute inset-0 h-full w-full object-cover'
+                    sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw'
+                    loading='lazy'
+                    placeholder='blur'
+                    blurDataURL='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=='
                   />
                 ) : (
                   <div className='h-16 w-16 rounded-xl bg-slate-800/80 ring-1 ring-slate-700/60 grid place-items-center text-slate-300 font-semibold'>
