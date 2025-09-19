@@ -480,10 +480,36 @@ export const TIMELINE: TimelineItem[] = [
   },
   {
     id: 'ph-2021-ryf',
-    year: '2021.02.06',
+    year: '2021.05.01',
     title: 'Regional Youth Forum',
     icon: 'users',
     content: `A total of 25,084 participants registered and a total of 6,677 completed the 2-day education throughout the 17 Regions Nationwide.`,
     imageUrl: '/history-images/2021-regional-youth-forum.jpg',
+  },
+  {
+    id: 'ph-2021-pclc',
+    year: '2021.10.05',
+    title: 'Inauguration of Pacific Christian Leadership Conference',
+    icon: 'heart',
+    content:
+      'The Pacific Christian Leadership Conference was inaugurated on October 5, 2021, bringing together Christian leaders from across the Pacific region to promote interfaith unity, peace, and shared values.',
+    imageUrl: '/history-images/2021-pclc.jpg',
+  },
+  {
+    id: 'ph-2021-ryfm',
+    year: '2021.05.01',
+    title: 'Regional Youth Forum Launching',
+    icon: 'users',
+    content: `RYF Lecture Manual was launched.`,
+    imageUrl: '/history-images/2021-regional-youth-forum.png',
+  },
+  {
+    id: 'ph-2021-cheonbo',
+    year: '2021.10.10',
+    title: 'Induction of New Cheonbo Families',
+    icon: 'heart',
+    content:
+      'A total of 59 new Cheonbo Couples from 13 locations in the Philippines were inducted on October 10, 2021. The ceremony included the Regional President’s couple, Pres. and Mrs. Masaichi Hori, and Vice President Rev. and Mrs. Ronnie Sodusta, marking a significant milestone for Filipino Blessed Families.',
+    imageUrl: '/history-images/2021-cheonbo-induction.png',
   },
 ]
