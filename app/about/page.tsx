@@ -1,3 +1,4 @@
+import { generatePageMetadata, pageMetadataConfigs } from '@/lib/metadata'
 import { AboutIntroSection } from '@/components/about/about-intro-section'
 import { AboutStatsStrip } from '@/components/about/about-stats'
 import { AboutPeaceRoadSection } from '@/components/about/about-peace-road'
@@ -8,6 +9,8 @@ import { AboutCTA } from '@/components/about/about-cta'
 import ChurchLeadershipGrid from '@/components/about/church-leadership-grid'
 import { AboutWorldCarpSection } from '@/components/about/about-carp'
 import { FadeIn } from '@/components/ui/motion'
+
+export const metadata = generatePageMetadata(pageMetadataConfigs.about)
 
 export default function AboutPage() {
   return (

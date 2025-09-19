@@ -1,9 +1,12 @@
 // app/news/page.tsx
 import { Suspense } from 'react'
+import { generatePageMetadata, pageMetadataConfigs } from '@/lib/metadata'
 import { NewsIndex } from '@/components/news/news-index'
 import { NewsIndexSkeleton } from '@/components/news/news-index-skeleton' // (only used by loading.tsx)
 import { headers } from 'next/headers'
 import { sampleNews } from '@/data/news'
+
+export const metadata = generatePageMetadata(pageMetadataConfigs.news)
 
 export async function NewsIndexServer() {
   try {

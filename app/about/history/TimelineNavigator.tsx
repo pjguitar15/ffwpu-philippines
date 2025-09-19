@@ -96,7 +96,7 @@ export function TimelineNavigator({ years, setForceYear, timeline }: Props) {
             <TooltipTrigger asChild>
               <button
                 onClick={() => goToYear(year)}
-                className={`px-5 py-2 w-28 text-center hover:text-white transition-colors cursor-pointer ${
+                className={`px-5 py-2 w-28 text-center hover:text-white hover:scale-110 duration-300  transition-colors cursor-pointer ${
                   activeYear === year
                     ? 'bg-slate-900 text-white shadow-sm'
                     : 'bg-slate-800/60 text-slate-500 hover:bg-slate-700'

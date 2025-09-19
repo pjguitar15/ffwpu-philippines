@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from 'next/link'
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -318,7 +319,7 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
               ) : (
-                <div className='flex items-start gap-4'>
+                <div className='flex items-center gap-4'>
                   <div className='p-2.5 rounded-full bg-white/60 dark:bg-white/10 ring-1 ring-black/5 dark:ring-white/10'>
                     <Sparkles className='h-5 w-5 text-indigo-600 dark:text-indigo-300' />
                   </div>
@@ -335,6 +336,19 @@ export default function AdminDashboardPage() {
                       )}
                     </div>
                   </div>
+                  <Link
+                    href='/admin/word-of-the-day'
+                    className='group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-indigo-600 via-sky-600 to-emerald-600 text-white text-xs md:text-sm hover:from-indigo-700 hover:via-sky-700 hover:to-emerald-700 active:scale-[0.99] transition shadow-sm'
+                    aria-label='Manage WOTD'
+                  >
+                    Manage WOTD
+                    <span
+                      aria-hidden
+                      className='transition-transform group-hover:translate-x-0.5'
+                    >
+                      →
+                    </span>
+                  </Link>
                 </div>
               )}
             </div>

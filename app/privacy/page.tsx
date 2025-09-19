@@ -1,6 +1,9 @@
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { generatePageMetadata, pageMetadataConfigs } from '@/lib/metadata'
+
+export const metadata = generatePageMetadata(pageMetadataConfigs.privacy)
 
 export default function PrivacyPage() {
   return (

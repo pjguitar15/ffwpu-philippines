@@ -1,6 +1,8 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+import { ClientMetadata } from '@/components/seo/client-metadata'
+import { pageMetadataConfigs } from '@/lib/metadata'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
@@ -527,139 +529,142 @@ export default function HJTestimoniesPage() {
   }
 
   return (
-    <div className='min-h-screen bg-gray-50'>
-      {/* Header Section */}
-      <section className='relative isolate overflow-hidden'>
-        <Image
-          src='/hj-testimonies-cover-photo.png'
-          alt='HJ Testimonies Banner'
-          fill
-          className='object-cover'
-          priority
-        />
+    <>
+      <ClientMetadata config={pageMetadataConfigs.hjTestimonies} />
+      <div className='min-h-screen bg-gray-50'>
+        {/* Header Section */}
+        <section className='relative isolate overflow-hidden'>
+          <Image
+            src='/hj-testimonies-cover-photo.png'
+            alt='HJ Testimonies Banner'
+            fill
+            className='object-cover'
+            priority
+          />
 
-        {/* Readability + color wash overlays */}
-        <div className='pointer-events-none absolute inset-0 z-0'>
-          {/* Base dark vignette for contrast */}
-          <div className='absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-900/60 to-slate-950/90' />
-          {/* Colorful radial washes (emerald/green theme for testimonies) */}
-          <div className='absolute inset-0 opacity-60 [background:radial-gradient(720px_360px_at_85%_0%,rgba(34,197,94,0.18),transparent_60%),radial-gradient(820px_400px_at_0%_100%,rgba(168,85,247,0.16),transparent_60%)]' />
-        </div>
-        {/* Soft brand glows */}
-        <div className='pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full blur-3xl bg-gradient-to-tr from-emerald-400/20 to-green-400/12' />
-        <div className='pointer-events-none absolute -bottom-24 -left-16 h-80 w-80 rounded-full blur-3xl bg-gradient-to-tr from-purple-400/15 to-blue-400/8' />
+          {/* Readability + color wash overlays */}
+          <div className='pointer-events-none absolute inset-0 z-0'>
+            {/* Base dark vignette for contrast */}
+            <div className='absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-900/60 to-slate-950/90' />
+            {/* Colorful radial washes (emerald/green theme for testimonies) */}
+            <div className='absolute inset-0 opacity-60 [background:radial-gradient(720px_360px_at_85%_0%,rgba(34,197,94,0.18),transparent_60%),radial-gradient(820px_400px_at_0%_100%,rgba(168,85,247,0.16),transparent_60%)]' />
+          </div>
+          {/* Soft brand glows */}
+          <div className='pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full blur-3xl bg-gradient-to-tr from-emerald-400/20 to-green-400/12' />
+          <div className='pointer-events-none absolute -bottom-24 -left-16 h-80 w-80 rounded-full blur-3xl bg-gradient-to-tr from-purple-400/15 to-blue-400/8' />
 
-        <div className='relative container mx-auto px-4 md:px-6 py-14 md:py-16'>
-          <div className='relative z-10 mx-auto max-w-5xl space-y-7'>
-            {/* Eyebrow */}
-            <p className='mx-auto inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[10px] md:text-xs font-semibold uppercase tracking-widest text-white/90 ring-1 ring-white/30 backdrop-blur-sm [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]'>
-              <Image
-                src='/hj-testimonies-logo.jpg'
-                alt='HJ Testimonies'
-                width={16}
-                height={16}
-                className='rounded'
-              />
-              Testimonies • Personal Stories & Faith
-            </p>
-
-            {/* Title */}
-            <div className='space-y-3 text-left'>
-              <div className='flex items-center gap-3 md:gap-4'>
+          <div className='relative container mx-auto px-4 md:px-6 py-14 md:py-16'>
+            <div className='relative z-10 mx-auto max-w-5xl space-y-7'>
+              {/* Eyebrow */}
+              <p className='mx-auto inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[10px] md:text-xs font-semibold uppercase tracking-widest text-white/90 ring-1 ring-white/30 backdrop-blur-sm [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]'>
                 <Image
-                  src='/hj-testimonies-logo.jpg' // use a square source if possible
-                  alt='HJ Testimonies logo'
-                  width={56}
-                  height={56}
-                  priority
-                  className='rounded-full bg-white/90 p-1 ring-1 ring-white/40 shadow-md'
+                  src='/hj-testimonies-logo.jpg'
+                  alt='HJ Testimonies'
+                  width={16}
+                  height={16}
+                  className='rounded'
                 />
-                <HighlightTitle
-                  as='h1'
-                  text='HJ Testimonies'
-                  highlightedText='HJ Testimonies'
-                  uppercase={true}
-                  className='text-3xl md:text-5xl font-extrabold leading-tight tracking-wide text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.7)]'
-                  gradientClassName='bg-gradient-to-r from-emerald-400 via-green-300 to-purple-400 bg-clip-text text-transparent [text-shadow:0_0_20px_rgba(34,197,94,0.6)]'
-                />
+                Testimonies • Personal Stories & Faith
+              </p>
+
+              {/* Title */}
+              <div className='space-y-3 text-left'>
+                <div className='flex items-center gap-3 md:gap-4'>
+                  <Image
+                    src='/hj-testimonies-logo.jpg' // use a square source if possible
+                    alt='HJ Testimonies logo'
+                    width={56}
+                    height={56}
+                    priority
+                    className='rounded-full bg-white/90 p-1 ring-1 ring-white/40 shadow-md'
+                  />
+                  <HighlightTitle
+                    as='h1'
+                    text='HJ Testimonies'
+                    highlightedText='HJ Testimonies'
+                    uppercase={true}
+                    className='text-3xl md:text-5xl font-extrabold leading-tight tracking-wide text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.7)]'
+                    gradientClassName='bg-gradient-to-r from-emerald-400 via-green-300 to-purple-400 bg-clip-text text-transparent [text-shadow:0_0_20px_rgba(34,197,94,0.6)]'
+                  />
+                </div>
+
+                <p className='text-base md:text-lg text-white/95 max-w-3xl leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]'>
+                  Hear powerful personal stories of faith, transformation, and
+                  divine love. These heartfelt testimonies share experiences of
+                  finding purpose, building ideal families, and living lives
+                  centered on Heavenly Parent&apos;s love.
+                </p>
               </div>
 
-              <p className='text-base md:text-lg text-white/95 max-w-3xl leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]'>
-                Hear powerful personal stories of faith, transformation, and
-                divine love. These heartfelt testimonies share experiences of
-                finding purpose, building ideal families, and living lives
-                centered on Heavenly Parent&apos;s love.
-              </p>
-            </div>
-
-            {/* CTA */}
-            <div className='flex flex-col items-start justify-start gap-3 sm:flex-row sm:gap-4'>
-              <Button
-                asChild
-                className='bg-gradient-to-r from-emerald-500 via-green-500 to-teal-400 ring-1 ring-white/10 shadow-[0_8px_30px_rgba(34,197,94,0.35)] text-base sm:text-base px-6 hover:shadow-[0_8px_30px_rgba(34,197,94,0.45)] transition-all duration-300'
-              >
-                <a
-                  href='#testimonies'
-                  onClick={(e) => {
-                    e.preventDefault()
-                    document
-                      .getElementById('testimonies')
-                      ?.scrollIntoView({ behavior: 'smooth' })
-                  }}
+              {/* CTA */}
+              <div className='flex flex-col items-start justify-start gap-3 sm:flex-row sm:gap-4'>
+                <Button
+                  asChild
+                  className='bg-gradient-to-r from-emerald-500 via-green-500 to-teal-400 ring-1 ring-white/10 shadow-[0_8px_30px_rgba(34,197,94,0.35)] text-base sm:text-base px-6 hover:shadow-[0_8px_30px_rgba(34,197,94,0.45)] transition-all duration-300'
                 >
-                  <span className='inline-flex items-center gap-2'>
-                    <Play className='w-5 h-5' />
-                    Watch Testimonies
-                  </span>
-                </a>
-              </Button>
+                  <a
+                    href='#testimonies'
+                    onClick={(e) => {
+                      e.preventDefault()
+                      document
+                        .getElementById('testimonies')
+                        ?.scrollIntoView({ behavior: 'smooth' })
+                    }}
+                  >
+                    <span className='inline-flex items-center gap-2'>
+                      <Play className='w-5 h-5' />
+                      Watch Testimonies
+                    </span>
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
+        </section>
+
+        {/* Testimony Rows */}
+        <div id='testimonies' className='py-16 bg-gray-50'>
+          <div className='container mx-auto'>
+            {couplesTestimonies.length > 0 && (
+              <TestimonyRow
+                title='Couples & Marriage'
+                testimonies={couplesTestimonies}
+                onTestimonySelect={openTestimonyModal}
+              />
+            )}
+
+            {familyTestimonies.length > 0 && (
+              <TestimonyRow
+                title='Family Stories'
+                testimonies={familyTestimonies}
+                onTestimonySelect={openTestimonyModal}
+              />
+            )}
+
+            {parentingTestimonies.length > 0 && (
+              <TestimonyRow
+                title='Parenting & Guidance'
+                testimonies={parentingTestimonies}
+                onTestimonySelect={openTestimonyModal}
+              />
+            )}
+
+            {personalTestimonies.length > 0 && (
+              <TestimonyRow
+                title='Personal Journeys'
+                testimonies={personalTestimonies}
+                onTestimonySelect={openTestimonyModal}
+              />
+            )}
+          </div>
         </div>
-      </section>
 
-      {/* Testimony Rows */}
-      <div id='testimonies' className='py-16 bg-gray-50'>
-        <div className='container mx-auto'>
-          {couplesTestimonies.length > 0 && (
-            <TestimonyRow
-              title='Couples & Marriage'
-              testimonies={couplesTestimonies}
-              onTestimonySelect={openTestimonyModal}
-            />
-          )}
-
-          {familyTestimonies.length > 0 && (
-            <TestimonyRow
-              title='Family Stories'
-              testimonies={familyTestimonies}
-              onTestimonySelect={openTestimonyModal}
-            />
-          )}
-
-          {parentingTestimonies.length > 0 && (
-            <TestimonyRow
-              title='Parenting & Guidance'
-              testimonies={parentingTestimonies}
-              onTestimonySelect={openTestimonyModal}
-            />
-          )}
-
-          {personalTestimonies.length > 0 && (
-            <TestimonyRow
-              title='Personal Journeys'
-              testimonies={personalTestimonies}
-              onTestimonySelect={openTestimonyModal}
-            />
-          )}
-        </div>
+        <TestimonyModal
+          testimony={selectedTestimony}
+          isOpen={isModalOpen}
+          onClose={closeTestimonyModal}
+        />
       </div>
-
-      <TestimonyModal
-        testimony={selectedTestimony}
-        isOpen={isModalOpen}
-        onClose={closeTestimonyModal}
-      />
-    </div>
+    </>
   )
 }
