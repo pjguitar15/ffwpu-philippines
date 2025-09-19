@@ -183,6 +183,7 @@ export default function WordOfTheDayModal() {
                 height={96}
                 className='w-30 sm:w-40 h-auto absolute bottom-0 right-0 z-10 pointer-events-none opacity-90'
                 priority={false}
+                loading='lazy'
               />
 
               {/* content */}

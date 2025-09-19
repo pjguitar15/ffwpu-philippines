@@ -365,10 +365,10 @@ export default function ContactPage() {
 
             {/* Sunday Service — encouraging CTA */}
             <Card className='mt-10 overflow-hidden p-0 ring-1 ring-slate-200/60'>
-              <div className='grid md:grid-cols-2'>
+              <div className='flex flex-col md:grid md:grid-cols-2'>
                 {/* Left: light blue gradient panel */}
-                <div className='relative p-8 md:p-10 bg-gradient-to-br from-sky-50 via-blue-50 to-white'>
-                  <h3 className='text-2xl font-semibold tracking-tight text-slate-900'>
+                <div className='relative p-6 sm:p-8 md:p-10 bg-gradient-to-br from-sky-50 via-blue-50 to-white'>
+                  <h3 className='text-xl sm:text-2xl font-semibold tracking-tight text-slate-900'>
                     Sunday Service
                   </h3>
 
@@ -383,33 +383,32 @@ export default function ContactPage() {
                     </span>
                   </div>
 
-                  <p className='mt-4 text-slate-700'>
-                    Quezon City Headquarters
-                    <br />
-                    32 Samar Avenue, Diliman, Quezon City
-                  </p>
+                  <div className='mt-4'>
+                    <p className='font-semibold text-slate-900'>
+                      Quezon City Headquarters
+                    </p>
+                    <p className='text-slate-700 text-sm'>
+                      32 Samar Avenue, Diliman, Quezon City
+                    </p>
+                  </div>
 
-                  <p className='mt-2 text-slate-600 max-w-xl'>
+                  <p className='mt-4 text-slate-600 text-sm sm:text-base leading-relaxed'>
                     Come as you are—experience uplifting worship, a warm
                     welcome, and fellowship with our community family.
                   </p>
 
-                  <div className='mt-6 flex w-full md:w-auto gap-3'>
-                    <Link
-                      href={mapsLink}
-                      target='_blank'
-                      className='w-full md:w-auto'
-                    >
-                      <Button className='w-full md:w-auto rounded-xl bg-slate-900 text-white hover:bg-slate-800'>
+                  <div className='mt-6 flex flex-col sm:flex-row gap-3'>
+                    <Link href={mapsLink} target='_blank' className='flex-1'>
+                      <Button className='w-full rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-sm'>
                         Open in Google Maps
                       </Button>
                     </Link>
                     <Link
                       href={`${mapsLink}&dirflg=d`}
                       target='_blank'
-                      className='w-full md:w-auto'
+                      className='flex-1'
                     >
-                      <Button className='w-full md:w-auto rounded-xl bg-gradient-to-r from-indigo-700 via-blue-700 to-sky-600 hover:from-indigo-600 hover:to-sky-500'>
+                      <Button className='w-full rounded-xl bg-gradient-to-r from-indigo-700 via-blue-700 to-sky-600 hover:from-indigo-600 hover:to-sky-500 text-sm'>
                         Get Directions
                       </Button>
                     </Link>
@@ -417,7 +416,7 @@ export default function ContactPage() {
                 </div>
 
                 {/* Right: bright photo (no dark overlay) */}
-                <div className='relative h-64 md:h-auto min-h-[280px] md:border-l md:border-slate-200/60'>
+                <div className='relative h-48 sm:h-64 md:h-auto min-h-[200px] md:min-h-[280px] md:border-l md:border-slate-200/60'>
                   <Image
                     src={serviceImg}
                     alt='FFWPU Philippines Sunday Service at Metro Manila Family Church'
