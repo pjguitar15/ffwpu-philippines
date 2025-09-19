@@ -174,16 +174,23 @@ export default function WordOfTheDayModal() {
             {/* subtle gradient header bar */}
             <div className='absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-400 via-indigo-500 to-fuchsia-500 opacity-80' />
 
-            <div className='relative border border-red-500'>
+            <div className='relative'>
               {/* Absolute image in bottom right */}
               <Image
                 src='/tp-laughing.png'
                 alt='True Parents laughing'
                 width={96}
                 height={96}
-                className='w-30 sm:w-40 h-auto absolute bottom-0 right-0 z-10 pointer-events-none opacity-90'
+                className='w-30 sm:w-40 h-auto absolute bottom-0 right-0 z-10 pointer-events-none opacity-90 transition-opacity duration-500 ease-in-out'
                 priority={false}
                 loading='lazy'
+                placeholder='blur'
+                blurDataURL='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAQklEQVQIHWPY8+cPAzYwirkzMHCBmAw4wZs3b/7//w8C/xkYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGPg3NRMJAAAAP0lEQVR4nGP4//8/AzYwirkzMHCBmAw4wZs3b/7//w8C/xkYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGPg3NRMJ'
+                onLoad={(e) => {
+                  const img = e.target as HTMLImageElement
+                  img.style.opacity = '0.9'
+                }}
+                style={{ opacity: 0 }}
               />
 
               {/* content */}
