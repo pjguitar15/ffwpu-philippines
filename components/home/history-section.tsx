@@ -73,10 +73,20 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 export function HistorySection() {
-  const [historyImages] = useState(() => shuffleArray(allHistoryImages))
+  const [historyImages, setHistoryImages] = useState(allHistoryImages)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isClient, setIsClient] = useState(false)
+
+  // Handle client-side hydration
+  useEffect(() => {
+    setIsClient(true)
+    // Only shuffle on the client side after hydration
+    setHistoryImages(shuffleArray(allHistoryImages))
+  }, [])
 
   useEffect(() => {
+    if (!isClient) return // Don't start interval until client-side
+    
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => 
         (prevIndex + 1) % historyImages.length
@@ -84,7 +94,7 @@ export function HistorySection() {
     }, 3000) // Change every 3 seconds for better viewing experience
 
     return () => clearInterval(interval)
-  }, [])
+  }, [isClient, historyImages.length])
 
   return (
     <section className='relative overflow-hidden bg-slate-950 text-slate-100 py-24'>
