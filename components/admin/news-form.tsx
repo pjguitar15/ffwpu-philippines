@@ -455,7 +455,7 @@ export function NewsForm({
                     <FileText className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
                     Content
                   </label>
-                  <div className='mt-1 rounded-md dark:border-slate-800 bg-white dark:bg-slate-950'>
+                  <div className='mt-1 rounded-md border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950'>
                     <RichTextEditor
                       value={values.content}
                       onChange={(html) =>

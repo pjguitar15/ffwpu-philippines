@@ -202,7 +202,7 @@ export default function NewsDetailClient() {
     return (
       <div className='min-h-screen flex flex-col bg-background'>
         <main className='flex-1'>
-          <div className='container mx-auto py-8 md:py-10 px-4 md:px-6 mb-12'>
+          <div className='container mx-auto py-10 px-4 md:px-6 mb-12'>
             {/* Breadcrumb skeleton */}
             <div className='mb-4 flex items-center gap-2'>
               <SkeletonBlock className='h-8 w-20 rounded-full' />
@@ -266,8 +266,7 @@ export default function NewsDetailClient() {
               Something's wrong to the page
             </h2>
             <p className='mt-2 text-slate-600 dark:text-slate-300'>
-              We couldn’t load this news article. It might be unavailable or
-              there was a connection hiccup.
+              We couldn’t load this news article. It might be unavailable or there was a connection hiccup.
             </p>
             <div className='mt-6 flex items-center justify-center gap-3'>
               <Button variant='default' onClick={() => router.refresh()}>
@@ -289,7 +288,7 @@ export default function NewsDetailClient() {
   return (
     <div className='min-h-screen flex flex-col bg-background'>
       <main className='flex-1'>
-        <div className='container mx-auto py-4 md:py-10 px-4 md:px-6 mb-12'>
+        <div className='container mx-auto py-10 px-4 md:px-6 mb-12'>
           {/* Breadcrumbs */}
           <FadeIn>
             <nav
