@@ -475,8 +475,7 @@ export const TIMELINE: TimelineItem[] = [
     year: '2021.02.06',
     title: 'One Million Rally of Hope Philippines',
     icon: 'users',
-    content: `250 people joined the 2-way interactive, more than 1.3M people registered
- and more than 1M people watch the event`,
+    content: `Featuring: Messages of Hope and Peace from Distinguished Leaders. Messages of Hope from Famous Celebrities. Exciting Performances from Famous Artists.`,
     imageUrl: '/history-images/2021-rally-of-hope.jpg',
   },
   {
@@ -484,7 +483,7 @@ export const TIMELINE: TimelineItem[] = [
     year: '2021.02.06',
     title: 'Regional Youth Forum',
     icon: 'users',
-    content: `A great educational program in partnership with the Gov’t. (National Youth Commission) to educate our Youth Leaders nationwide against the deceptive communist recruitment`,
+    content: `A total of 25,084 participants registered and a total of 6,677 completed the 2-day education throughout the 17 Regions Nationwide.`,
     imageUrl: '/history-images/2021-regional-youth-forum.jpg',
   },
 ]
