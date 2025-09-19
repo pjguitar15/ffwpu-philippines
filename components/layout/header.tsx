@@ -35,76 +35,6 @@ import {
 import { HeaderSearch } from './header-search'
 import { LiveIndicator } from '@/components/ui/live-indicator'
 
-// --- DrawerMenuItem component for mobile nested dropdowns ---
-function DrawerMenuItem({
-  item,
-  onChoose,
-  depth = 0,
-}: {
-  item: DropdownNavItem | MainNavItem
-  onChoose: () => void
-  depth?: number
-}) {
-  const pathname = usePathname()
-  const active = pathname === item.href
-  const Icon = item.icon ? item.icon : FiInfo
-  const [open, setOpen] = useState(false)
-
-  if (item.dropdown && item.dropdown.length > 0) {
-    return (
-      <div className='w-full'>
-        <div
-          className={cn(
-            'flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-100 transition-all duration-150',
-            depth > 0 && 'pl-10',
-            active && 'bg-blue-100',
-          )}
-          onClick={() => setOpen(!open)}
-        >
-          <div className='flex items-center gap-3'>
-            <Icon className='h-5 w-5 text-gray-600 shrink-0' />
-            <span className='text-sm font-semibold'>{item.label}</span>
-          </div>
-          <FiChevronDown
-            className={cn(
-              'h-4 w-4 transition-transform duration-200',
-              open && 'rotate-180',
-            )}
-          />
-        </div>
-        {open && (
-          <div className='bg-gray-50'>
-            {item.dropdown.map((sub: DropdownNavItem) => (
-              <DrawerMenuItem
-                key={sub.href}
-                item={sub}
-                onChoose={onChoose}
-                depth={depth + 1}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    )
-  }
-
-  // Regular link item
-  return (
-    <Link
-      href={item.href}
-      onClick={onChoose}
-      className={cn(
-        'flex items-center gap-3 px-6 py-4 hover:bg-gray-100 transition-all duration-150',
-        depth > 0 && 'pl-10 bg-gray-50',
-        active && 'bg-blue-100 font-bold',
-      )}
-    >
-      <Icon className='h-5 w-5 text-gray-600 shrink-0' />
-      <span className='text-sm font-semibold'>{item.label}</span>
-    </Link>
-  )
-}
-
 // --- DropdownMenuItem component for nested dropdowns ---
 function DropdownMenuItem({
   item,
@@ -302,7 +232,7 @@ function DrawerList({
   items,
   onChoose,
 }: {
-  items: readonly (NavItem | DropdownNavItem)[]
+  items: readonly NavItem[]
   onChoose: () => void
 }) {
   const pathname = usePathname()
@@ -310,16 +240,6 @@ function DrawerList({
   return (
     <nav className='px-5 space-y-1'>
       {items.map((item) => {
-        // If item has dropdown, use DrawerMenuItem for nested handling
-        if (item.dropdown && item.dropdown.length > 0) {
-          return (
-            <div key={item.href} className='rounded-xl overflow-hidden bg-white border border-gray-200'>
-              <DrawerMenuItem item={item} onChoose={onChoose} />
-            </div>
-          )
-        }
-
-        // Regular item rendering
         const Icon = item.icon ? item.icon : FiInfo
         const active = isActive(item.href)
         return (
@@ -346,6 +266,11 @@ function DrawerList({
               >
                 {item.label}
               </div>
+              {item.desc && (
+                <div className='mt-1 text-xs text-foreground/70'>
+                  {item.desc}
+                </div>
+              )}
             </div>
           </Link>
         )
@@ -718,10 +643,74 @@ export function Header() {
 
               {/* PRIMARY (mobile) */}
               <div className='md:hidden space-y-1 pt-3'>
-                {/* All main navigation items with their nested dropdowns */}
+                {/* Home link */}
                 <DrawerList
-                  items={mainNavItems}
+                  items={mainNavItems.filter((item) => item.label === 'Home')}
                   onChoose={() => setIsOpen(false)}
+                />
+                {/* About dropdown */}
+                <DrawerGroup
+                  label='About'
+                  parent={mainNavItems.find((item) => item.label === 'About')}
+                  childrenItems={(
+                    mainNavItems.find((item) => item.label === 'About')
+                      ?.dropdown || []
+                  ).map((sub) => ({
+                    ...sub,
+                    desc: '',
+                    icon: sub.icon || FiInfo,
+                  }))}
+                  onChoose={() => setIsOpen(false)}
+                  icon={FiInfo}
+                />
+                {/* News link */}
+                <DrawerList
+                  items={mainNavItems.filter((item) => item.label === 'News')}
+                  onChoose={() => setIsOpen(false)}
+                />
+                {/* Messages dropdown */}
+                <DrawerGroup
+                  label='Messages'
+                  parent={mainNavItems.find(
+                    (item) => item.label === 'Messages',
+                  )}
+                  childrenItems={(
+                    mainNavItems.find((item) => item.label === 'Messages')
+                      ?.dropdown || []
+                  ).map((sub) => ({
+                    ...sub,
+                    desc: '',
+                    icon: sub.icon || FiInfo,
+                  }))}
+                  onChoose={() => setIsOpen(false)}
+                  icon={FiUsers}
+                />
+                {/* Contact link only in burger menu */}
+                <DrawerList
+                  items={[
+                    {
+                      href: '/contact',
+                      label: 'Contact',
+                      desc: 'Reach out to our team',
+                      icon: FiPhone,
+                    },
+                  ]}
+                  onChoose={() => setIsOpen(false)}
+                />
+                {/* Media dropdown */}
+                <DrawerGroup
+                  label='Media'
+                  parent={mainNavItems.find((item) => item.label === 'Media')}
+                  childrenItems={(
+                    mainNavItems.find((item) => item.label === 'Media')
+                      ?.dropdown || []
+                  ).map((sub) => ({
+                    ...sub,
+                    desc: '',
+                    icon: sub.icon || FiVideo,
+                  }))}
+                  onChoose={() => setIsOpen(false)}
+                  icon={FiVideo}
                 />
               </div>
 
