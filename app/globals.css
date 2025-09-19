@@ -338,4 +338,13 @@
   .scrollbar-hidden::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
   }
+
+  /* 3D Perspective utilities for event modal card flip */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
 }

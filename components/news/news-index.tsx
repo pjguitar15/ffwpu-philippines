@@ -74,22 +74,21 @@ export function NewsIndex({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q])
 
-  // Available tags with view counts, sorted by views
+  // Available tags sorted by frequency (most used first)
   const allTags = useMemo(() => {
-    // Calculate total views for each tag
-    const tagViews = new Map<string, number>()
+    // Calculate frequency (count) for each tag
+    const tagCounts = new Map<string, number>()
 
     items.forEach((item) => {
       if (item.status === 'published' || !item.status) {
-        const views = item.views || 0
         item.tags?.forEach((tag) => {
-          tagViews.set(tag, (tagViews.get(tag) || 0) + views)
+          tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1)
         })
       }
     })
 
-    // Sort tags by total views (descending)
-    const sortedTags = Array.from(tagViews.entries())
+    // Sort tags by frequency (descending) - most used first
+    const sortedTags = Array.from(tagCounts.entries())
       .sort(([, a], [, b]) => b - a)
       .map(([tag]) => tag)
 
