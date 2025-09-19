@@ -4,33 +4,24 @@ import { motion, type Variants, type Easing, type Transition } from 'framer-moti
 import Image from 'next/image'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { LEADERS, getInitials, Leader } from '@/constants/history.constants'
-import { useState, useEffect } from 'react'
 
 const easeOut: Easing = [0.16, 1, 0.3, 1]
 const container: Variants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
+  show: { transition: { staggerChildren: 0.35, delayChildren: 0.25 } },
 }
 const item: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: easeOut } satisfies Transition,
+    transition: { duration: 1.0, ease: easeOut } satisfies Transition,
   },
 }
 
 export function NationalLeadersGrid() {
-  const [isVisible, setIsVisible] = useState(false)
-
-  // Fallback to show content after a delay if animation doesn't trigger
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 1000)
-    return () => clearTimeout(timer)
-  }, [])
-
   return (
-    <section className='relative max-w-6xl mx-auto py-8'>
+    <section className='relative max-w-6xl mx-auto'>
       <div
         aria-hidden
         className='pointer-events-none absolute -inset-x-10 -top-10 -bottom-16 -z-10 opacity-70'
@@ -43,7 +34,7 @@ export function NationalLeadersGrid() {
         <p className='text-amber-300/80 text-sm tracking-wider uppercase'>
           Leadership
         </p>
-        <h2 className='font-heading text-3xl md:text-4xl font-bold text-slate-100'>
+        <h2 className='font-heading text-3xl md:text-4xl font-bold'>
           National Leaders
         </h2>
         <p className='text-slate-400 mt-1'>
@@ -52,14 +43,11 @@ export function NationalLeadersGrid() {
         </p>
       </div>
       <motion.div
-        className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${
-          isVisible ? 'opacity-100' : ''
-        }`}
+        className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
         variants={container}
         initial='hidden'
         whileInView='show'
-        viewport={{ once: true, amount: 0.1, margin: '100px' }}
-        onAnimationComplete={() => setIsVisible(true)}
+        viewport={{ once: true, amount: 0.2 }}
       >
         {LEADERS.map((leader: Leader) => (
           <motion.div key={leader.id} variants={item}>
