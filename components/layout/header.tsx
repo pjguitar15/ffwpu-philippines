@@ -340,7 +340,7 @@ function DrawerList({
             <div className='flex-1'>
               <div
                 className={cn(
-                  'text-md font-semibold leading-none',
+                  'text-sm font-semibold leading-none',
                   active && 'text-foreground',
                 )}
               >
@@ -402,7 +402,7 @@ function DrawerGroup({
         >
           {Icon ? <Icon className='mt-0.5 h-5 w-5 text-foreground/80' /> : null}
           <div className='flex-1'>
-            <div className='text-md font-semibold leading-none'>{label}</div>
+            <div className='text-sm font-semibold leading-none'>{label}</div>
             {parent?.desc && (
               <div className='mt-1 text-xs text-foreground/70'>
                 {parent.desc}
