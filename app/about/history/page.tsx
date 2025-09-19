@@ -74,7 +74,9 @@ export default function HistoryPage() {
           <TimelineWithState timeline={TIMELINE_WITH_LEADERS} />
 
           {/* National Leaders Grid */}
-          <NationalLeadersGrid />
+          <div className='mt-16 mb-8'>
+            <NationalLeadersGrid />
+          </div>
         </div>
       </main>
     </div>
