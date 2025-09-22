@@ -24,6 +24,9 @@ import {
 } from 'react-icons/fi'
 import { HeaderSearch } from './header-search'
 import { LiveIndicator } from '@/components/ui/live-indicator'
+import { DesktopNavigation } from './desktop-navigation'
+import { IconButtons } from './icon-buttons'
+import { AuthDropdown } from './auth-dropdown'
 
 function DrawerMenuItem({
   item,
@@ -90,100 +93,6 @@ function DrawerMenuItem({
     >
       <Icon className='h-5 w-5 text-gray-600 shrink-0' />
       <span className='text-sm font-semibold'>{item.label}</span>
-    </Link>
-  )
-}
-
-// --- DropdownMenuItem component for nested dropdowns ---
-function DropdownMenuItem({
-  item,
-  parentIsDropdown = false,
-}: {
-  item: DropdownNavItem | MainNavItem
-  parentIsDropdown?: boolean
-}) {
-  const pathname = usePathname()
-  const active = pathname === item.href
-  const Icon = item.icon ? item.icon : FiInfo
-  const [open, setOpen] = useState(false)
-  const itemRef = useRef(null)
-
-  // Show submenu on hover or focus
-  const showSubmenu = () => setOpen(true)
-  const hideSubmenu = () => setOpen(false)
-
-  if (item.dropdown && item.dropdown.length > 0) {
-    return (
-      <div
-        className={cn('relative group', parentIsDropdown ? 'w-full' : '')}
-        onMouseEnter={showSubmenu}
-        onMouseLeave={hideSubmenu}
-        onFocus={showSubmenu}
-        onBlur={hideSubmenu}
-        ref={itemRef}
-      >
-        <button
-          className={cn(
-            'flex items-center gap-3 px-6 py-4 text-sm transition-all duration-150 font-semibold w-full cursor-pointer',
-            active
-              ? 'bg-gray-100 text-slate-900 font-bold'
-              : 'text-slate-700 hover:bg-gray-100',
-            'justify-between',
-          )}
-          type='button'
-          aria-haspopup='menu'
-          aria-expanded={open}
-          tabIndex={0}
-        >
-          <span className='flex items-center gap-3'>
-            <Icon className='h-5 w-5 text-gray-600 shrink-0' />
-            <span className='flex-1'>{item.label}</span>
-          </span>
-          {/* Right arrow for nested dropdown */}
-          <FiChevronDown
-            className={cn(
-              'ml-2 h-3 w-3 transition-transform',
-              open && 'rotate-180',
-              'transform',
-              parentIsDropdown && 'rotate-[-90deg]',
-            )}
-          />
-        </button>
-        {/* Nested dropdown menu */}
-        <div
-          className={cn(
-            'absolute z-50 min-w-[220px] bg-white shadow-2xl opacity-0 pointer-events-none transition-all duration-200 flex flex-col',
-            open && 'opacity-100 pointer-events-auto',
-            parentIsDropdown ? 'right-full top-0 mr-0' : 'left-0 top-full',
-          )}
-        >
-          {item.dropdown.map((sub: DropdownNavItem) => (
-            <DropdownMenuItem
-              key={sub.href}
-              item={sub}
-              parentIsDropdown={true}
-            />
-          ))}
-        </div>
-      </div>
-    )
-  }
-  // Otherwise, render a normal link
-  return (
-    <Link
-      href={item.href}
-      className={cn(
-        'flex items-center gap-3 px-5 py-4 text-sm transition-all duration-150 font-semibold',
-        active
-          ? 'bg-gray-100 text-slate-900 font-bold'
-          : 'text-slate-700 hover:bg-gray-100',
-        'w-full cursor-pointer',
-        // Ensure submenu items don't inherit parent hover states
-        parentIsDropdown && 'bg-white hover:bg-gray-100',
-      )}
-    >
-      <Icon className='h-5 w-5 text-gray-600 shrink-0' />
-      <span className='flex-1'>{item.label}</span>
     </Link>
   )
 }
@@ -530,140 +439,12 @@ export function Header() {
             </div>
 
             <div className='ml-auto flex items-center gap-2 sm:gap-3 min-w-0'>
-              <nav className='hidden md:flex items-center gap-2'>
-                {/* Home link - full text on lg+ screens */}
-                <Link
-                  href='/'
-                  className={cn(
-                    'hidden lg:flex text-sm font-medium rounded-full px-3 py-2 items-center gap-2 text-slate-700 transition-all duration-150',
-                    'hover:-translate-y-0.5 hover:text-slate-800',
-                    isActive('/') ? 'font-bold text-slate-900' : '',
-                  )}
-                >
-                  Home
-                </Link>
+              <DesktopNavigation
+                mainNavItems={mainNavItems}
+                isActive={isActive}
+              />
 
-                {mainNavItems
-                  .filter(
-                    (item) =>
-                      item.label !== 'Contact' &&
-                      item.label !== 'News' &&
-                      item.label !== 'Home',
-                  ) // Exclude Contact, News, and Home from main nav
-                  .map((item) =>
-                    item.dropdown ? (
-                      <div className='relative group' key={item.href}>
-                        <button
-                          className={cn(
-                            'text-sm font-medium rounded-full px-3 py-2 flex items-center gap-2 text-slate-700 transition-all duration-150 cursor-pointer',
-                            'hover:-translate-y-0.5 hover:text-slate-800',
-                            isActive(item.href)
-                              ? 'font-bold text-slate-900'
-                              : '',
-                          )}
-                          type='button'
-                          aria-haspopup='menu'
-                          aria-expanded='false'
-                          tabIndex={0}
-                        >
-                          {item.label}
-                          <FiChevronDown className='ml-1 h-3 w-3' />
-                        </button>
-                        {/* Dropdown menu, visible instantly on hover */}
-                        <div className='absolute left-0 top-full z-50 min-w-[240px] bg-white shadow-2xl opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 flex flex-col gap-0'>
-                          {item.dropdown.map((sub) => (
-                            <DropdownMenuItem
-                              key={sub.href}
-                              item={sub}
-                              parentIsDropdown
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn(
-                          'text-sm font-medium rounded-full px-3 py-2 flex items-center gap-2 text-slate-700 transition-all duration-150',
-                          'hover:-translate-y-0.5 hover:text-slate-800',
-                          isActive(item.href) ? 'font-bold text-slate-900' : '',
-                        )}
-                      >
-                        {item.label}
-                      </Link>
-                    ),
-                  )}
-
-                {/* News link - full text on lg+ screens */}
-                <Link
-                  href='/news'
-                  className={cn(
-                    'hidden lg:flex text-sm font-medium rounded-full px-3 py-2 items-center gap-2 text-slate-700 transition-all duration-150',
-                    'hover:-translate-y-0.5 hover:text-slate-800',
-                    isActive('/news') ? 'font-bold text-slate-900' : '',
-                  )}
-                >
-                  News
-                </Link>
-
-                {/* Contact link - full text on lg+ screens */}
-                <Link
-                  href='/contact'
-                  className={cn(
-                    'hidden lg:flex text-sm font-medium rounded-full px-3 py-2 items-center gap-2 text-slate-700 transition-all duration-150',
-                    'hover:-translate-y-0.5 hover:text-slate-800',
-                    isActive('/contact') ? 'font-bold text-slate-900' : '',
-                  )}
-                >
-                  Contact
-                </Link>
-              </nav>
-
-              {/* Home icon button - ONLY on md screens */}
-              <Link
-                href='/'
-                aria-label='Home'
-                className={cn(
-                  'hidden md:flex lg:hidden h-10 w-10 items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full cursor-pointer shrink-0 transition-all duration-150',
-                  'hover:-translate-y-0.5',
-                  isActive('/')
-                    ? 'bg-gray-200 text-slate-900'
-                    : 'text-slate-700',
-                )}
-              >
-                <FiHome className='h-4 w-4' strokeWidth={2.5} />
-              </Link>
-
-              {/* News icon button - ONLY on md screens */}
-              <Link
-                href='/news'
-                aria-label='News'
-                className={cn(
-                  'hidden md:flex lg:hidden h-10 w-10 items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full cursor-pointer shrink-0 transition-all duration-150',
-                  'hover:-translate-y-0.5',
-                  isActive('/news')
-                    ? 'bg-gray-200 text-slate-900'
-                    : 'text-slate-700',
-                )}
-              >
-                <FiFileText className='h-4 w-4' strokeWidth={2.5} />
-              </Link>
-
-              {/* Contact icon button - ONLY on md screens */}
-              <Link
-                href='/contact'
-                aria-label='Contact us'
-                className={cn(
-                  'hidden md:flex lg:hidden h-10 w-10 items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full cursor-pointer shrink-0 transition-all duration-150',
-                  'hover:-translate-y-0.5',
-                  isActive('/contact')
-                    ? 'bg-gray-200 text-slate-900'
-                    : 'text-slate-700',
-                )}
-              >
-                <FiPhone className='h-4 w-4' strokeWidth={2.5} />
-              </Link>
+              <IconButtons isActive={isActive} />
 
               <button
                 type='button'
@@ -736,6 +517,13 @@ export function Header() {
                   items={mainNavItems}
                   onChoose={() => setIsOpen(false)}
                 />
+                
+                {/* Mobile Auth Dropdown */}
+                <div className="px-5">
+                  <div className="rounded-xl overflow-hidden bg-white border border-gray-200">
+                    <AuthDropdown variant="mobile" onNavigate={() => setIsOpen(false)} />
+                  </div>
+                </div>
               </div>
 
               {/* SECONDARY (drawer on md+) */}

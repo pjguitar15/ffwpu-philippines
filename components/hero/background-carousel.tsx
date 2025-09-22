@@ -84,6 +84,7 @@ export function BackgroundCarousel({
             priority={i === 0}
             className={[
               'object-cover will-change-transform',
+              dim ? 'brightness-[1]' : '',
               active ? 'animate-zoomout' : '',
             ].join(' ')}
             style={active ? undefined : { transform: 'scale(1)' }}
@@ -92,7 +93,7 @@ export function BackgroundCarousel({
       ))}
 
       {/* Gentle readability overlays */}
-      <div className='absolute inset-0 bg-gradient-to-b from-black/35 via-black/20 to-black/45' />
+      {/* <div className='absolute inset-0 bg-gradient-to-b from-black/35 via-black/20 to-black/45' /> */}
       <div className='absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/30 to-transparent' />
       <style jsx global>{`
         @keyframes zoomout {
