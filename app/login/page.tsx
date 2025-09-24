@@ -1,200 +1,259 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { cn } from '@/lib/utils'
-import { FiEye, FiEyeOff, FiMail, FiLock, FiArrowRight, FiUser } from 'react-icons/fi'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import {
+  FiMail,
+  FiLock,
+  FiEye,
+  FiEyeOff,
+  FiUser,
+  FiShield,
+  FiLoader,
+} from 'react-icons/fi'
 
-export default function LoginPage() {
+export default function MemberLoginPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    rememberMe: false
-  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [checking, setChecking] = useState(true)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const nextPath = searchParams.get('next') || '/profile'
+  const message = searchParams.get('message')
+
+  // Check if already authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/member/me', {
+          cache: 'no-store',
+        })
+        if (res.ok) {
+          router.replace(nextPath)
+          return
+        }
+      } catch (error) {
+        // Not authenticated, continue with login
+      } finally {
+        setChecking(false)
+      }
+    }
+
+    checkAuth()
+  }, [router, nextPath])
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (loading) return
 
-    // Hardcoded credentials for testing
-    if (
-      formData.email === 'test@test.com' &&
-      formData.password === 'Test@123'
-    ) {
-      // Store login state (in real app, use proper auth)
-      localStorage.setItem('isLoggedIn', 'true')
-      localStorage.setItem('userEmail', formData.email)
+    setError('')
 
-      // Redirect to profile page
-      window.location.href = '/profile'
-    } else {
-      alert('Invalid credentials. Use test@test.com / Test@123')
+    const trimmedEmail = email.trim().toLowerCase()
+    if (!trimmedEmail || !password) {
+      setError('Please enter both email and password')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const res = await fetch('/api/auth/member/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          password,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        // Successful login
+        router.push(nextPath)
+      } else {
+        setError(data.error || 'Login failed')
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+      setError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }))
+  if (checking) {
+    return (
+      <div className='min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center'>
+        <div className='flex items-center gap-2 text-blue-600'>
+          <FiLoader className='h-5 w-5 animate-spin' />
+          <span>Checking authentication...</span>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full">
+    <div className='min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4'>
+      <div className='w-full max-w-md'>
         {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-6">
+        <div className='text-center mb-8'>
+          <Link href='/' className='inline-flex items-center gap-3 mb-6'>
             <Image
-              src="/ffwpu-ph-logo.webp"
-              alt="FFWPU Philippines Logo"
-              width={120}
-              height={120}
-              className="h-16 w-auto mx-auto"
+              src='/ffwpu-ph-logo.webp'
+              alt='FFWPU Philippines'
+              width={64}
+              height={64}
+              className='rounded-full shadow-lg'
             />
+            <div className='text-left'>
+              <h1 className='text-2xl font-bold text-gray-900'>
+                FFWPU Philippines
+              </h1>
+              <p className='text-sm text-gray-600'>Member Portal</p>
+            </div>
           </Link>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h2>
-          <p className="text-gray-600">Sign in to your account to continue</p>
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiMail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 leading-5 bg-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                  placeholder="Enter your email"
-                />
-              </div>
+        <Card className='shadow-2xl border-0 bg-white/80 backdrop-blur-sm'>
+          <CardHeader className='space-y-1 pb-6'>
+            <div className='flex items-center gap-2 justify-center mb-2'>
+              <FiUser className='h-5 w-5 text-blue-600' />
+              <CardTitle className='text-2xl font-bold text-center text-gray-900'>
+                Member Sign In
+              </CardTitle>
             </div>
+            {searchParams.get('next') ? (
+              <p className='flex items-center gap-2 text-sm text-gray-600 text-center'>
+                <FiShield className='h-4 w-4' />
+                Please sign in to access your member profile
+              </p>
+            ) : (
+              <p className='text-sm text-gray-600 text-center'>
+                Access your member profile and church community
+              </p>
+            )}
+          </CardHeader>
 
-            {/* Password Field */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiLock className="h-5 w-5 text-gray-400" />
+          <CardContent className='px-8 pb-8'>
+            {/* Success message from registration */}
+            {message === 'registration-success' && (
+              <Alert className='border-green-200 bg-green-50 text-green-800 mb-6'>
+                <AlertDescription>
+                  🎉 Account created successfully! Please sign in with your
+                  credentials.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            <form onSubmit={handleSubmit} className='space-y-5'>
+              {/* Email */}
+              <div className='space-y-2'>
+                <Label htmlFor='email'>Email Address</Label>
+                <div className='relative'>
+                  <FiMail className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                  <Input
+                    id='email'
+                    name='email'
+                    type='email'
+                    placeholder='your.email@example.com'
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className='pl-10'
+                    required
+                    autoComplete='email'
+                  />
                 </div>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 leading-5 bg-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                  placeholder="Enter your password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
-                >
-                  {showPassword ? (
-                    <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  ) : (
-                    <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  )}
-                </button>
               </div>
-            </div>
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="rememberMe"
-                  name="rememberMe"
-                  type="checkbox"
-                  checked={formData.rememberMe}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
-                />
-                <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700 cursor-pointer">
-                  Remember me
-                </label>
+              {/* Password */}
+              <div className='space-y-2'>
+                <Label htmlFor='password'>Password</Label>
+                <div className='relative'>
+                  <FiLock className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                  <Input
+                    id='password'
+                    name='password'
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder='Enter your password'
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className='pl-10 pr-10'
+                    required
+                    autoComplete='current-password'
+                  />
+                  <button
+                    type='button'
+                    onClick={() => setShowPassword(!showPassword)}
+                    className='absolute right-3 top-3 text-gray-400 hover:text-gray-600'
+                  >
+                    {showPassword ? (
+                      <FiEyeOff className='h-4 w-4' />
+                    ) : (
+                      <FiEye className='h-4 w-4' />
+                    )}
+                  </button>
+                </div>
               </div>
-              <Link
-                href="/forgot-password"
-                className="text-sm text-blue-600 hover:text-blue-500 font-medium cursor-pointer"
+
+              {/* Error Alert */}
+              {error && (
+                <Alert variant='destructive'>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              {/* Submit Button */}
+              <Button
+                type='submit'
+                className='w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl'
+                disabled={loading}
               >
-                Forgot password?
-              </Link>
-            </div>
+                {loading ? (
+                  <div className='flex items-center gap-2'>
+                    <FiLoader className='h-4 w-4 animate-spin' />
+                    Signing In...
+                  </div>
+                ) : (
+                  'Sign In'
+                )}
+              </Button>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className={cn(
-                "group relative w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white cursor-pointer",
-                "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800",
-                "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
-                "transform transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-              )}
-            >
-              <span>Sign In</span>
-              <FiArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-            </button>
-          </form>
+              {/* Register Link */}
+              <div className='text-center pt-4'>
+                <p className='text-sm text-gray-600'>
+                  Don't have an account?{' '}
+                  <Link
+                    href='/register'
+                    className='text-blue-600 hover:text-blue-800 font-medium'
+                  >
+                    Register here
+                  </Link>
+                </p>
+              </div>
 
-          {/* Divider */}
-          <div className="mt-6 relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">New to FFWPU Philippines?</span>
-            </div>
-          </div>
-
-          {/* Sign Up Link */}
-          <div className="mt-6">
-            <Link
-              href="/register"
-              className={cn(
-                "group relative w-full flex justify-center items-center gap-2 py-3 px-4 border border-gray-300 text-sm font-medium rounded-xl text-gray-700 cursor-pointer",
-                "bg-white hover:bg-gray-50 hover:border-gray-400",
-                "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
-                "transform transition-all duration-200 hover:-translate-y-0.5"
-              )}
-            >
-              <FiUser className="h-4 w-4" />
-              <span>Create Account</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600">
-            By signing in, you agree to our{' '}
-            <Link href="/terms" className="text-blue-600 hover:text-blue-500 cursor-pointer">
-              Terms of Service
-            </Link>{' '}
-            and{' '}
-            <Link href="/privacy" className="text-blue-600 hover:text-blue-500 cursor-pointer">
-              Privacy Policy
-            </Link>
-          </p>
-        </div>
+              {/* Security Notice */}
+              <div className='mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl'>
+                <p className='text-xs text-blue-800 flex items-center gap-2'>
+                  <FiShield className='h-3.5 w-3.5' />
+                  Secured with JWT authentication. Member access only.
+                </p>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

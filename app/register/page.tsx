@@ -1,305 +1,352 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
-import { FiEye, FiEyeOff, FiMail, FiLock, FiUser, FiPhone, FiArrowRight, FiCheck } from 'react-icons/fi'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import {
+  FiEye,
+  FiEyeOff,
+  FiMail,
+  FiLock,
+  FiUser,
+  FiCalendar,
+  FiArrowRight,
+  FiCheck,
+} from 'react-icons/fi'
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const router = useRouter()
+
   const [formData, setFormData] = useState({
     firstName: '',
+    middleName: '',
     lastName: '',
+    dateOfBirth: '',
     email: '',
-    phone: '',
     password: '',
     confirmPassword: '',
-    agreeToTerms: false,
-    subscribeNewsletter: false
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Handle registration logic
-    console.log('Registration attempted with:', formData)
+    setLoading(true)
+    setError('')
+    setSuccess('')
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuccess(data.message)
+        // Reset form
+        setFormData({
+          firstName: '',
+          middleName: '',
+          lastName: '',
+          dateOfBirth: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+        })
+        // Redirect to login after 3 seconds
+        setTimeout(() => {
+          router.push('/login?message=registration-success')
+        }, 3000)
+      } else {
+        setError(data.error || 'Registration failed')
+      }
+    } catch (error) {
+      console.error('Registration error:', error)
+      setError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target
-    setFormData(prev => ({
+    const { name, value } = e.target
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value,
     }))
+    // Clear errors when user starts typing
+    if (error) setError('')
   }
 
-  const passwordsMatch = formData.password && formData.confirmPassword && formData.password === formData.confirmPassword
+  const passwordsMatch =
+    formData.password &&
+    formData.confirmPassword &&
+    formData.password === formData.confirmPassword
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl w-full">
+    <div className='min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4'>
+      <div className='w-full max-w-md'>
         {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-6">
+        <div className='text-center mb-8'>
+          <Link href='/' className='inline-flex items-center gap-3 mb-6'>
             <Image
-              src="/ffwpu-ph-logo.webp"
-              alt="FFWPU Philippines Logo"
-              width={120}
-              height={120}
-              className="h-16 w-auto mx-auto"
+              src='/ffwpu-ph-logo.webp'
+              alt='FFWPU Philippines'
+              width={64}
+              height={64}
+              className='rounded-full shadow-lg'
             />
+            <div className='text-left'>
+              <h1 className='text-2xl font-bold text-gray-900'>
+                FFWPU Philippines
+              </h1>
+              <p className='text-sm text-gray-600'>Member Registration</p>
+            </div>
           </Link>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Join our community</h2>
-          <p className="text-gray-600">Create your account to get started</p>
         </div>
 
         {/* Registration Form */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Personal Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-                  First Name
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FiUser className="h-5 w-5 text-gray-400" />
+        <Card className='shadow-2xl border-0 bg-white/80 backdrop-blur-sm'>
+          <CardHeader className='space-y-1 pb-6'>
+            <CardTitle className='text-2xl font-bold text-center text-gray-900'>
+              Create Account
+            </CardTitle>
+            <p className='text-sm text-gray-600 text-center'>
+              Join the FFWPU Philippines community
+            </p>
+          </CardHeader>
+          <CardContent className='px-8 pb-8'>
+            <form onSubmit={handleSubmit} className='space-y-5'>
+              {/* Name Fields */}
+              <div className='grid grid-cols-1 gap-4'>
+                <div className='space-y-2'>
+                  <Label htmlFor='firstName'>First Name *</Label>
+                  <div className='relative'>
+                    <FiUser className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                    <Input
+                      id='firstName'
+                      name='firstName'
+                      type='text'
+                      placeholder='Juan'
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className='pl-10'
+                      required
+                    />
                   </div>
-                  <input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    required
-                    value={formData.firstName}
+                </div>
+              </div>
+
+              {/* Middle Name & Last Name Row */}
+              <div className='grid grid-cols-2 gap-4'>
+                <div className='space-y-2'>
+                  <Label htmlFor='middleName'>Middle Name</Label>
+                  <Input
+                    id='middleName'
+                    name='middleName'
+                    type='text'
+                    placeholder='Carlos'
+                    value={formData.middleName}
                     onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 leading-5 bg-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                    placeholder="First name"
+                  />
+                </div>
+                <div className='space-y-2'>
+                  <Label htmlFor='lastName'>Last Name *</Label>
+                  <Input
+                    id='lastName'
+                    name='lastName'
+                    type='text'
+                    placeholder='Dela Cruz'
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    required
                   />
                 </div>
               </div>
-              <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-                  Last Name
-                </label>
-                <input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  required
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  className="block w-full px-3 py-3 border border-gray-300 leading-5 bg-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                  placeholder="Last name"
-                />
-              </div>
-            </div>
 
-            {/* Contact Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FiMail className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
+              {/* Date of Birth */}
+              <div className='space-y-2'>
+                <Label htmlFor='dateOfBirth'>Date of Birth *</Label>
+                <div className='relative'>
+                  <FiCalendar className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                  <Input
+                    id='dateOfBirth'
+                    name='dateOfBirth'
+                    type='date'
+                    value={formData.dateOfBirth}
+                    onChange={handleInputChange}
+                    className='pl-10'
                     required
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className='space-y-2'>
+                <Label htmlFor='email'>Email Address *</Label>
+                <div className='relative'>
+                  <FiMail className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                  <Input
+                    id='email'
+                    name='email'
+                    type='email'
+                    placeholder='your.email@example.com'
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 leading-5 bg-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                    placeholder="Enter your email"
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number <span className="text-gray-400 text-xs">(Optional)</span>
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FiPhone className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 leading-5 bg-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                    placeholder="Your phone number"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Security Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FiLock className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
+                    className='pl-10'
                     required
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div className='space-y-2'>
+                <Label htmlFor='password'>Password *</Label>
+                <div className='relative'>
+                  <FiLock className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                  <Input
+                    id='password'
+                    name='password'
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder='At least 6 characters'
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="block w-full pl-10 pr-10 py-3 border border-gray-300 leading-5 bg-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                    placeholder="Create a password"
+                    className='pl-10 pr-10'
+                    required
                   />
                   <button
-                    type="button"
+                    type='button'
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                    className='absolute right-3 top-3 text-gray-400 hover:text-gray-600'
                   >
                     {showPassword ? (
-                      <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                      <FiEyeOff className='h-4 w-4' />
                     ) : (
-                      <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                      <FiEye className='h-4 w-4' />
                     )}
                   </button>
                 </div>
               </div>
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FiLock className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
+
+              {/* Confirm Password */}
+              <div className='space-y-2'>
+                <Label htmlFor='confirmPassword'>Confirm Password *</Label>
+                <div className='relative'>
+                  <FiLock className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
+                  <Input
+                    id='confirmPassword'
+                    name='confirmPassword'
                     type={showConfirmPassword ? 'text' : 'password'}
-                    required
+                    placeholder='Confirm your password'
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     className={cn(
-                      "block w-full pl-10 pr-10 py-3 border leading-5 bg-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 transition-colors duration-200",
+                      'pl-10 pr-10',
                       formData.confirmPassword && passwordsMatch
-                        ? "border-green-300 focus:ring-green-500 focus:border-green-500"
+                        ? 'border-green-300 focus:ring-green-500 focus:border-green-500'
                         : formData.confirmPassword && !passwordsMatch
-                        ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                        : '',
                     )}
-                    placeholder="Confirm your password"
+                    required
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center space-x-2">
+                  <div className='absolute right-3 top-3 flex items-center space-x-2'>
                     {formData.confirmPassword && passwordsMatch && (
-                      <FiCheck className="h-5 w-5 text-green-500" />
+                      <FiCheck className='h-4 w-4 text-green-500' />
                     )}
                     <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="cursor-pointer"
+                      type='button'
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className='text-gray-400 hover:text-gray-600'
                     >
                       {showConfirmPassword ? (
-                        <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                        <FiEyeOff className='h-4 w-4' />
                       ) : (
-                        <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                        <FiEye className='h-4 w-4' />
                       )}
                     </button>
                   </div>
                 </div>
                 {formData.confirmPassword && !passwordsMatch && (
-                  <p className="mt-1 text-sm text-red-600">Passwords do not match</p>
+                  <p className='text-sm text-red-600'>Passwords do not match</p>
                 )}
               </div>
-            </div>
 
-            {/* Checkboxes */}
-            <div className="space-y-3">
-              <div className="flex items-start">
-                <input
-                  id="agreeToTerms"
-                  name="agreeToTerms"
-                  type="checkbox"
-                  required
-                  checked={formData.agreeToTerms}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer mt-0.5"
-                />
-                <label htmlFor="agreeToTerms" className="ml-2 block text-sm text-gray-700 cursor-pointer">
-                  I agree to the{' '}
-                  <Link href="/terms" className="text-blue-600 hover:text-blue-500">
-                    Terms of Service
-                  </Link>{' '}
-                  and{' '}
-                  <Link href="/privacy" className="text-blue-600 hover:text-blue-500">
-                    Privacy Policy
-                  </Link>
-                </label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  id="subscribeNewsletter"
-                  name="subscribeNewsletter"
-                  type="checkbox"
-                  checked={formData.subscribeNewsletter}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
-                />
-                <label htmlFor="subscribeNewsletter" className="ml-2 block text-sm text-gray-700 cursor-pointer">
-                  Subscribe to our newsletter for updates and events
-                </label>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={!formData.agreeToTerms || !passwordsMatch}
-              className={cn(
-                "group relative w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white cursor-pointer",
-                "transform transition-all duration-200",
-                formData.agreeToTerms && passwordsMatch
-                  ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  : "bg-gray-400 cursor-not-allowed"
+              {/* Error Alert */}
+              {error && (
+                <Alert variant='destructive'>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
-            >
-              <span>Create Account</span>
-              <FiArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-            </button>
-          </form>
 
-          {/* Divider */}
-          <div className="mt-6 relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Already have an account?</span>
-            </div>
-          </div>
+              {/* Success Alert */}
+              {success && (
+                <Alert className='border-green-200 bg-green-50 text-green-800'>
+                  <AlertDescription>{success}</AlertDescription>
+                </Alert>
+              )}
 
-          {/* Sign In Link */}
-          <div className="mt-6">
+              {/* Submit Button */}
+              <Button
+                type='submit'
+                className='w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl'
+                disabled={
+                  loading ||
+                  !passwordsMatch ||
+                  !formData.password ||
+                  !formData.confirmPassword
+                }
+              >
+                {loading ? (
+                  <div className='flex items-center gap-2'>
+                    <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin' />
+                    Creating Account...
+                  </div>
+                ) : (
+                  'Create Account'
+                )}
+              </Button>
+
+              {/* Info Box */}
+              <div className='mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl'>
+                <p className='text-sm text-blue-800'>
+                  <strong>📋 Important:</strong> Your name and date of birth
+                  must match your church membership records. Contact your
+                  administrator if you encounter issues.
+                </p>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Login Link */}
+        <div className='text-center mt-6'>
+          <p className='text-sm text-gray-600'>
+            Already have an account?{' '}
             <Link
-              href="/login"
-              className={cn(
-                "group relative w-full flex justify-center items-center gap-2 py-3 px-4 border border-gray-300 text-sm font-medium rounded-xl text-gray-700 cursor-pointer",
-                "bg-white hover:bg-gray-50 hover:border-gray-400",
-                "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
-                "transform transition-all duration-200 hover:-translate-y-0.5"
-              )}
+              href='/login'
+              className='text-blue-600 hover:text-blue-800 font-medium'
             >
-              <FiUser className="h-4 w-4" />
-              <span>Sign In Instead</span>
+              Sign in here
             </Link>
-          </div>
+          </p>
         </div>
       </div>
     </div>

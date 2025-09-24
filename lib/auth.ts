@@ -15,7 +15,8 @@ export async function verifyPassword(plain: string, hash: string) {
 export type JwtPayload = {
   sub: string
   email: string
-  role: 'super_admin' | 'content_manager' | 'news_editor'
+  role: 'super_admin' | 'content_manager' | 'news_editor' | 'member'
+  memberId?: string // Optional for admin users
 }
 
 export async function createToken(payload: JwtPayload, ttl = '2h') {
