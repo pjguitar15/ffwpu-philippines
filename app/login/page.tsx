@@ -16,8 +16,21 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Handle login logic
-    console.log('Login attempted with:', formData)
+
+    // Hardcoded credentials for testing
+    if (
+      formData.email === 'test@test.com' &&
+      formData.password === 'Test@123'
+    ) {
+      // Store login state (in real app, use proper auth)
+      localStorage.setItem('isLoggedIn', 'true')
+      localStorage.setItem('userEmail', formData.email)
+
+      // Redirect to profile page
+      window.location.href = '/profile'
+    } else {
+      alert('Invalid credentials. Use test@test.com / Test@123')
+    }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
