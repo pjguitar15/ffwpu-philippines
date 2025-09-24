@@ -11,6 +11,8 @@ import { Mail, Repeat, CalendarRange, CalendarClock, Download } from 'lucide-rea
 type Subscriber = {
   _id: string
   email: string
+  firstName: string
+  lastName: string
   frequency: 'weekly' | 'monthly'
   createdAt: string
 }
@@ -28,7 +30,9 @@ export default function AdminNewsletterPage() {
     let ignore = false
     ;(async () => {
       setLoading(true)
-      const res = await fetch(`/api/newsletter?page=${page}&pageSize=${pageSize}`)
+      const res = await fetch(
+        `/api/newsletter?page=${page}&pageSize=${pageSize}`,
+      )
       const data = await res.json()
       if (!ignore) {
         setItems(data.items)
@@ -43,7 +47,12 @@ export default function AdminNewsletterPage() {
 
   const filtered = useMemo(() => {
     const s = q.toLowerCase()
-    return items.filter((x) => x.email.toLowerCase().includes(s))
+    return items.filter(
+      (x) =>
+        x.email.toLowerCase().includes(s) ||
+        (x.firstName && x.firstName.toLowerCase().includes(s)) ||
+        (x.lastName && x.lastName.toLowerCase().includes(s)),
+    )
   }, [q, items])
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
@@ -67,7 +76,7 @@ export default function AdminNewsletterPage() {
           {/* Inline toolbar: search only (left-aligned, bordered) */}
           <div className='mb-4'>
             <Input
-              placeholder='Filter by email…'
+              placeholder='Filter by name or email…'
               value={q}
               onChange={(e) => setQ(e.target.value)}
               className='h-10 w-full max-w-sm bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
@@ -104,11 +113,23 @@ export default function AdminNewsletterPage() {
 
                     // Optional in-memory filter by q
                     const s = q.toLowerCase()
-                    const rows = all.filter((x) =>
-                      x.email.toLowerCase().includes(s),
+                    const rows = all.filter(
+                      (x) =>
+                        x.email.toLowerCase().includes(s) ||
+                        (x.firstName &&
+                          x.firstName.toLowerCase().includes(s)) ||
+                        (x.lastName && x.lastName.toLowerCase().includes(s)),
                     )
-                    const header = ['Email', 'Frequency', 'Joined']
+                    const header = [
+                      'First Name',
+                      'Last Name',
+                      'Email',
+                      'Frequency',
+                      'Joined',
+                    ]
                     const body = rows.map((r) => [
+                      r.firstName || '',
+                      r.lastName || '',
                       r.email,
                       r.frequency,
                       new Date(r.createdAt).toISOString(),
@@ -158,6 +179,9 @@ export default function AdminNewsletterPage() {
                   <TableHeader className='sticky top-0 z-[1] bg-gradient-to-r from-slate-50 to-sky-50 dark:from-slate-900/60 dark:to-sky-950/40 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
                     <TableRow className='h-14'>
                       <TableHead className='text-slate-700 py-3'>
+                        Name
+                      </TableHead>
+                      <TableHead className='text-slate-700 py-3'>
                         Email
                       </TableHead>
                       <TableHead className='text-slate-700 py-3'>
@@ -172,6 +196,9 @@ export default function AdminNewsletterPage() {
                     {loading
                       ? Array.from({ length: 5 }).map((_, i) => (
                           <TableRow key={`sk-${i}`} className='h-16'>
+                            <TableCell>
+                              <div className='h-4 w-40 bg-slate-200 animate-pulse rounded' />
+                            </TableCell>
                             <TableCell>
                               <div className='h-4 w-64 bg-slate-200 animate-pulse rounded' />
                             </TableCell>
@@ -188,6 +215,21 @@ export default function AdminNewsletterPage() {
                             key={s._id}
                             className='h-16 hover:bg-sky-50/60 dark:hover:bg-sky-950/20'
                           >
+                            <TableCell>
+                              <div className='flex items-center gap-2'>
+                                <div className='font-medium'>
+                                  {s.firstName || s.lastName ? (
+                                    `${s.firstName || ''} ${
+                                      s.lastName || ''
+                                    }`.trim()
+                                  ) : (
+                                    <span className='text-gray-400 italic'>
+                                      No name provided
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </TableCell>
                             <TableCell>
                               <div className='flex items-center gap-2'>
                                 <Mail className='h-4 w-4' /> {s.email}

@@ -27,24 +27,40 @@ export async function GET(req: Request) {
 }
 
 // POST /api/newsletter
-// { email: string, frequency: 'weekly'|'monthly' }
+// { email: string, firstName: string, lastName: string, frequency: 'weekly'|'monthly' }
 export async function POST(req: Request) {
   await dbConnect()
   const body = await req.json()
   const email = String(body.email || '')
     .trim()
     .toLowerCase()
+  const firstName = String(body.firstName || '').trim()
+  const lastName = String(body.lastName || '').trim()
   const frequency = body.frequency === 'monthly' ? 'monthly' : 'weekly'
+  
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
   }
+  
+  if (!firstName || firstName.length < 1) {
+    return NextResponse.json({ error: 'First name is required' }, { status: 400 })
+  }
+  
+  if (!lastName || lastName.length < 1) {
+    return NextResponse.json({ error: 'Last name is required' }, { status: 400 })
+  }
+
+  // Debug logging
+  console.log('Saving newsletter data:', { email, firstName, lastName, frequency })
 
   // Upsert by email
   const doc = await Newsletter.findOneAndUpdate(
     { email },
-    { $set: { email, frequency } },
-    { new: true, upsert: true },
+    { $set: { email, firstName, lastName, frequency } },
+    { new: true, upsert: true, runValidators: true },
   ).lean()
+
+  console.log('Saved document:', doc)
 
   // Audit log (subscription upsert)
   try {
@@ -52,7 +68,7 @@ export async function POST(req: Request) {
       action: 'Subscribed',
       resourceType: 'newsletter',
       resourceId: String(doc?._id || email),
-      details: `Upsert subscriber: ${email} (${frequency})`,
+      details: `Upsert subscriber: ${firstName} ${lastName} <${email}> (${frequency})`,
     })
   } catch {}
 
