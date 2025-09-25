@@ -80,7 +80,8 @@ export default function MemberLoginPage() {
       const data = await res.json()
 
       if (res.ok) {
-        // Successful login
+        // Successful login - dispatch event to update auth components
+        window.dispatchEvent(new CustomEvent('auth-login'))
         router.push(nextPath)
       } else {
         setError(data.error || 'Login failed')

@@ -1,7 +1,14 @@
 import { SignJWT, jwtVerify } from 'jose'
 import bcrypt from 'bcrypt'
 
-const secret = new TextEncoder().encode(process.env.AUTH_SECRET || 'dev-secret')
+const authSecret = process.env.AUTH_SECRET || 'dev-secret'
+console.log(
+  'AUTH_SECRET available:',
+  !!process.env.AUTH_SECRET,
+  'Using secret:',
+  authSecret.substring(0, 10) + '...',
+)
+const secret = new TextEncoder().encode(authSecret)
 
 export async function hashPassword(plain: string) {
   const salt = await bcrypt.genSalt(10)
@@ -20,7 +27,15 @@ export type JwtPayload = {
 }
 
 export async function createToken(payload: JwtPayload, ttl = '2h') {
-  const exp = Math.floor(Date.now() / 1000) + 60 * 60 * (ttl === '2h' ? 2 : 24)
+  // Parse TTL to hours
+  let hours = 2 // default
+  if (ttl.endsWith('h')) {
+    hours = parseInt(ttl.slice(0, -1))
+  } else if (ttl.endsWith('d')) {
+    hours = parseInt(ttl.slice(0, -1)) * 24
+  }
+
+  const exp = Math.floor(Date.now() / 1000) + 60 * 60 * hours
   return new SignJWT({ ...payload, exp })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(payload.sub)

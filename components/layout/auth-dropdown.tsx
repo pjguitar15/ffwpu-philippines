@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   FiUser,
@@ -17,25 +18,128 @@ interface AuthDropdownProps {
   onNavigate?: () => void
 }
 
+interface UserData {
+  id: string
+  email: string
+  member?: {
+    fullName: string
+    givenName: string
+    familyName: string
+  }
+}
+
 export function AuthDropdown({
   variant = 'desktop',
   onNavigate,
 }: AuthDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userData, setUserData] = useState<UserData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
-  // Check login status
+  // Check login status by calling the member API
+  const checkLoginStatus = async () => {
+    try {
+      setIsLoading(true)
+      const response = await fetch('/api/auth/member/me', {
+        cache: 'no-store',
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        setUserData({
+          id: result.user.id,
+          email: result.user.email,
+          member: {
+            fullName: result.member.fullName,
+            givenName: result.member.givenName,
+            familyName: result.member.familyName,
+          },
+        })
+      } else {
+        setUserData(null)
+      }
+    } catch (error) {
+      console.error('Auth check error:', error)
+      setUserData(null)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Initial check and refresh when trigger changes
   useEffect(() => {
-    const checkLoginStatus = () => {
-      const loggedIn = localStorage.getItem('isLoggedIn') === 'true'
-      setIsLoggedIn(loggedIn)
+    checkLoginStatus()
+  }, [refreshTrigger])
+
+  // Listen for login/logout events and route changes
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setRefreshTrigger((prev) => prev + 1)
     }
 
-    checkLoginStatus()
-    // Listen for storage changes (when user logs in/out in another tab)
-    window.addEventListener('storage', checkLoginStatus)
-    return () => window.removeEventListener('storage', checkLoginStatus)
+    // Listen for custom auth events
+    window.addEventListener('auth-login', handleAuthChange)
+    window.addEventListener('auth-logout', handleAuthChange)
+
+    // Also refresh when route changes (user might login/logout on different pages)
+    const handleRouteChange = () => {
+      setTimeout(() => {
+        setRefreshTrigger((prev) => prev + 1)
+      }, 100) // Small delay to ensure cookies are updated
+    }
+
+    // Listen for route changes
+    window.addEventListener('popstate', handleRouteChange)
+
+    return () => {
+      window.removeEventListener('auth-login', handleAuthChange)
+      window.removeEventListener('auth-logout', handleAuthChange)
+      window.removeEventListener('popstate', handleRouteChange)
+    }
+  }, [])
+
+  // Refresh auth state when component becomes visible (focus events)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        setRefreshTrigger((prev) => prev + 1)
+      }
+    }
+
+    const handleFocus = () => {
+      setRefreshTrigger((prev) => prev + 1)
+    }
+
+    // Listen for storage changes (if JWT is stored in localStorage)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'auth-token' || e.key === null) {
+        setRefreshTrigger((prev) => prev + 1)
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleFocus)
+    window.addEventListener('storage', handleStorageChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleFocus)
+      window.removeEventListener('storage', handleStorageChange)
+    }
+  }, [])
+
+  // Expose refresh function globally (for debugging or manual refresh)
+  useEffect(() => {
+    ;(window as any).refreshAuth = () => {
+      setRefreshTrigger((prev) => prev + 1)
+    }
+
+    return () => {
+      delete (window as any).refreshAuth
+    }
   }, [])
 
   // Close dropdown when clicking outside
@@ -83,7 +187,9 @@ export function AuthDropdown({
         >
           <div className='flex items-center gap-3'>
             <FiUser className='h-5 w-5 text-gray-600 shrink-0' />
-            <span className='text-sm font-semibold'>Account</span>
+            <span className='text-sm font-semibold'>
+              {userData ? userData.member?.givenName || 'Member' : 'Account'}
+            </span>
           </div>
           <FiChevronDown
             className={cn(
@@ -94,8 +200,22 @@ export function AuthDropdown({
         </div>
         {isOpen && (
           <div className='bg-gray-50'>
-            {isLoggedIn ? (
+            {userData ? (
               <>
+                {/* User Info Header - Mobile */}
+                <div className='px-6 py-3 pl-14 bg-gray-100 border-b border-gray-200'>
+                  <div className='text-sm font-medium text-gray-900'>
+                    {userData.member?.fullName ||
+                      `${userData.member?.givenName || ''} ${
+                        userData.member?.familyName || ''
+                      }`.trim() ||
+                      'Member'}
+                  </div>
+                  <div className='text-xs text-gray-500 truncate'>
+                    {userData.email}
+                  </div>
+                </div>
+
                 <Link
                   href='/profile'
                   onClick={handleOptionClick}
@@ -104,13 +224,27 @@ export function AuthDropdown({
                   <FiUser className='h-4 w-4 text-blue-600' />
                   <span className='text-sm font-semibold'>My Profile</span>
                 </Link>
+                <Link
+                  href='/settings'
+                  onClick={handleOptionClick}
+                  className='flex items-center gap-3 px-6 py-3 pl-14 hover:bg-gray-100 transition-all duration-150 cursor-pointer'
+                >
+                  <FiSettings className='h-4 w-4 text-gray-600' />
+                  <span className='text-sm font-semibold'>Settings</span>
+                </Link>
                 <button
-                  onClick={() => {
-                    localStorage.removeItem('isLoggedIn')
-                    localStorage.removeItem('userEmail')
-                    setIsLoggedIn(false)
-                    handleOptionClick()
-                    window.location.href = '/'
+                  onClick={async () => {
+                    try {
+                      await fetch('/api/auth/member/logout', { method: 'POST' })
+                    } catch (error) {
+                      console.error('Logout error:', error)
+                    } finally {
+                      setUserData(null)
+                      // Dispatch logout event for other components
+                      window.dispatchEvent(new CustomEvent('auth-logout'))
+                      handleOptionClick()
+                      router.push('/')
+                    }
                   }}
                   className='flex items-center gap-3 px-6 py-3 pl-14 hover:bg-gray-100 transition-all duration-150 cursor-pointer w-full text-left'
                 >
@@ -154,9 +288,11 @@ export function AuthDropdown({
             'h-10 w-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full cursor-pointer shrink-0 transition-all duration-150',
             'hover:-translate-y-0.5',
             isOpen && 'bg-blue-700',
+            isLoading && 'opacity-50 cursor-not-allowed',
           )}
           aria-haspopup='menu'
           aria-expanded={isOpen}
+          disabled={isLoading}
         >
           <FiUser className='h-4 w-4' strokeWidth={2.5} />
         </button>
@@ -168,14 +304,23 @@ export function AuthDropdown({
               'animate-in slide-in-from-top-2 fade-in-0 duration-200',
             )}
           >
-            {isLoggedIn ? (
+            {userData ? (
               <>
+                {/* User Info Header - Medium */}
+                <div className='px-4 py-3 border-b border-gray-100 bg-gray-50'>
+                  <div className='text-sm font-medium text-gray-900 truncate'>
+                    {userData.member?.givenName || 'Member'}
+                  </div>
+                  <div className='text-xs text-gray-500 truncate'>
+                    {userData.email}
+                  </div>
+                </div>
+
                 <Link
                   href='/profile'
                   onClick={handleOptionClick}
                   className={cn(
                     'flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 cursor-pointer',
-                    'border-b border-gray-100',
                   )}
                 >
                   <FiUser className='h-4 w-4 text-blue-600' />
@@ -184,13 +329,33 @@ export function AuthDropdown({
                   </div>
                 </Link>
 
+                <Link
+                  href='/settings'
+                  onClick={handleOptionClick}
+                  className={cn(
+                    'flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 cursor-pointer',
+                    'border-b border-gray-100',
+                  )}
+                >
+                  <FiSettings className='h-4 w-4 text-gray-600' />
+                  <div>
+                    <div className='font-medium'>Settings</div>
+                  </div>
+                </Link>
+
                 <button
-                  onClick={() => {
-                    localStorage.removeItem('isLoggedIn')
-                    localStorage.removeItem('userEmail')
-                    setIsLoggedIn(false)
-                    handleOptionClick()
-                    window.location.href = '/'
+                  onClick={async () => {
+                    try {
+                      await fetch('/api/auth/member/logout', { method: 'POST' })
+                    } catch (error) {
+                      console.error('Logout error:', error)
+                    } finally {
+                      setUserData(null)
+                      // Dispatch logout event for other components
+                      window.dispatchEvent(new CustomEvent('auth-logout'))
+                      handleOptionClick()
+                      router.push('/')
+                    }
                   }}
                   className='flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 cursor-pointer w-full text-left'
                 >
@@ -246,12 +411,16 @@ export function AuthDropdown({
           'hover:from-blue-700 hover:to-blue-800 hover:shadow-md hover:-translate-y-0.5',
           'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
           isOpen && 'from-blue-700 to-blue-800 shadow-md',
+          isLoading && 'opacity-50 cursor-not-allowed',
         )}
         aria-haspopup='menu'
         aria-expanded={isOpen}
+        disabled={isLoading}
       >
         <FiUser className='h-4 w-4' />
-        <span>Account</span>
+        <span>
+          {userData ? userData.member?.givenName || 'Member' : 'Account'}
+        </span>
         <FiChevronDown
           className={cn(
             'h-3 w-3 transition-transform duration-200',
@@ -268,15 +437,28 @@ export function AuthDropdown({
             'animate-in slide-in-from-top-2 fade-in-0 duration-200',
           )}
         >
-          {isLoggedIn ? (
+          {userData ? (
             <>
+              {/* User Info Header */}
+              <div className='px-4 py-3 border-b border-gray-100 bg-gray-50'>
+                <div className='text-sm font-medium text-gray-900'>
+                  {userData.member?.fullName ||
+                    `${userData.member?.givenName || ''} ${
+                      userData.member?.familyName || ''
+                    }`.trim() ||
+                    'Member'}
+                </div>
+                <div className='text-xs text-gray-500 truncate'>
+                  {userData.email}
+                </div>
+              </div>
+
               {/* Profile Option */}
               <Link
                 href='/profile'
                 onClick={handleOptionClick}
                 className={cn(
                   'flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 cursor-pointer',
-                  'border-b border-gray-100',
                 )}
               >
                 <FiUser className='h-4 w-4 text-blue-600' />
@@ -288,12 +470,19 @@ export function AuthDropdown({
 
               {/* Logout Option */}
               <button
-                onClick={() => {
-                  localStorage.removeItem('isLoggedIn')
-                  localStorage.removeItem('userEmail')
-                  setIsLoggedIn(false)
-                  handleOptionClick()
-                  window.location.href = '/'
+                onClick={async () => {
+                  try {
+                    await fetch('/api/auth/member/logout', { method: 'POST' })
+                  } catch (error) {
+                    console.error('Logout error:', error)
+                  } finally {
+                    setUserData(null)
+                    // Dispatch logout event for other components
+                    window.dispatchEvent(new CustomEvent('auth-logout'))
+                    setIsOpen(false)
+                    onNavigate?.()
+                    router.push('/')
+                  }
                 }}
                 className='flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 cursor-pointer w-full text-left'
               >

@@ -34,7 +34,11 @@ const MemberSchema = new mongoose.Schema(
 
     // Membership Details
     dateOfJoining: { type: Date, required: true },
-    spiritualParent: { type: String },
+    spiritualParent: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Member',
+      default: null,
+    },
     registeredAt: { type: String, required: true },
     registeredBy: { type: String, required: true },
     membershipCategory: { type: String, required: true },
@@ -50,6 +54,22 @@ const MemberSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    // Enhanced registration tracking
+    registrationHistory: [{
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      email: { type: String, required: true },
+      registeredAt: { type: Date, default: Date.now },
+      status: { 
+        type: String, 
+        enum: ['active', 'deleted', 'suspended'],
+        default: 'active'
+      },
+      ipAddress: { type: String },
+      userAgent: { type: String }
+    }],
+    firstRegistrationAt: { type: Date },
+    lastRegistrationAttempt: { type: Date },
+    registrationAttemptCount: { type: Number, default: 0 },
   },
   {
     timestamps: true,
@@ -59,8 +79,8 @@ const MemberSchema = new mongoose.Schema(
 
 // Add indexes for performance
 MemberSchema.index({ id: 1 })
-MemberSchema.index({ email: 1 })
 MemberSchema.index({ church: 1 })
+MemberSchema.index({ spiritualParent: 1 }) // Add index for spiritual parent lookups
 
 const Member = mongoose.model('Member', MemberSchema)
 

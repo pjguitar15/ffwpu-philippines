@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { dbConnect } from '@/lib/db'
 import User from '@/models/User'
-import { verifyPassword, createToken } from '@/lib/auth'
+import { verifyPassword, createToken, type JwtPayload } from '@/lib/auth'
 import { cookies } from 'next/headers'
 
 // If you use native modules like bcrypt, force Node runtime:
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!email || !password) {
       return NextResponse.json(
         { error: 'Email and password are required' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
-        { status: 401 }
+        { status: 401 },
       )
     }
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       console.error('User passwordHash is missing for user:', user.email)
       return NextResponse.json(
         { error: 'Account setup incomplete. Please contact support.' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     if (!isPasswordValid) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
-        { status: 401 }
+        { status: 401 },
       )
     }
 
@@ -52,13 +52,16 @@ export async function POST(request: Request) {
     user.lastLoginAt = new Date()
     await user.save().catch(() => {})
 
-    // Create JWT token with member role
-    const token = await createToken({
+    // Create JWT token with member role (7 days)
+    const tokenPayload: JwtPayload = {
       sub: String(user._id),
       email: user.email,
-      role: 'member', // Different from admin role
-      memberId: String(user.memberId) // Include member reference
-    })
+      role: 'member' as const, // Different from admin role
+      memberId: String(user.memberId), // Include member reference
+    }
+    console.log('Creating token for user:', tokenPayload)
+    const token = await createToken(tokenPayload, '168h') // 7 days = 168 hours
+    console.log('Token created successfully')
 
     // Set cookie with member token
     const cookieStore = await cookies()
@@ -70,21 +73,26 @@ export async function POST(request: Request) {
       maxAge: 60 * 60 * 24 * 7, // 7 days (longer than admin sessions)
     })
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       user: {
         id: String(user._id),
         email: user.email,
         memberId: String(user.memberId),
-        isEmailVerified: user.isEmailVerified
-      }
+        isEmailVerified: user.isEmailVerified,
+      },
     })
-
   } catch (error) {
     console.error('Member login error:', error)
     return NextResponse.json(
-      { error: 'Internal server error', details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined },
-      { status: 500 }
+      {
+        error: 'Internal server error',
+        details:
+          process.env.NODE_ENV === 'development'
+            ? (error as Error).message
+            : undefined,
+      },
+      { status: 500 },
     )
   }
 }

@@ -27,6 +27,8 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [showAccountRecovery, setShowAccountRecovery] = useState(false)
+  const [existingAccountInfo, setExistingAccountInfo] = useState<any>(null)
   const router = useRouter()
 
   const [formData, setFormData] = useState({
@@ -73,6 +75,11 @@ export default function RegisterPage() {
           router.push('/login?message=registration-success')
         }, 3000)
       } else {
+        // Handle different error scenarios
+        if (data.suggestAccountRecovery || response.status === 409) {
+          setShowAccountRecovery(true)
+          setExistingAccountInfo(data)
+        }
         setError(data.error || 'Registration failed')
       }
     } catch (error) {
@@ -97,6 +104,46 @@ export default function RegisterPage() {
     formData.password &&
     formData.confirmPassword &&
     formData.password === formData.confirmPassword
+
+  const handleAccountRecovery = async () => {
+    setLoading(true)
+    setError('')
+
+    try {
+      const response = await fetch('/api/auth/account-recovery', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          middleName: formData.middleName,
+          lastName: formData.lastName,
+          dateOfBirth: formData.dateOfBirth,
+          email: formData.email,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuccess(
+          'Account recovery initiated! Check your email for reset instructions.',
+        )
+        setShowAccountRecovery(false)
+        setTimeout(() => {
+          router.push('/login?message=account-recovery-sent')
+        }, 3000)
+      } else {
+        setError(data.error || 'Account recovery failed')
+      }
+    } catch (error) {
+      console.error('Account recovery error:', error)
+      setError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4'>
@@ -300,6 +347,51 @@ export default function RegisterPage() {
               {success && (
                 <Alert className='border-green-200 bg-green-50 text-green-800'>
                   <AlertDescription>{success}</AlertDescription>
+                </Alert>
+              )}
+
+              {/* Account Recovery Option */}
+              {showAccountRecovery && existingAccountInfo && (
+                <Alert className='border-orange-200 bg-orange-50 text-orange-800'>
+                  <AlertDescription>
+                    <div className='space-y-3'>
+                      <div>
+                        <strong>Account Already Exists</strong>
+                        <p className='text-sm mt-1'>
+                          {existingAccountInfo.details}
+                        </p>
+                        {existingAccountInfo.existingEmail && (
+                          <p className='text-sm mt-1'>
+                            Email: {existingAccountInfo.existingEmail}
+                          </p>
+                        )}
+                      </div>
+                      <div className='flex gap-2'>
+                        <Button
+                          type='button'
+                          size='sm'
+                          variant='outline'
+                          onClick={handleAccountRecovery}
+                          disabled={loading}
+                          className='bg-orange-100 border-orange-300 text-orange-800 hover:bg-orange-200'
+                        >
+                          Recover Account
+                        </Button>
+                        <Button
+                          type='button'
+                          size='sm'
+                          variant='ghost'
+                          onClick={() => {
+                            setShowAccountRecovery(false)
+                            setError('')
+                          }}
+                          className='text-orange-700 hover:bg-orange-100'
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  </AlertDescription>
                 </Alert>
               )}
 

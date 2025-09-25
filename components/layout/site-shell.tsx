@@ -17,6 +17,10 @@ export function SiteShell({ isUnderConstruction, children }: Props) {
   const pathname = usePathname()
   const isAdmin = pathname?.startsWith('/admin')
 
+  // Routes that should have minimal layout (no events, branches, newsletter, footer)
+  const isMinimalLayout =
+    pathname?.startsWith('/profile') || pathname?.startsWith('/members')
+
   // For admin routes, render children without the public site chrome
   if (isAdmin) return <>{children}</>
 
@@ -26,13 +30,18 @@ export function SiteShell({ isUnderConstruction, children }: Props) {
     <>
       <Header />
       {children}
-      {/* Events first (conditionally), then branches, then newsletter */}
-      <ConditionalUpcomingEvents />
-      <div className='container mx-auto space-y-16'>
-        <ChurchBranchesSection />
-      </div>
-      <NewsletterBanner />
-      <Footer />
+      {/* Only show additional sections on non-minimal layout pages */}
+      {!isMinimalLayout && (
+        <>
+          {/* Events first (conditionally), then branches, then newsletter */}
+          <ConditionalUpcomingEvents />
+          <div className='container mx-auto space-y-16'>
+            <ChurchBranchesSection />
+          </div>
+          <NewsletterBanner />
+          <Footer />
+        </>
+      )}
     </>
   )
 }
