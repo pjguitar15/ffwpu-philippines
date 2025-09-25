@@ -509,7 +509,7 @@ export const TIMELINE: TimelineItem[] = [
     title: 'Induction of New Cheonbo Families',
     icon: 'heart',
     content:
-      'A total of 59 new Cheonbo Couples from 13 locations in the Philippines were inducted on October 10, 2021. The ceremony included the Regional President’s couple, Pres. and Mrs. Masaichi Hori, and Vice President Rev. and Mrs. Ronnie Sodusta, marking a significant milestone for Filipino Blessed Families.',
+      'A total of 59 new Cheonbo Couples from 13 locations in the Philippines were inducted on October 10, 2021. The ceremony included the Regional President’s couple, Pres. and Rev. Masaichi Hori, and Vice President Rev. Ronnie Sodusta, marking a significant milestone for Filipino Blessed Families.',
     imageUrl: '/history-images/2021-cheonbo-induction.png',
   },
 ]
