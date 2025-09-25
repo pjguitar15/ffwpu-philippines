@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, Suspense } from 'react'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -17,7 +17,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 
-export default function AdminLoginPage() {
+function AdminLoginContent() {
   const router = useRouter()
   const search = useSearchParams()
   const nextPath = search.get('next') || '/admin/dashboard'
@@ -322,6 +322,14 @@ export default function AdminLoginPage() {
         <div className='absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.08),transparent_60%)]' />
       </div>
     </div>
+  )
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
+      <AdminLoginContent />
+    </Suspense>
   )
 }
 

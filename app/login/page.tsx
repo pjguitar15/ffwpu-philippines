@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -19,7 +19,7 @@ import {
   FiLoader,
 } from 'react-icons/fi'
 
-export default function MemberLoginPage() {
+function MemberLoginContent() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -257,5 +257,13 @@ export default function MemberLoginPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function MemberLoginPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
+      <MemberLoginContent />
+    </Suspense>
   )
 }
