@@ -15,15 +15,16 @@ async function findByIdOrSlug(idOrSlug: string) {
 }
 
 export async function GET(
-  _: NextRequest,
+  _req: NextRequest,
   { params }: { params: { id: string } },
 ) {
   await dbConnect()
-  const doc = await findByIdOrSlug(params.id)
+  const { id } = await params
+  const doc = await findByIdOrSlug(id)
   if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   const o: any = doc.toObject()
   o.id = String(o._id)
-  return NextResponse.json(o)
+  return NextResponse.json(o, { headers: { 'Cache-Control': 'no-store' } })
 }
 
 export async function PUT(
@@ -34,15 +35,14 @@ export async function PUT(
   const { id } = await params
   const doc = await findByIdOrSlug(id)
   if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  const body = await req.json()
 
+  const body = await req.json()
   if (body.title) doc.title = body.title
   if (body.author) doc.author = body.author
   if (body.date) doc.date = body.date
   if (body.image) doc.image = body.image
   if (Array.isArray(body.tags)) doc.tags = body.tags
   if (body.status) {
-    // Handle migration from old status values to new ones
     let newStatus = body.status
     if (body.status === 'active') newStatus = 'published'
     if (body.status === 'inactive') newStatus = 'draft'
@@ -52,10 +52,22 @@ export async function PUT(
     doc.content = toParagraphHtml(body.content)
   if (body.slug) doc.slug = slugify(body.slug)
 
+  // ⬅️ NEW: testimonials
+  if (Array.isArray(body.testimonials)) {
+    doc.testimonials = body.testimonials
+      .slice(0, 3)
+      .map((t: any) => ({
+        name: String(t?.name || '').trim(),
+        role: String(t?.role || '').trim() || undefined,
+        avatar: String(t?.avatar || '').trim() || undefined,
+        quote: String(t?.quote || '').trim(),
+      }))
+      .filter((t: any) => t.name && t.quote)
+  }
+
   await doc.save()
   const o: any = doc.toObject()
   o.id = String(o._id)
-  // Audit log
   try {
     recordAudit({
       action: 'Updated',
@@ -66,6 +78,7 @@ export async function PUT(
   } catch {}
   return NextResponse.json(o)
 }
+
 
 export async function DELETE(
   _: NextRequest,

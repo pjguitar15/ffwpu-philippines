@@ -4,7 +4,14 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Calendar, User, Home, ChevronRight, Eye, AlertTriangle } from 'lucide-react'
+import {
+  Calendar,
+  User,
+  Home,
+  ChevronRight,
+  Eye,
+  AlertTriangle,
+} from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { ArticleBody } from './article-body'
@@ -14,8 +21,9 @@ import {
   StaggerContainer,
   PopInItem,
 } from '@/components/ui/motion'
+import CuteNewsCta from '../CuteNewsCta'
 
-// Tag gradient helpers moved to module scope to avoid hook ordering issues
+// Tag gradient helpers
 const TAG_GRADIENTS: Record<string, string> = {
   youth: 'from-sky-600 via-cyan-600 to-emerald-600',
   leadership: 'from-indigo-600 via-violet-600 to-fuchsia-600',
@@ -57,6 +65,13 @@ function SkeletonBlock({ className = '' }: { className?: string }) {
   )
 }
 
+type Testimonial = {
+  name: string
+  role?: string
+  avatar?: string
+  quote: string
+}
+
 type NewsItem = {
   id: string
   slug: string
@@ -70,6 +85,56 @@ type NewsItem = {
   likes: number
   content: string
   comments: any[]
+  testimonials?: Testimonial[] // ⬅️ NEW
+}
+
+function TestimonialsSection({ items }: { items: Testimonial[] }) {
+  if (!items?.length) return null
+  return (
+    <section aria-labelledby='testimonials-title' className='mt-10 md:mt-12'>
+      <div className='text-center mb-8 md:mb-10'>
+        <p className='mt-2 text-sm md:text-base text-slate-600'>
+          Reflections shared by participants during this event.
+        </p>
+      </div>
+
+      <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
+        {items.slice(0, 3).map((t, i) => (
+          <article
+            key={i}
+            className='relative rounded-xl border border-slate-200 bg-white/70 backdrop-blur-md shadow-sm hover:shadow-md transition-shadow'
+          >
+            <div className='absolute -top-7 left-1/2 -translate-x-1/2 h-14 w-14 rounded-full ring-4 ring-white overflow-hidden shadow'>
+              {t.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={t.avatar}
+                  alt={`${t.name} avatar`}
+                  className='h-full w-full object-cover'
+                />
+              ) : (
+                <div className='h-full w-full grid place-items-center bg-slate-200 text-slate-600 text-base font-semibold'>
+                  {t.name?.[0]?.toUpperCase() ?? '⦿'}
+                </div>
+              )}
+            </div>
+
+            <div className='px-5 pb-5 pt-10'>
+              <p className='text-slate-700 leading-relaxed'>
+                <span className='text-amber-500 text-xl align-top'>“</span>
+                {t.quote}
+                <span className='text-amber-500 text-xl align-top'>”</span>
+              </p>
+              <div className='mt-4'>
+                <p className='font-semibold text-amber-600'>{t.name}</p>
+                {t.role && <p className='text-xs text-slate-500'>{t.role}</p>}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
 }
 
 export default function NewsDetailClient() {
@@ -93,7 +158,6 @@ export default function NewsDetailClient() {
           return
         }
       } catch {}
-      // On failure, do not fallback to sample; show error UI
       if (mounted) setNewsItem(undefined)
       if (mounted) setLoading(false)
     })()
@@ -105,51 +169,35 @@ export default function NewsDetailClient() {
   // Track views when news item is loaded
   useEffect(() => {
     if (newsItem && newsItem.slug) {
-      // Only track views for articles from the API (not sample data)
-      // Check if the item has an _id which indicates it's from the database
       const isFromDatabase = (newsItem as any)._id || (newsItem as any).id
-
       if (isFromDatabase) {
         const trackView = async () => {
           try {
-            // Check if we've already viewed this article in this session
             const viewedKey = `viewed_${newsItem.slug}`
             const lastViewed = localStorage.getItem(viewedKey)
             const now = Date.now()
-            
-            // Only track if not viewed before, or if 30 minutes have passed
-            const thirtyMinutes = 30 * 60 * 1000 // 30 minutes in milliseconds
-            if (!lastViewed || (now - parseInt(lastViewed)) > thirtyMinutes) {
-              console.log('Tracking view for:', newsItem.slug)
+            const thirtyMinutes = 30 * 60 * 1000
+            if (!lastViewed || now - parseInt(lastViewed) > thirtyMinutes) {
               const response = await fetch(`/api/news/${newsItem.slug}/views`, {
                 method: 'POST',
               })
               const result = await response.json()
-              console.log('View tracking result:', result)
-              // Update local views count if API returned the new value
               if (result && typeof result.views === 'number') {
                 setNewsItem((prev) =>
                   prev ? { ...prev, views: result.views } : prev,
                 )
               }
-              
-              // Store the current timestamp
               localStorage.setItem(viewedKey, now.toString())
-            } else {
-              console.log('View already tracked recently for:', newsItem.slug)
             }
-          } catch (error) {
-            // Silently fail view tracking to not affect user experience
-            console.log('Failed to track view:', error)
-          }
+          } catch {}
         }
-
-        // Track view after a short delay to ensure the user is actually reading
         const timer = setTimeout(trackView, 2000)
         return () => clearTimeout(timer)
       }
     }
-  }, [newsItem]) // Load all news (for related/more sections)
+  }, [newsItem])
+
+  // Load all news (for related/more sections)
   useEffect(() => {
     let mounted = true
     ;(async () => {
@@ -266,7 +314,8 @@ export default function NewsDetailClient() {
               Something's wrong to the page
             </h2>
             <p className='mt-2 text-slate-600 dark:text-slate-300'>
-              We couldn’t load this news article. It might be unavailable or there was a connection hiccup.
+              We couldn’t load this news article. It might be unavailable or
+              there was a connection hiccup.
             </p>
             <div className='mt-6 flex items-center justify-center gap-3'>
               <Button variant='default' onClick={() => router.refresh()}>
@@ -332,18 +381,23 @@ export default function NewsDetailClient() {
             </nav>
           </FadeIn>
 
-          {/* HERO */}
-          <PopInItem className='relative rounded-xl ring-1 ring-black/10 shadow'>
-            <div className='flex items-stretch gap-4'>
-              <div className='relative w-full rounded-xl overflow-hidden bg-black/5'>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className='w-full h-[320px] md:h-[420px] object-cover'
-                />
-                <div className='absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent' />
-              </div>
+          <FadeIn>
+            <header className='mb-4 md:mb-6'>
+              <h1 className='text-3xl md:text-4xl font-extrabold leading-tight text-slate-900'>
+                {item.title}
+              </h1>
+            </header>
+          </FadeIn>
+
+          {/* HERO (title at the top, no meta on image) */}
+          <PopInItem className='relative rounded-xl ring-1 ring-black/10 shadow overflow-hidden'>
+            <div className='relative w-full'>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={item.image}
+                alt={item.title}
+                className='w-full h-[320px] md:h-[420px] object-cover'
+              />
             </div>
           </PopInItem>
 
@@ -352,18 +406,7 @@ export default function NewsDetailClient() {
             {/* MAIN */}
             <article className='lg:col-span-3'>
               <StaggerContainer delayChildren={0.05} stagger={0.08}>
-                <FadeInItem>
-                  <div className='text-sm text-slate-600 font-semibold mb-2'>
-                    <span>{item.author}</span> •{' '}
-                    <span>{new Date(item.date).toLocaleDateString()}</span>
-                  </div>
-                </FadeInItem>
-
-                <FadeInItem>
-                  <h1 className='text-3xl md:text-4xl font-extrabold leading-tight tracking-wide text-slate-900'>
-                    {item.title}
-                  </h1>
-                </FadeInItem>
+                {/* Title removed here (now in hero) */}
 
                 <FadeInItem>
                   <div className='mt-3 flex items-center gap-4 text-slate-500 text-sm'>
@@ -406,8 +449,12 @@ export default function NewsDetailClient() {
                 </StaggerContainer>
               )}
 
-              {/* Content (no animation to avoid late render on mobile) */}
+              {/* Content */}
               <ArticleBody content={item.content} />
+              <hr className='mt-8' />
+              {/* Testimonials under the article body */}
+              <TestimonialsSection items={item.testimonials || []} />
+              <CuteNewsCta />
             </article>
 
             {/* SIDEBAR */}

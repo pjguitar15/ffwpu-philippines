@@ -1,4 +1,12 @@
+// models/News.ts
 import mongoose, { Schema, models, model } from 'mongoose'
+
+export interface Testimonial {
+  name: string
+  role?: string
+  avatar?: string
+  quote: string
+}
 
 export interface NewsDoc extends mongoose.Document {
   title: string
@@ -6,21 +14,32 @@ export interface NewsDoc extends mongoose.Document {
   date: string
   image: string
   tags: string[]
-  status: 'published' | 'draft' | 'active' | 'inactive' // Temporarily support both for migration
+  status: 'published' | 'draft' | 'active' | 'inactive'
   views: number
   likes: number
   content: string
   slug: string
   comments: any[]
+  testimonials: Testimonial[] // ⬅️ NEW
   createdAt: Date
   updatedAt: Date
 }
+
+const TestimonialSchema = new Schema<Testimonial>(
+  {
+    name: { type: String, required: true },
+    role: { type: String },
+    avatar: { type: String },
+    quote: { type: String, required: true },
+  },
+  { _id: false },
+)
 
 const NewsSchema = new Schema<NewsDoc>(
   {
     title: { type: String, required: true },
     author: { type: String, required: true },
-    date: { type: String, required: true }, // ISO date string
+    date: { type: String, required: true },
     image: { type: String, required: true },
     tags: { type: [String], default: [] },
     status: {
@@ -32,15 +51,11 @@ const NewsSchema = new Schema<NewsDoc>(
     likes: { type: Number, default: 0 },
     content: { type: String, required: true },
     slug: { type: String, required: true, unique: true, index: true },
-    // Use Mixed[] for now; admin UI doesn't edit comments yet
     comments: { type: [Schema.Types.Mixed] as unknown as any, default: [] },
+    testimonials: { type: [TestimonialSchema], default: [] }, // ⬅️ NEW
   },
   { timestamps: true },
 )
 
-// Clear the model cache to ensure the new schema is used
-if (models.News) {
-  delete models.News
-}
-
+if (models.News) delete models.News
 export const News = model<NewsDoc>('News', NewsSchema)

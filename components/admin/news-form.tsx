@@ -35,6 +35,13 @@ import {
 } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
 
+type Testimonial = {
+  name: string
+  role?: string
+  avatar?: string
+  quote: string
+}
+
 type NewsFormValues = {
   _id?: string
   title: string
@@ -45,8 +52,8 @@ type NewsFormValues = {
   status: 'published' | 'draft'
   content: string
   slug?: string
+  testimonials: Testimonial[] // ⬅️ NEW
 }
-
 export function NewsForm({
   open,
   onOpenChange,
@@ -66,12 +73,18 @@ export function NewsForm({
     tags: '',
     status: 'published',
     content: '',
+    testimonials: [], // ⬅️ NEW
   })
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [uploadPct, setUploadPct] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
+  const [avatarUploading, setAvatarUploading] = useState<
+    Record<number, { uploading: boolean; pct: number; error: string | null }>
+  >({})
+  const avatarInputsRef = useRef<Record<number, HTMLInputElement | null>>({})
+
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const isEdit = Boolean(initial && (initial as any)._id)
   const { toast } = useToast()
@@ -92,9 +105,11 @@ export function NewsForm({
         content: (initial?.content as any) || '',
         slug: (initial as any)?.slug,
         _id: (initial as any)?._id,
+        testimonials: Array.isArray((initial as any)?.testimonials)
+          ? (initial as any).testimonials
+          : [], // ⬅️ NEW
       }))
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
   const tagList = useMemo(
@@ -164,6 +179,87 @@ export function NewsForm({
     }
   }
 
+  async function uploadAvatar(idx: number, file: File) {
+    const MAX_BYTES = 10 * 1024 * 1024 // 10MB
+    if (!file.type.startsWith('image/')) {
+      setAvatarUploading((s) => ({
+        ...s,
+        [idx]: {
+          uploading: false,
+          pct: 0,
+          error: 'Please select an image file',
+        },
+      }))
+      return
+    }
+    if (file.size > MAX_BYTES) {
+      setAvatarUploading((s) => ({
+        ...s,
+        [idx]: { uploading: false, pct: 0, error: 'File too large (max 10MB)' },
+      }))
+      return
+    }
+
+    setAvatarUploading((s) => ({
+      ...s,
+      [idx]: { uploading: true, pct: 0, error: null },
+    }))
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const fd = new FormData()
+        fd.append('file', file)
+        const xhr = new XMLHttpRequest()
+        xhr.open('POST', '/api/cloudinary-upload')
+
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const pct = (e.loaded / e.total) * 100
+            setAvatarUploading((s) => ({
+              ...s,
+              [idx]: { uploading: true, pct, error: null },
+            }))
+          }
+        }
+
+        xhr.onload = () => {
+          try {
+            const data = JSON.parse(xhr.responseText || '{}')
+            if (xhr.status >= 200 && xhr.status < 300 && data?.url) {
+              setValues((v) => {
+                const arr = [...(v.testimonials || [])]
+                if (!arr[idx]) return v
+                arr[idx] = { ...arr[idx], avatar: data.url }
+                return { ...v, testimonials: arr }
+              })
+              setAvatarUploading((s) => ({
+                ...s,
+                [idx]: { uploading: false, pct: 100, error: null },
+              }))
+              resolve()
+            } else {
+              reject(new Error(data?.error || 'Upload failed'))
+            }
+          } catch {
+            reject(new Error('Upload failed'))
+          }
+        }
+
+        xhr.onerror = () => reject(new Error('Network error during upload'))
+        xhr.send(fd)
+      })
+    } catch (err: any) {
+      setAvatarUploading((s) => ({
+        ...s,
+        [idx]: {
+          uploading: false,
+          pct: 0,
+          error: err?.message || 'Upload failed',
+        },
+      }))
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -180,6 +276,7 @@ export function NewsForm({
         status: values.status,
         content: toParagraphHtml(values.content),
         slug: values.slug || slugify(values.title),
+        testimonials: (values.testimonials || []).slice(0, 3), // ⬅️ NEW
       }
       const isEdit = Boolean((values as any)._id || values.slug)
       const res = await fetch(
@@ -468,6 +565,227 @@ export function NewsForm({
                     Use the toolbar to format text (bold, italic, underline,
                     lists, headings, links).
                   </p>
+                </div>
+                {/* Testimonials editor */}
+                <div className='md:col-span-3'>
+                  <div className='flex items-center justify-between mb-1.5'>
+                    <label className='text-sm font-medium flex items-center gap-2'>
+                      <svg
+                        className='h-4 w-4 text-sky-600 dark:text-sky-300'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                      >
+                        <path
+                          d='M7 7h10M7 12h10M7 17h6'
+                          stroke='currentColor'
+                          strokeWidth='2'
+                          strokeLinecap='round'
+                        />
+                      </svg>
+                      Testimonials (max 3)
+                    </label>
+                    <Button
+                      type='button'
+                      size='sm'
+                      variant='secondary'
+                      className='cursor-pointer'
+                      onClick={() =>
+                        setValues((v) => ({
+                          ...v,
+                          testimonials:
+                            (v.testimonials || []).length >= 3
+                              ? v.testimonials
+                              : [
+                                  ...(v.testimonials || []),
+                                  { name: '', role: '', avatar: '', quote: '' },
+                                ],
+                        }))
+                      }
+                      disabled={(values.testimonials || []).length >= 3}
+                    >
+                      Add testimonial
+                    </Button>
+                  </div>
+
+                  {(values.testimonials || []).length === 0 && (
+                    <p className='text-xs text-muted-foreground mb-2'>
+                      Optional. Add up to three short reflections with name,
+                      role, and quote.
+                    </p>
+                  )}
+
+                  <div className='space-y-4'>
+                    {(values.testimonials || []).map((t, idx) => (
+                      <div
+                        key={idx}
+                        className='rounded-lg border p-3 bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-800'
+                      >
+                        <div className='grid grid-cols-1 md:grid-cols-6 gap-3'>
+                          <div className='md:col-span-2'>
+                            <label className='text-xs font-medium'>Name</label>
+                            <Input
+                              value={t.name}
+                              onChange={(e) => {
+                                const name = e.target.value
+                                setValues((v) => {
+                                  const arr = [...(v.testimonials || [])]
+                                  arr[idx] = { ...arr[idx], name }
+                                  return { ...v, testimonials: arr }
+                                })
+                              }}
+                              placeholder='Jane Doe'
+                            />
+                          </div>
+                          <div className='md:col-span-2'>
+                            <label className='text-xs font-medium'>
+                              Role (optional)
+                            </label>
+                            <Input
+                              value={t.role || ''}
+                              onChange={(e) => {
+                                const role = e.target.value
+                                setValues((v) => {
+                                  const arr = [...(v.testimonials || [])]
+                                  arr[idx] = { ...arr[idx], role }
+                                  return { ...v, testimonials: arr }
+                                })
+                              }}
+                              placeholder='Youth Leader'
+                            />
+                          </div>
+                          {/* Avatar uploader (replaces the old text input) */}
+                          <div className='md:col-span-2'>
+                            <label className='text-xs font-medium'>
+                              Avatar (optional)
+                            </label>
+                            <div className='flex items-center gap-3'>
+                              {/* Preview */}
+                              <div className='h-12 w-12 rounded-full overflow-hidden bg-slate-200'>
+                                {t.avatar ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img
+                                    src={t.avatar}
+                                    alt='avatar'
+                                    className='h-full w-full object-cover'
+                                  />
+                                ) : (
+                                  <div className='h-full w-full grid place-items-center text-slate-500 text-[10px]'>
+                                    No image
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Actions */}
+                              <div className='flex items-center gap-2'>
+                                <Button
+                                  type='button'
+                                  size='sm'
+                                  variant='secondary'
+                                  className='cursor-pointer'
+                                  onClick={() =>
+                                    avatarInputsRef.current[idx]?.click()
+                                  }
+                                >
+                                  {t.avatar
+                                    ? 'Replace avatar'
+                                    : 'Upload avatar'}
+                                </Button>
+
+                                {t.avatar && (
+                                  <Button
+                                    type='button'
+                                    size='sm'
+                                    variant='ghost'
+                                    className='cursor-pointer text-rose-600 hover:text-rose-700'
+                                    onClick={() =>
+                                      setValues((v) => {
+                                        const arr = [...(v.testimonials || [])]
+                                        arr[idx] = { ...arr[idx], avatar: '' }
+                                        return { ...v, testimonials: arr }
+                                      })
+                                    }
+                                  >
+                                    Remove
+                                  </Button>
+                                )}
+                              </div>
+
+                              {/* Hidden file input */}
+                              <input
+                                ref={(el: any) =>
+                                  (avatarInputsRef.current[idx] = el)
+                                }
+                                type='file'
+                                accept='image/*'
+                                className='hidden'
+                                onChange={async (e) => {
+                                  const input =
+                                    e.currentTarget as HTMLInputElement
+                                  const f = input.files?.[0]
+                                  if (f) await uploadAvatar(idx, f)
+                                  // reset via ref (works even if React nullifies the event)
+                                  const refEl = avatarInputsRef.current[idx]
+                                  if (refEl) refEl.value = ''
+                                }}
+                              />
+                            </div>
+
+                            {/* Progress / Error */}
+                            {avatarUploading[idx]?.uploading && (
+                              <div className='mt-2 w-48'>
+                                <Progress
+                                  value={avatarUploading[idx].pct || 0}
+                                />
+                                <p className='text-xs text-muted-foreground mt-1'>
+                                  Uploading…{' '}
+                                  {Math.round(avatarUploading[idx].pct || 0)}%
+                                </p>
+                              </div>
+                            )}
+                            {avatarUploading[idx]?.error && (
+                              <p className='text-xs text-rose-600 mt-1'>
+                                {avatarUploading[idx].error}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className='md:col-span-5'>
+                            <label className='text-xs font-medium'>Quote</label>
+                            <Textarea
+                              value={t.quote}
+                              onChange={(e) => {
+                                const quote = e.target.value
+                                setValues((v) => {
+                                  const arr = [...(v.testimonials || [])]
+                                  arr[idx] = { ...arr[idx], quote }
+                                  return { ...v, testimonials: arr }
+                                })
+                              }}
+                              placeholder='Their short reflection…'
+                              rows={3}
+                            />
+                          </div>
+                          <div className='md:col-span-1 flex items-end'>
+                            <Button
+                              type='button'
+                              variant='destructive'
+                              className='w-full cursor-pointer'
+                              onClick={() =>
+                                setValues((v) => ({
+                                  ...v,
+                                  testimonials: (v.testimonials || []).filter(
+                                    (_, i) => i !== idx,
+                                  ),
+                                }))
+                              }
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
