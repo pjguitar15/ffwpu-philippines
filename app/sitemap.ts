@@ -61,18 +61,6 @@ const staticPages = [
     priority: 0.6,
     changeFrequency: 'monthly' as const,
   },
-
-  // Authentication pages (public)
-  {
-    path: '/login',
-    priority: 0.5,
-    changeFrequency: 'monthly' as const,
-  },
-  {
-    path: '/register',
-    priority: 0.5,
-    changeFrequency: 'monthly' as const,
-  },
 ]
 
 // Safe join: guarantees exactly one slash between base and path
