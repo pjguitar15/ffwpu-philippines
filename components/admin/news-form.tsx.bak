@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -33,10 +33,6 @@ import {
   RefreshCcw,
   Trash2,
   CheckCircle,
-  Loader2,
-  ChevronUp,
-  ChevronDown,
-  Images,
 } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
 
@@ -97,128 +93,92 @@ export function NewsForm({
   >({})
   const avatarInputsRef = useRef<Record<number, HTMLInputElement | null>>({})
 
-  const [galleryOpen, setGalleryOpen] = useState(true)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const galleryInputRef = useRef<HTMLInputElement | null>(null)
+  const [galleryUploading, setGalleryUploading] = useState<Record<number, {
+    uploading: boolean
+    pct: number
+    error: string | null
+  }>>({})
+  const isEdit = Boolean(initial && (initial as any)._id)
 
-  type PendingItem = { id: string; pct: number; error?: string | null }
-  const [pendingGallery, setPendingGallery] = useState<PendingItem[]>([])
-
-  function uid() {
-    return Math.random().toString(36).slice(2) + Date.now().toString(36)
-  }
-
-  async function uploadGalleryFiles(fileList: FileList | File[]) {
-    const files = Array.from(fileList || [])
-    if (!files.length) return
-
-    // respect max items (12)
-    const remaining =
-      MAX_GALLERY_ITEMS - (values.gallery?.length || 0) - pendingGallery.length
-    if (remaining <= 0) {
-      toast({ title: 'Gallery is full', description: 'Max 12 images.' })
+  async function uploadGalleryImage(file: File) {
+    const MAX_BYTES = 10 * 1024 * 1024 // 10MB
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: 'Invalid file type',
+        description: 'Please select an image file',
+        variant: 'destructive',
+      })
       return
     }
-    const toUpload = files.slice(0, remaining)
-
-    // validate first
-    const MAX_BYTES = 10 * 1024 * 1024
-    for (const f of toUpload) {
-      if (!f.type.startsWith('image/')) {
-        toast({
-          title: 'Invalid file',
-          description: 'Images only.',
-          variant: 'destructive',
-        })
-        return
-      }
-      if (f.size > MAX_BYTES) {
-        toast({
-          title: 'File too large',
-          description: 'Max 10MB per image.',
-          variant: 'destructive',
-        })
-        return
-      }
+    if (file.size > MAX_BYTES) {
+      toast({
+        title: 'File too large',
+        description: 'Maximum file size is 10MB',
+        variant: 'destructive',
+      })
+      return
     }
 
-    // create pending placeholders
-    const ids = toUpload.map(() => uid())
-    setPendingGallery((prev) => [
-      ...prev,
-      ...ids.map((id) => ({ id, pct: 0, error: null })),
-    ])
+    const idx = values.gallery?.length || 0
+    setGalleryUploading(prev => ({ ...prev, [idx]: { uploading: true, pct: 0, error: null }}))
 
-    // upload each file
-    await Promise.all(
-      toUpload.map(
-        (file, idx) =>
-          new Promise<void>((resolve) => {
-            const id = ids[idx]
-            const fd = new FormData()
-            fd.append('file', file)
-            const xhr = new XMLHttpRequest()
-            xhr.open('POST', '/api/cloudinary-upload')
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      
+      const xhr = new XMLHttpRequest()
+      xhr.open('POST', '/api/cloudinary-upload')
+      
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const pct = (e.loaded / e.total) * 100
+          setGalleryUploading(prev => ({ 
+            ...prev, 
+            [idx]: { uploading: true, pct, error: null }
+          }))
+        }
+      }
 
-            xhr.upload.onprogress = (e) => {
-              if (e.lengthComputable) {
-                const pct = (e.loaded / e.total) * 100
-                setPendingGallery((prev) =>
-                  prev.map((p) => (p.id === id ? { ...p, pct } : p)),
-                )
-              }
-            }
-
-            xhr.onload = () => {
-              try {
-                const data = JSON.parse(xhr.responseText || '{}')
-                if (xhr.status >= 200 && xhr.status < 300 && data?.url) {
-                  // commit to gallery list
-                  setValues((v) => ({
-                    ...v,
-                    gallery: [...(v.gallery || []), data.url].slice(
-                      0,
-                      MAX_GALLERY_ITEMS,
-                    ),
-                  }))
-                  // remove pending
-                  setPendingGallery((prev) => prev.filter((p) => p.id !== id))
-                } else {
-                  setPendingGallery((prev) =>
-                    prev.map((p) =>
-                      p.id === id
-                        ? { ...p, error: data?.error || 'Upload failed' }
-                        : p,
-                    ),
-                  )
-                }
-              } catch {
-                setPendingGallery((prev) =>
-                  prev.map((p) =>
-                    p.id === id ? { ...p, error: 'Upload failed' } : p,
-                  ),
-                )
-              } finally {
-                resolve()
-              }
-            }
-
-            xhr.onerror = () => {
-              setPendingGallery((prev) =>
-                prev.map((p) =>
-                  p.id === id ? { ...p, error: 'Network error' } : p,
-                ),
-              )
+      await new Promise<void>((resolve, reject) => {
+        xhr.onload = () => {
+          try {
+            const data = JSON.parse(xhr.responseText || '{}')
+            if (xhr.status >= 200 && xhr.status < 300 && data?.url) {
+              setValues(prev => ({
+                ...prev,
+                gallery: [...(prev.gallery || []), data.url]
+              }))
+              setGalleryUploading(prev => ({ 
+                ...prev, 
+                [idx]: { uploading: false, pct: 100, error: null }
+              }))
               resolve()
+            } else {
+              reject(new Error(data?.error || 'Upload failed'))
             }
+          } catch {
+            reject(new Error('Upload failed'))
+          }
+        }
 
-            xhr.send(fd)
-          }),
-      ),
-    )
+        xhr.onerror = () => reject(new Error('Network error during upload'))
+        xhr.send(fd)
+      })
+    } catch (err: any) {
+      console.error(err)
+      setGalleryUploading(prev => ({
+        ...prev,
+        [idx]: { uploading: false, pct: 0, error: err?.message || 'Upload failed' }
+      }))
+      toast({
+        title: 'Upload failed',
+        description: err?.message || 'Please try again',
+        variant: 'destructive',
+      })
+    }
   }
-
-  const isEdit = Boolean(initial && (initial as any)._id)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -450,8 +410,18 @@ export function NewsForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='w-[95vw] sm:max-w-3xl md:max-w-4xl h-[90vh] sm:h-[85vh] p-0 overflow-hidden'>
-        <div className='flex flex-col h-full min-h-0'>
+      <DialogContent className="w-[95vw] sm:max-w-3xl md:max-w-4xl h-[90vh] sm:h-[85vh] p-0 overflow-hidden">
+        <div className="flex flex-col h-full min-h-0">
+          <div className="mb-5">
+            <div className="h-1 w-full bg-indigo-500" />
+            <div className="px-6 pt-6 pb-4 bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/20 dark:to-indigo-950/20 border-b">
+              <DialogHeader>
+                <DialogTitle className="text-foreground">
+                  {isEdit ? 'Edit News' : 'Create News'}
+                </DialogTitle>
+              </DialogHeader>
+            </div>
+          </div>
           {/* Themed header: thin indigo bar + subtle sky→indigo gradient */}
           <div className='mb-5'>
             <div className='h-1 w-full bg-indigo-500' />
@@ -519,6 +489,7 @@ export function NewsForm({
                     Appears beneath the headline on the public page.
                   </p>
                 </div>
+
                 {/* Row 2: Date | Status | Tags */}
                 <div>
                   <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
@@ -583,11 +554,12 @@ export function NewsForm({
                     </div>
                   )}
                 </div>
-                {/* Row 3: Dropbox-like dropzone or image preview, spanning all columns */}
+
+                {/* Row 3: Main image upload */}
                 <div className='md:col-span-3'>
                   <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
                     <ImageIcon className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
-                    Upload Image
+                    Main Image
                   </label>
                   {!values.image ? (
                     <div
@@ -704,6 +676,134 @@ export function NewsForm({
                     </div>
                   )}
                 </div>
+
+                </div>
+                </div>
+
+                {/* Gallery Section */}
+                <div className='md:col-span-3 mt-6'>
+                  <div className='flex items-center justify-between mb-1.5'>
+                    <label className='text-sm font-medium flex items-center gap-2'>
+                      <ImageIcon className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
+                      Gallery Images
+                    </label>
+                    <Button
+                      type='button'
+                      size='sm'
+                      variant='secondary'
+                      className='cursor-pointer'
+                      onClick={() => galleryInputRef.current?.click()}
+                      disabled={(values.gallery?.length || 0) >= MAX_GALLERY_ITEMS}
+                    >
+                      Add image
+                    </Button>
+                    <input
+                      ref={galleryInputRef}
+                      type='file'
+                      accept='image/*'
+                      multiple
+                      className='hidden'
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files || [])
+                        for (const file of files) {
+                          if ((values.gallery?.length || 0) >= MAX_GALLERY_ITEMS) break
+                          await uploadGalleryImage(file)
+                        }
+                        if (galleryInputRef.current) galleryInputRef.current.value = ''
+                      }}
+                    />
+                  </div>
+
+                  {(values.gallery?.length || 0) === 0 ? (
+                    <div
+                      className={'relative rounded-xl border-2 border-dashed transition-colors p-6 text-center select-none ' +
+                        (isDragging
+                          ? 'border-sky-500 bg-sky-50/50 dark:bg-sky-950/20'
+                          : 'border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-sky-400')
+                      }
+                      onDragOver={(e) => {
+                        e.preventDefault()
+                        setIsDragging(true)
+                      }}
+                      onDragLeave={() => setIsDragging(false)}
+                      onDrop={async (e) => {
+                        e.preventDefault()
+                        setIsDragging(false)
+                        const files = Array.from(e.dataTransfer.files || [])
+                        for (const file of files) {
+                          if ((values.gallery?.length || 0) >= MAX_GALLERY_ITEMS) break
+                          await uploadGalleryImage(file)
+                        }
+                      }}
+                    >
+                      <div className='flex flex-col items-center gap-2'>
+                        <div className='h-12 w-12 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center dark:bg-sky-900/40 dark:text-sky-200'>
+                          <ImagePlus className='h-6 w-6' />
+                        </div>
+                        <div className='text-sm font-medium'>
+                          Drag & drop images here or click Add image
+                        </div>
+                        <div className='text-sm text-muted-foreground'>
+                          Up to {MAX_GALLERY_ITEMS} images, max 10MB each
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-3'>
+                      {values.gallery.map((url, idx) => (
+                        <div
+                          key={idx}
+                          className='relative group aspect-square rounded-lg overflow-hidden border bg-white dark:bg-slate-950'
+                        >
+                          <img
+                            src={url}
+                            alt={`Gallery ${idx + 1}`}
+                            className='w-full h-full object-cover'
+                          />
+                          <div className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2'>
+                            <Button
+                              type='button'
+                              size='sm'
+                              variant='destructive'
+                              className='cursor-pointer'
+                              onClick={() => {
+                                setValues(prev => ({
+                                  ...prev,
+                                  gallery: prev.gallery?.filter((_, i) => i !== idx),
+                                }))
+                              }}
+                            >
+                              <Trash2 className='h-4 w-4' />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+
+                      {Object.entries(galleryUploading).map(([idx, status]) => (
+                        status.uploading && (
+                          <div key={idx} className='aspect-square rounded-lg border bg-white dark:bg-slate-950 flex flex-col items-center justify-center gap-2 p-4'>
+                            <Progress value={status.pct} />
+                            <p className='text-xs text-muted-foreground'>
+                              Uploading... {Math.round(status.pct)}%
+                            </p>
+                          </div>
+                        )
+                      ))}
+
+                      {(values.gallery?.length || 0) < MAX_GALLERY_ITEMS && (
+                        <button
+                          type='button'
+                          onClick={() => galleryInputRef.current?.click()}
+                          className='aspect-square rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-800 hover:border-sky-400 transition-colors flex flex-col items-center justify-center gap-2 bg-white dark:bg-slate-950'
+                        >
+                          <ImagePlus className='h-6 w-6 text-sky-600 dark:text-sky-300' />
+                          <span className='text-sm text-muted-foreground'>Add image</span>
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 {/* Content editor */}
                 <div className='md:col-span-3'>
                   <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
@@ -724,160 +824,80 @@ export function NewsForm({
                     lists, headings, links).
                   </p>
                 </div>
-                {/* Row 3: Gallery uploader (modern UI) */}
                 <div className='md:col-span-3'>
-                  <div className='flex items-center justify-between mb-1.5'>
-                    <label className='text-sm font-medium flex items-center gap-2'>
-                      <Images className='h-4 w-4 text-sky-600 dark:text-sky-300' />
-                      Gallery images
-                      <span className='text-xs text-muted-foreground ml-2'>
-                        {(values.gallery?.length || 0) + pendingGallery.length}/
-                        {MAX_GALLERY_ITEMS}
-                      </span>
-                    </label>
-
-                    <div className='flex items-center gap-2'>
-                      <Button
-                        type='button'
-                        variant='secondary'
-                        size='sm'
-                        className='cursor-pointer'
-                        onClick={() => galleryInputRef.current?.click()}
-                        disabled={
-                          (values.gallery?.length || 0) +
-                            pendingGallery.length >=
-                          MAX_GALLERY_ITEMS
-                        }
-                      >
-                        <ImagePlus className='h-4 w-4 mr-1.5' />
-                        Add images
-                      </Button>
-                      <Button
-                        type='button'
-                        variant='ghost'
-                        size='icon'
-                        className='cursor-pointer'
-                        onClick={() => setGalleryOpen((v) => !v)}
-                        aria-label={galleryOpen ? 'Collapse' : 'Expand'}
-                      >
-                        {galleryOpen ? (
-                          <ChevronUp className='h-4 w-4' />
-                        ) : (
-                          <ChevronDown className='h-4 w-4' />
-                        )}
-                      </Button>
-
-                      {/* hidden multiple input */}
-                      <input
-                        ref={galleryInputRef}
-                        type='file'
-                        accept='image/*'
-                        multiple
-                        className='hidden'
-                        onChange={async (e) => {
-                          const files = e.target.files
-                          if (files?.length) await uploadGalleryFiles(files)
-                          if (galleryInputRef.current)
-                            galleryInputRef.current.value = ''
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <p className='text-xs text-muted-foreground mb-2'>
-                    Drag & drop or click “Add images.” You can upload up to 12
-                    images.
+                  <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
+                    <ImagePlus className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
+                    Gallery images
+                  </label>
+                  <p className='text-xs text-muted-foreground'>
+                    Add up to 12 image URLs to show above the testimonies
+                    section.
                   </p>
-
-                  {/* Dropzone */}
-                  <div
-                    className='relative rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-sky-400 transition-colors p-4'
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={async (e) => {
-                      e.preventDefault()
-                      if (e.dataTransfer.files?.length)
-                        await uploadGalleryFiles(e.dataTransfer.files)
-                    }}
+                  {values.gallery.length === 0 && (
+                    <p className='text-xs text-muted-foreground mt-2'>
+                      No gallery items yet. Click below to add one.
+                    </p>
+                  )}
+                  {values.gallery.length > 0 && (
+                    <div className='space-y-3 mt-2'>
+                      {values.gallery.map((url, idx) => (
+                        <div
+                          key={idx}
+                          className='flex flex-col sm:flex-row sm:items-center gap-2'
+                        >
+                          <Input
+                            value={url}
+                            onChange={(e) =>
+                              setValues((prev) => {
+                                const next = [...(prev.gallery || [])]
+                                next[idx] = e.target.value
+                                return { ...prev, gallery: next }
+                              })
+                            }
+                            placeholder='https://example.com/image.jpg'
+                            className='flex-1 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+                          />
+                          <Button
+                            type='button'
+                            variant='ghost'
+                            size='sm'
+                            className='text-rose-600 hover:text-rose-700 cursor-pointer'
+                            onClick={() =>
+                              setValues((prev) => ({
+                                ...prev,
+                                gallery: (prev.gallery || []).filter(
+                                  (_, i) => i !== idx,
+                                ),
+                              }))
+                            }
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <Button
+                    type='button'
+                    variant='secondary'
+                    size='sm'
+                    className='mt-3 cursor-pointer'
+                    onClick={() =>
+                      setValues((prev) => ({
+                        ...prev,
+                        gallery:
+                          (prev.gallery || []).length >= MAX_GALLERY_ITEMS
+                            ? prev.gallery
+                            : [...(prev.gallery || []), ''],
+                      }))
+                    }
+                    disabled={
+                      (values.gallery || []).length >= MAX_GALLERY_ITEMS
+                    }
                   >
-                    {/* Grid */}
-                    {galleryOpen && (
-                      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3'>
-                        {/* existing images */}
-                        {(values.gallery || []).map((url, idx) => (
-                          <div
-                            key={`${url}-${idx}`}
-                            className='relative overflow-hidden rounded-lg ring-1 ring-black/10 shadow bg-white'
-                          >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={url}
-                              alt={`Gallery ${idx + 1}`}
-                              className='aspect-[4/3] w-full object-cover'
-                            />
-                            <button
-                              type='button'
-                              className='absolute top-2 right-2 rounded-full bg-white/90 hover:bg-white px-2 py-1 text-xs text-rose-600 shadow ring-1 ring-black/10'
-                              onClick={() =>
-                                setValues((prev) => ({
-                                  ...prev,
-                                  gallery: (prev.gallery || []).filter(
-                                    (_, i) => i !== idx,
-                                  ),
-                                }))
-                              }
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        ))}
-
-                        {/* uploading placeholders */}
-                        {pendingGallery.map((p) => (
-                          <div
-                            key={p.id}
-                            className='relative overflow-hidden rounded-lg ring-1 ring-black/10 shadow bg-slate-100 dark:bg-slate-900'
-                          >
-                            <div className='aspect-[4/3] w-full animate-pulse' />
-                            <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/30'>
-                              {!p.error ? (
-                                <>
-                                  <Loader2 className='h-6 w-6 text-white animate-spin' />
-                                  <Progress className='w-2/3' value={p.pct} />
-                                  <span className='text-xs text-white/90'>
-                                    {Math.round(p.pct)}%
-                                  </span>
-                                </>
-                              ) : (
-                                <span className='text-xs text-rose-200'>
-                                  ⨯ {p.error}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-
-                        {/* empty state tile */}
-                        {(values.gallery?.length || 0) +
-                          pendingGallery.length ===
-                          0 && (
-                          <div className='col-span-full'>
-                            <div className='grid place-items-center py-10 text-center text-slate-500'>
-                              <Upload className='h-6 w-6 mb-2 opacity-70' />
-                              <div className='text-sm'>
-                                Drop images here or click “Add images”.
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                    Add image
+                  </Button>
                 </div>
-
-                <div className='md:col-span-3 my-8'>
-                  <div className='h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent dark:via-slate-800' />
-                </div>
-
                 {/* Testimonials editor */}
                 <div className='md:col-span-3'>
                   <div className='flex items-center justify-between mb-1.5'>
@@ -1132,5 +1152,8 @@ export function NewsForm({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
+
+export default NewsForm;
+
