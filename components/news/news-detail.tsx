@@ -76,19 +76,21 @@ type NewsItem = {
   id: string
   slug: string
   title: string
+  subtitle?: string
   author: string
   date: string
   image: string
+  gallery?: string[]
   tags: string[]
   status: string
   views: number
   likes: number
   content: string
   comments: any[]
-  testimonials?: Testimonial[] // ⬅️ NEW
+  testimonials?: Testimonial[]
 }
 
-function TestimonialsSection({ items }: { items: Testimonial[] }) {
+export function TestimonialsSection({ items }: { items: Testimonial[] }) {
   if (!items?.length) return null
   return (
     <section aria-labelledby='testimonials-title' className='mt-10 md:mt-12'>
@@ -131,6 +133,54 @@ function TestimonialsSection({ items }: { items: Testimonial[] }) {
               </div>
             </div>
           </article>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+export function GallerySection({
+  images,
+  title,
+}: {
+  images: string[]
+  title: string
+}) {
+  const items = (images || [])
+    .map((src) => (typeof src === 'string' ? src.trim() : ''))
+    .filter(Boolean)
+    .slice(0, 12)
+
+  if (!items.length) return null
+
+  return (
+    <section aria-labelledby='gallery-title' className='mt-10 md:mt-12'>
+      <div className='flex flex-col md:flex-row md:items-end md:justify-between gap-2 mb-4'>
+        <div>
+          <h2
+            id='gallery-title'
+            className='text-xl font-semibold text-slate-900 tracking-wide uppercase'
+          >
+            Gallery
+          </h2>
+          <p className='text-sm text-slate-600'>
+            Moments captured during this update.
+          </p>
+        </div>
+      </div>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+        {items.map((src, idx) => (
+          <div
+            key={`${src}-${idx}`}
+            className='overflow-hidden rounded-lg ring-1 ring-black/10 shadow bg-white'
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={src}
+              alt={`${title} gallery image ${idx + 1}`}
+              className='h-56 w-full object-cover'
+            />
+          </div>
         ))}
       </div>
     </section>
@@ -203,19 +253,21 @@ export default function NewsDetailClient() {
     ;(async () => {
       try {
         const res = await fetch('/api/news', { cache: 'no-store' })
-        if (res.ok) {
-          const data = (await res.json()) as NewsItem[]
-          const sorted = Array.isArray(data)
-            ? [...data].sort(
-                (a, b) =>
-                  new Date(b.date || 0).getTime() -
-                  new Date(a.date || 0).getTime(),
-              )
-            : []
-          if (mounted) setAllNews(sorted)
-          return
+        if (!res.ok) return
+
+        const data = (await res.json()) as NewsItem[]
+        const arr = Array.isArray(data) ? data.slice() : []
+
+        // Fisher–Yates shuffle
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1))
+          ;[arr[i], arr[j]] = [arr[j], arr[i]]
         }
-      } catch {}
+
+        if (mounted) setAllNews(arr)
+      } catch {
+        // noop
+      }
     })()
     return () => {
       mounted = false
@@ -383,9 +435,14 @@ export default function NewsDetailClient() {
 
           <FadeIn>
             <header className='mb-4 md:mb-6'>
-              <h1 className='text-3xl md:text-4xl font-extrabold leading-tight text-slate-900'>
+              <h1 className='text-3xl md:text-4xl font-extrabold leading-tight text-slate-900 uppercase tracking-[0.08em]'>
                 {item.title}
               </h1>
+              {item.subtitle && (
+                <p className='mt-2 text-base md:text-lg text-slate-600 font-medium'>
+                  {item.subtitle}
+                </p>
+              )}
             </header>
           </FadeIn>
 
@@ -451,6 +508,7 @@ export default function NewsDetailClient() {
 
               {/* Content */}
               <ArticleBody content={item.content} />
+              <GallerySection images={item.gallery || []} title={item.title} />
               <hr className='mt-8' />
               {/* Testimonials under the article body */}
               <TestimonialsSection items={item.testimonials || []} />
@@ -540,3 +598,4 @@ export default function NewsDetailClient() {
     </div>
   )
 }
+

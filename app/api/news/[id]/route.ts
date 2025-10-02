@@ -38,9 +38,19 @@ export async function PUT(
 
   const body = await req.json()
   if (body.title) doc.title = body.title
+  if ('subtitle' in body) {
+    doc.subtitle =
+      typeof body.subtitle === 'string' ? body.subtitle.trim() : ''
+  }
   if (body.author) doc.author = body.author
   if (body.date) doc.date = body.date
   if (body.image) doc.image = body.image
+  if (Array.isArray(body.gallery)) {
+    doc.gallery = body.gallery
+      .map((url: any) => String(url || '').trim())
+      .filter(Boolean)
+      .slice(0, 12)
+  }
   if (Array.isArray(body.tags)) doc.tags = body.tags
   if (body.status) {
     let newStatus = body.status
@@ -101,3 +111,4 @@ export async function DELETE(
   } catch {}
   return NextResponse.json({ ok: true })
 }
+

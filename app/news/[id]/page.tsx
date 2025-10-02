@@ -9,9 +9,11 @@ type NewsItem = {
   id?: string
   slug: string
   title: string
+  subtitle?: string
   author: string
   date: string
   image: string
+  gallery?: string[]
   tags?: string[]
   status?: string
   views?: number
@@ -54,12 +56,13 @@ async function fetchNews(slug: string): Promise<NewsItem | undefined> {
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }): Promise<Metadata> {
-  const item = await fetchNews(params.id)
-  const slug = item?.slug || params.id
+  const { id } = await params
+  const item = await fetchNews(id)
+  const slug = item?.slug || id
   const description = toDescription(
-    stripHtml(item?.content) || item?.title || '',
+    stripHtml(item?.content) || item?.subtitle || item?.title || '',
   )
 
   const canonical = `/news/${slug}`
@@ -114,7 +117,7 @@ async function NewsJsonLd({ slug }: { slug: string }) {
   const imageUrl = item.image?.startsWith('http')
     ? item.image
     : `${base}${item.image}`
-  const description = toDescription(stripHtml(item.content) || item.title || '')
+  const description = toDescription(stripHtml(item.content) || item.subtitle || item.title || '')
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
@@ -151,8 +154,9 @@ async function NewsJsonLd({ slug }: { slug: string }) {
   )
 }
 
-export default function Page({ params }: { params: { id: string } }) {
-  const slug = params.id
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id: slug } = await params
+
   return (
     <div className='min-h-screen flex flex-col bg-background'>
       <main className='flex-1'>

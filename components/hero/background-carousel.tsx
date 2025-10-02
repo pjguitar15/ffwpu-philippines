@@ -84,7 +84,6 @@ export function BackgroundCarousel({
             priority={i === 0}
             className={[
               'object-cover will-change-transform',
-              dim ? 'brightness-[.92]' : '',
               active ? 'animate-zoomout' : '',
             ].join(' ')}
             style={active ? undefined : { transform: 'scale(1)' }}
@@ -105,9 +104,9 @@ export function BackgroundCarousel({
           }
         }
         .animate-zoomout {
-          animation: zoomout 16s linear forwards;
+          animation: zoomout 5s linear forwards;
           animation-fill-mode: forwards;
-          transform: scale(1.15);
+          transform: scale(1.3);
         }
         /* Remove .zoomout-final, let animation finish naturally */
       `}</style>

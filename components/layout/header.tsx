@@ -22,20 +22,9 @@ import {
   FiUser,
   FiHome,
 } from 'react-icons/fi'
-import {
-  FaChurch,
-  FaUsers,
-  FaStar,
-  FaPrayingHands,
-  FaCalendarAlt,
-  FaLaptop,
-  FaRocket,
-  FaHeart,
-} from 'react-icons/fa'
 import { HeaderSearch } from './header-search'
 import { LiveIndicator } from '@/components/ui/live-indicator'
 
-// --- DrawerMenuItem component for mobile nested dropdowns ---
 function DrawerMenuItem({
   item,
   onChoose,
@@ -198,11 +187,6 @@ function DropdownMenuItem({
     </Link>
   )
 }
-
-const IN_TOP_NAV_ON_XL = new Set<string>([
-  '/about/true-parents',
-  '/hj-testimonies',
-])
 
 export type DropdownNavItem = {
   label: string

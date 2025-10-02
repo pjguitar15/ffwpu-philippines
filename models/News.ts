@@ -10,9 +10,11 @@ export interface Testimonial {
 
 export interface NewsDoc extends mongoose.Document {
   title: string
+  subtitle?: string
   author: string
   date: string
   image: string
+  gallery: string[]
   tags: string[]
   status: 'published' | 'draft' | 'active' | 'inactive'
   views: number
@@ -20,7 +22,7 @@ export interface NewsDoc extends mongoose.Document {
   content: string
   slug: string
   comments: any[]
-  testimonials: Testimonial[] // ⬅️ NEW
+  testimonials: Testimonial[]
   createdAt: Date
   updatedAt: Date
 }
@@ -38,9 +40,11 @@ const TestimonialSchema = new Schema<Testimonial>(
 const NewsSchema = new Schema<NewsDoc>(
   {
     title: { type: String, required: true },
+    subtitle: { type: String, default: '' },
     author: { type: String, required: true },
     date: { type: String, required: true },
     image: { type: String, required: true },
+    gallery: { type: [String], default: [] },
     tags: { type: [String], default: [] },
     status: {
       type: String,
@@ -52,10 +56,11 @@ const NewsSchema = new Schema<NewsDoc>(
     content: { type: String, required: true },
     slug: { type: String, required: true, unique: true, index: true },
     comments: { type: [Schema.Types.Mixed] as unknown as any, default: [] },
-    testimonials: { type: [TestimonialSchema], default: [] }, // ⬅️ NEW
+    testimonials: { type: [TestimonialSchema], default: [] },
   },
   { timestamps: true },
 )
 
 if (models.News) delete models.News
 export const News = model<NewsDoc>('News', NewsSchema)
+

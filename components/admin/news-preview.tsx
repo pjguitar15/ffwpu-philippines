@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { ArticleBody } from '@/components/news/article-body'
+import { GallerySection, TestimonialsSection } from '../news/news-detail'
+import CuteNewsCta from '../CuteNewsCta'
 
 type Item = {
   _id?: string
@@ -16,6 +18,8 @@ type Item = {
   tags?: string[]
   status?: string
   content?: string
+  gallery?: string[]
+  testimonials?: any[]
 }
 
 export function NewsPreviewDialog({
@@ -115,6 +119,14 @@ export function NewsPreviewDialog({
 
                 {/* Body */}
                 <ArticleBody content={contentHtml} />
+                <GallerySection
+                  images={fullItem.gallery || []}
+                  title={fullItem.title}
+                />
+                <hr className='mt-8' />
+                {/* Testimonials under the article body */}
+                <TestimonialsSection items={fullItem.testimonials || []} />
+                <CuteNewsCta />
               </div>
             ) : (
               <div className='p-6 text-sm text-muted-foreground'>Loading…</div>

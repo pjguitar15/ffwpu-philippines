@@ -85,12 +85,15 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const {
     title,
+    subtitle,
     author,
     date,
     image,
+    gallery = [],
     tags = [],
     status = 'published',
     content = '',
+    testimonials = [],
   } = body || {}
 
   if (!title || !author || !date || !image) {
@@ -100,6 +103,29 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  const trimmedSubtitle =
+    typeof subtitle === 'string' ? subtitle.trim() : ''
+  const normalizedGallery = Array.isArray(gallery)
+    ? gallery
+        .map((url: any) => String(url || '').trim())
+        .filter(Boolean)
+        .slice(0, 12)
+    : []
+  const normalizedTags = Array.isArray(tags)
+    ? tags.map((t: any) => String(t || '').trim()).filter(Boolean)
+    : []
+  const normalizedTestimonials = Array.isArray(testimonials)
+    ? testimonials
+        .slice(0, 3)
+        .map((t: any) => ({
+          name: String(t?.name || '').trim(),
+          role: String(t?.role || '').trim() || undefined,
+          avatar: String(t?.avatar || '').trim() || undefined,
+          quote: String(t?.quote || '').trim(),
+        }))
+        .filter((t: any) => t.name && t.quote)
+    : []
+  const bodyContent = typeof content === 'string' ? content : ''
   const slug = body.slug || slugify(title)
   const exists = await News.findOne({ slug })
   if (exists) {
@@ -108,13 +134,16 @@ export async function POST(req: NextRequest) {
 
   const doc = await News.create({
     title,
+    subtitle: trimmedSubtitle,
     author,
     date,
     image,
-    tags,
+    gallery: normalizedGallery,
+    tags: normalizedTags,
     status,
-    content: toParagraphHtml(content),
+    content: toParagraphHtml(bodyContent),
     slug,
+    testimonials: normalizedTestimonials,
   })
   const asJson: any = doc.toObject()
   asJson.id = String(asJson._id)
@@ -127,3 +156,4 @@ export async function POST(req: NextRequest) {
   })
   return NextResponse.json(asJson)
 }
+

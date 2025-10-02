@@ -24,6 +24,7 @@ import RichTextEditor from '@/components/admin/rich-text-editor'
 import {
   Calendar,
   ImageIcon,
+  ImagePlus,
   Tag,
   Type,
   User,
@@ -45,15 +46,20 @@ type Testimonial = {
 type NewsFormValues = {
   _id?: string
   title: string
+  subtitle: string
   author: string
   date: string
   image: string
+  gallery: string[]
   tags: string
   status: 'published' | 'draft'
   content: string
   slug?: string
-  testimonials: Testimonial[] // ⬅️ NEW
+  testimonials: Testimonial[]
 }
+
+const MAX_GALLERY_ITEMS = 12
+
 export function NewsForm({
   open,
   onOpenChange,
@@ -67,13 +73,15 @@ export function NewsForm({
 }) {
   const [values, setValues] = useState<NewsFormValues>({
     title: '',
+    subtitle: '',
     author: '',
     date: new Date().toISOString().slice(0, 10),
     image: '',
+    gallery: [],
     tags: '',
     status: 'published',
     content: '',
-    testimonials: [], // ⬅️ NEW
+    testimonials: [],
   })
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -86,6 +94,12 @@ export function NewsForm({
   const avatarInputsRef = useRef<Record<number, HTMLInputElement | null>>({})
 
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const galleryInputRef = useRef<HTMLInputElement | null>(null)
+  const [galleryUploading, setGalleryUploading] = useState(false)
+  const [galleryUploadPct, setGalleryUploadPct] = useState(0)
+  const [galleryUploadError, setGalleryUploadError] = useState<string | null>(
+    null,
+  )
   const isEdit = Boolean(initial && (initial as any)._id)
   const { toast } = useToast()
 
@@ -94,10 +108,17 @@ export function NewsForm({
       setValues((v) => ({
         ...v,
         title: initial?.title || '',
+        subtitle: (initial?.subtitle as string) || '',
         author: initial?.author || '',
         date:
           (initial?.date as string) || new Date().toISOString().slice(0, 10),
         image: (initial as any)?.image || '',
+        gallery: Array.isArray((initial as any)?.gallery)
+          ? ((initial as any).gallery as Array<unknown>)
+              .map((url) => (typeof url === 'string' ? url.trim() : ''))
+              .filter(Boolean)
+              .slice(0, MAX_GALLERY_ITEMS)
+          : [],
         tags: Array.isArray((initial as any)?.tags)
           ? ((initial as any)?.tags || []).join(', ')
           : (initial?.tags as any) || '',
@@ -107,7 +128,7 @@ export function NewsForm({
         _id: (initial as any)?._id,
         testimonials: Array.isArray((initial as any)?.testimonials)
           ? (initial as any).testimonials
-          : [], // ⬅️ NEW
+          : [],
       }))
     }
   }, [open])
@@ -266,9 +287,14 @@ export function NewsForm({
     try {
       const payload = {
         title: values.title.trim(),
+        subtitle: values.subtitle.trim(),
         author: values.author.trim(),
         date: values.date,
         image: values.image.trim(),
+        gallery: (values.gallery || [])
+          .map((url) => url.trim())
+          .filter(Boolean)
+          .slice(0, MAX_GALLERY_ITEMS),
         tags: (values.tags || '')
           .split(',')
           .map((t) => t.trim())
@@ -276,7 +302,7 @@ export function NewsForm({
         status: values.status,
         content: toParagraphHtml(values.content),
         slug: values.slug || slugify(values.title),
-        testimonials: (values.testimonials || []).slice(0, 3), // ⬅️ NEW
+        testimonials: (values.testimonials || []).slice(0, 3),
       }
       const isEdit = Boolean((values as any)._id || values.slug)
       const res = await fetch(
@@ -357,6 +383,23 @@ export function NewsForm({
                     required
                     className='bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
                   />
+                </div>
+                <div className='md:col-span-3'>
+                  <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
+                    <FileText className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
+                    Subtitle
+                  </label>
+                  <Input
+                    placeholder='Add a short subtitle'
+                    value={values.subtitle}
+                    onChange={(e) =>
+                      setValues({ ...values, subtitle: e.target.value })
+                    }
+                    className='bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+                  />
+                  <p className='text-xs text-muted-foreground mt-1'>
+                    Appears beneath the headline on the public page.
+                  </p>
                 </div>
 
                 {/* Row 2: Date | Status | Tags */}
@@ -565,6 +608,80 @@ export function NewsForm({
                     Use the toolbar to format text (bold, italic, underline,
                     lists, headings, links).
                   </p>
+                </div>
+                <div className='md:col-span-3'>
+                  <label className='text-sm font-medium flex items-center gap-2 mb-1.5'>
+                    <ImagePlus className='h-4 w-4 text-sky-600 dark:text-sky-300' />{' '}
+                    Gallery images
+                  </label>
+                  <p className='text-xs text-muted-foreground'>
+                    Add up to 12 image URLs to show above the testimonies
+                    section.
+                  </p>
+                  {values.gallery.length === 0 && (
+                    <p className='text-xs text-muted-foreground mt-2'>
+                      No gallery items yet. Click below to add one.
+                    </p>
+                  )}
+                  {values.gallery.length > 0 && (
+                    <div className='space-y-3 mt-2'>
+                      {values.gallery.map((url, idx) => (
+                        <div
+                          key={idx}
+                          className='flex flex-col sm:flex-row sm:items-center gap-2'
+                        >
+                          <Input
+                            value={url}
+                            onChange={(e) =>
+                              setValues((prev) => {
+                                const next = [...(prev.gallery || [])]
+                                next[idx] = e.target.value
+                                return { ...prev, gallery: next }
+                              })
+                            }
+                            placeholder='https://example.com/image.jpg'
+                            className='flex-1 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-0'
+                          />
+                          <Button
+                            type='button'
+                            variant='ghost'
+                            size='sm'
+                            className='text-rose-600 hover:text-rose-700 cursor-pointer'
+                            onClick={() =>
+                              setValues((prev) => ({
+                                ...prev,
+                                gallery: (prev.gallery || []).filter(
+                                  (_, i) => i !== idx,
+                                ),
+                              }))
+                            }
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <Button
+                    type='button'
+                    variant='secondary'
+                    size='sm'
+                    className='mt-3 cursor-pointer'
+                    onClick={() =>
+                      setValues((prev) => ({
+                        ...prev,
+                        gallery:
+                          (prev.gallery || []).length >= MAX_GALLERY_ITEMS
+                            ? prev.gallery
+                            : [...(prev.gallery || []), ''],
+                      }))
+                    }
+                    disabled={
+                      (values.gallery || []).length >= MAX_GALLERY_ITEMS
+                    }
+                  >
+                    Add image
+                  </Button>
                 </div>
                 {/* Testimonials editor */}
                 <div className='md:col-span-3'>
@@ -822,3 +939,4 @@ export function NewsForm({
     </Dialog>
   )
 }
+
