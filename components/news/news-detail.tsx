@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Eye,
   AlertTriangle,
+  Share2,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -22,6 +23,7 @@ import {
   PopInItem,
 } from '@/components/ui/motion'
 import CuteNewsCta from '../CuteNewsCta'
+import OGNewsAuto from '../seo/og-news-auto'
 
 // Tag gradient helpers
 const TAG_GRADIENTS: Record<string, string> = {
@@ -388,6 +390,14 @@ export default function NewsDetailClient() {
 
   return (
     <div className='min-h-screen flex flex-col bg-background'>
+      <OGNewsAuto
+        title={item.title}
+        subtitle={item.subtitle}
+        image={item.image}
+        url={shareUrl}
+        publishedTime={item.date}
+        author={item.author}
+      />
       <main className='flex-1'>
         <div className='container mx-auto py-10 px-4 md:px-6 mb-12'>
           {/* Breadcrumbs */}
@@ -477,6 +487,33 @@ export default function NewsDetailClient() {
                     <span className='inline-flex items-center gap-1'>
                       <Eye className='h-4 w-4' /> {item.views ?? 0}
                     </span>
+                    <button
+                      onClick={() => {
+                        const description = `${item.title}${
+                          item.subtitle ? ` - ${item.subtitle}` : ''
+                        }`
+                        const hashtag = 'FFWPUPhilippines'
+                        // Construct Facebook share URL with proper parameters
+                        const fbShareUrl = new URL(
+                          'https://www.facebook.com/sharer/sharer.php',
+                        )
+                        fbShareUrl.searchParams.append(
+                          'u',
+                          window.location.href,
+                        )
+                        fbShareUrl.searchParams.append('quote', description)
+                        fbShareUrl.searchParams.append('hashtag', `#${hashtag}`)
+                        window.open(
+                          fbShareUrl.toString(),
+                          '_blank',
+                          'width=626,height=436',
+                        )
+                      }}
+                      className='inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full transition-colors cursor-pointer text-sm font-medium shadow-sm'
+                      title='Share this article on Facebook'
+                    >
+                      <Share2 className='h-3.5 w-3.5' /> Share to Facebook
+                    </button>
                   </div>
                 </FadeInItem>
               </StaggerContainer>
