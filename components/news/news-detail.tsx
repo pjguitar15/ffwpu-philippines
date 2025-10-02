@@ -159,14 +159,8 @@ export function GallerySection({
     <section aria-labelledby='gallery-title' className='mt-10 md:mt-12'>
       <div className='flex flex-col md:flex-row md:items-end md:justify-between gap-2 mb-4'>
         <div>
-          <h2
-            id='gallery-title'
-            className='text-xl font-semibold text-slate-900 tracking-wide uppercase'
-          >
-            Gallery
-          </h2>
           <p className='text-sm text-slate-600'>
-            Moments captured during this update.
+            Moments captured on this day.
           </p>
         </div>
       </div>
@@ -445,7 +439,7 @@ export default function NewsDetailClient() {
 
           <FadeIn>
             <header className='mb-4 md:mb-6'>
-              <h1 className='text-3xl md:text-4xl font-extrabold leading-tight text-slate-900 uppercase tracking-[0.08em]'>
+              <h1 className='text-3xl md:text-4xl font-extrabold text-slate-900 uppercase tracking-[0.02em]'>
                 {item.title}
               </h1>
               {item.subtitle && (
@@ -476,17 +470,19 @@ export default function NewsDetailClient() {
                 {/* Title removed here (now in hero) */}
 
                 <FadeInItem>
-                  <div className='mt-3 flex items-center gap-4 text-slate-500 text-sm'>
-                    <span className='inline-flex items-center gap-1'>
-                      <User className='h-4 w-4' /> {item.author}
-                    </span>
-                    <span className='inline-flex items-center gap-1'>
-                      <Calendar className='h-4 w-4' />{' '}
-                      {new Date(item.date).toLocaleDateString()}
-                    </span>
-                    <span className='inline-flex items-center gap-1'>
-                      <Eye className='h-4 w-4' /> {item.views ?? 0}
-                    </span>
+                  <div className='mt-3 flex flex-wrap items-center gap-4 text-slate-500 text-sm'>
+                    <div className='flex items-center gap-4 flex-wrap'>
+                      <span className='inline-flex items-center gap-1'>
+                        <User className='h-4 w-4' /> {item.author}
+                      </span>
+                      <span className='inline-flex items-center gap-1'>
+                        <Calendar className='h-4 w-4' />{' '}
+                        {new Date(item.date).toLocaleDateString()}
+                      </span>
+                      <span className='inline-flex items-center gap-1'>
+                        <Eye className='h-4 w-4' /> {item.views ?? 0}
+                      </span>
+                    </div>
                     <button
                       onClick={() => {
                         const description = `${item.title}${
@@ -509,10 +505,14 @@ export default function NewsDetailClient() {
                           'width=626,height=436',
                         )
                       }}
-                      className='inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full transition-colors cursor-pointer text-sm font-medium shadow-sm'
+                      className='inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full transition-colors cursor-pointer text-xs sm:text-sm font-medium shadow-sm whitespace-nowrap'
                       title='Share this article on Facebook'
                     >
-                      <Share2 className='h-3.5 w-3.5' /> Share to Facebook
+                      <Share2 className='h-3.5 w-3.5' />
+                      <span className='hidden sm:inline'>
+                        Share to Facebook
+                      </span>
+                      <span className='sm:hidden'>Share</span>
                     </button>
                   </div>
                 </FadeInItem>
