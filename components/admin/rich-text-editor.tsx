@@ -15,6 +15,10 @@ import {
   Quote,
   Undo2,
   Redo2,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
 } from 'lucide-react'
 
 type Props = {
@@ -246,6 +250,47 @@ export default function RichTextEditor({
           className='inline-flex h-8 w-8 items-center justify-center rounded hover:bg-muted cursor-pointer'
         >
           <LinkIcon className='h-4 w-4' />
+        </button>
+        <span className='mx-1 h-5 w-px bg-muted-foreground/20' />
+        <button
+          type='button'
+          title='Align left'
+          aria-label='Align left'
+          onMouseDown={onToolMouseDown}
+          onClick={() => exec('justifyLeft')}
+          className='inline-flex h-8 w-8 items-center justify-center rounded hover:bg-muted cursor-pointer'
+        >
+          <AlignLeft className='h-4 w-4' />
+        </button>
+        <button
+          type='button'
+          title='Align center'
+          aria-label='Align center'
+          onMouseDown={onToolMouseDown}
+          onClick={() => exec('justifyCenter')}
+          className='inline-flex h-8 w-8 items-center justify-center rounded hover:bg-muted cursor-pointer'
+        >
+          <AlignCenter className='h-4 w-4' />
+        </button>
+        <button
+          type='button'
+          title='Align right'
+          aria-label='Align right'
+          onMouseDown={onToolMouseDown}
+          onClick={() => exec('justifyRight')}
+          className='inline-flex h-8 w-8 items-center justify-center rounded hover:bg-muted cursor-pointer'
+        >
+          <AlignRight className='h-4 w-4' />
+        </button>
+        <button
+          type='button'
+          title='Justify'
+          aria-label='Justify'
+          onMouseDown={onToolMouseDown}
+          onClick={() => exec('justifyFull')}
+          className='inline-flex h-8 w-8 items-center justify-center rounded hover:bg-muted cursor-pointer'
+        >
+          <AlignJustify className='h-4 w-4' />
         </button>
         <span className='mx-1 h-5 w-px bg-muted-foreground/20' />
         <button
