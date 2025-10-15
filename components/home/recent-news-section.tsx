@@ -33,31 +33,84 @@ function TestimonialsPreview({ items }: { items: Testimonial[] }) {
   if (!items?.length) return null
 
   return (
-    <div className='absolute top-3 right-3 bg-gradient-to-r from-amber-400/90 to-orange-400/90 backdrop-blur-sm border border-amber-300/50 rounded-full px-2 py-1 flex items-center gap-1 shadow-sm z-20'>
-      <div className='flex -space-x-1'>
-        {items.slice(0, 2).map((t, i) => (
-          <div
-            key={i}
-            className='h-4 w-4 rounded-full ring-1 ring-white overflow-hidden bg-amber-100'
-          >
-            {t.avatar ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={t.avatar}
-                alt={`${t.name} avatar`}
-                className='h-full w-full object-cover'
-              />
-            ) : (
-              <div className='h-full w-full grid place-items-center bg-amber-200 text-amber-800 text-[8px] font-bold'>
-                {t.name?.[0]?.toUpperCase() ?? '⦿'}
-              </div>
-            )}
-          </div>
-        ))}
+    <div className='group/tooltip relative'>
+      <div className='absolute top-3 right-3 bg-gradient-to-r from-amber-400/90 to-orange-400/90 backdrop-blur-sm border border-amber-300/50 rounded-full px-2 py-1 flex items-center gap-1 shadow-sm z-20 cursor-help transition-all duration-200 hover:from-amber-500/95 hover:to-orange-500/95 hover:scale-105'>
+        <div className='flex -space-x-1'>
+          {items.slice(0, 2).map((t, i) => (
+            <div
+              key={i}
+              className='h-4 w-4 rounded-full ring-1 ring-white overflow-hidden bg-amber-100'
+            >
+              {t.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={t.avatar}
+                  alt={`${t.name} avatar`}
+                  className='h-full w-full object-cover'
+                />
+              ) : (
+                <div className='h-full w-full grid place-items-center bg-amber-200 text-amber-800 text-[8px] font-bold'>
+                  {t.name?.[0]?.toUpperCase() ?? '⦿'}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        <span className='text-[10px] font-semibold text-white leading-none'>
+          {items.length} reflection{items.length !== 1 ? 's' : ''}
+        </span>
       </div>
-      <span className='text-[10px] font-semibold text-white leading-none'>
-        {items.length} reflection{items.length !== 1 ? 's' : ''}
-      </span>
+
+      {/* Tooltip */}
+      <div className='absolute top-12 right-3 bg-white/95 backdrop-blur-lg border border-amber-200 rounded-lg shadow-xl p-3 min-w-[280px] max-w-[320px] opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 z-30'>
+        <div className='text-xs font-semibold text-amber-700 mb-2 border-b border-amber-100 pb-1'>
+          Participant Reflections
+        </div>
+        <div className='space-y-2 max-h-[200px] overflow-y-auto'>
+          {items.slice(0, 4).map((t, i) => (
+            <div key={i} className='flex gap-2'>
+              <div className='h-6 w-6 rounded-full ring-1 ring-amber-200 overflow-hidden bg-amber-100 flex-shrink-0'>
+                {t.avatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={t.avatar}
+                    alt={`${t.name} avatar`}
+                    className='h-full w-full object-cover'
+                  />
+                ) : (
+                  <div className='h-full w-full grid place-items-center bg-amber-200 text-amber-700 text-[10px] font-bold'>
+                    {t.name?.[0]?.toUpperCase() ?? '⦿'}
+                  </div>
+                )}
+              </div>
+              <div className='flex-1 min-w-0'>
+                <div className='text-[10px] font-medium text-amber-600'>
+                  {t.name}
+                  {t.role && (
+                    <span className='text-slate-500 ml-1'>• {t.role}</span>
+                  )}
+                </div>
+                <p className='text-[11px] text-slate-600 leading-relaxed mt-0.5'>
+                  <span className='text-amber-500'>"</span>
+                  {t.quote.length > 60
+                    ? `${t.quote.substring(0, 60)}...`
+                    : t.quote}
+                  <span className='text-amber-500'>"</span>
+                </p>
+              </div>
+            </div>
+          ))}
+          {items.length > 4 && (
+            <div className='text-[10px] text-center text-slate-500 pt-1 border-t border-slate-100'>
+              and {items.length - 4} more reflection
+              {items.length - 4 !== 1 ? 's' : ''}...
+            </div>
+          )}
+        </div>
+
+        {/* Tooltip arrow */}
+        <div className='absolute -top-1 right-4 w-2 h-2 bg-white/95 border-l border-t border-amber-200 rotate-45'></div>
+      </div>
     </div>
   )
 }
