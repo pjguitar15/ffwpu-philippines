@@ -12,13 +12,58 @@ import { excerptFromHtml } from '@/lib/text'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AnimatePresence, motion } from 'framer-motion'
 
+type Testimonial = {
+  name: string
+  role?: string
+  avatar?: string
+  quote: string
+}
+
+type ExtendedNewsItem = NewsItem & {
+  testimonials?: Testimonial[]
+}
+
 type Props = {
   // Optional fallback while dynamic data loads
-  sampleNews?: NewsItem[]
+  sampleNews?: ExtendedNewsItem[]
+}
+
+// Small testimonials preview component for home page
+function TestimonialsPreview({ items }: { items: Testimonial[] }) {
+  if (!items?.length) return null
+
+  return (
+    <div className='absolute top-3 right-3 bg-gradient-to-r from-amber-400/90 to-orange-400/90 backdrop-blur-sm border border-amber-300/50 rounded-full px-2 py-1 flex items-center gap-1 shadow-sm z-20'>
+      <div className='flex -space-x-1'>
+        {items.slice(0, 2).map((t, i) => (
+          <div
+            key={i}
+            className='h-4 w-4 rounded-full ring-1 ring-white overflow-hidden bg-amber-100'
+          >
+            {t.avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={t.avatar}
+                alt={`${t.name} avatar`}
+                className='h-full w-full object-cover'
+              />
+            ) : (
+              <div className='h-full w-full grid place-items-center bg-amber-200 text-amber-800 text-[8px] font-bold'>
+                {t.name?.[0]?.toUpperCase() ?? '⦿'}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      <span className='text-[10px] font-semibold text-white leading-none'>
+        {items.length} reflection{items.length !== 1 ? 's' : ''}
+      </span>
+    </div>
+  )
 }
 
 export function RecentNewsSection({ sampleNews = [] }: Props) {
-  const [items, setItems] = React.useState<NewsItem[]>(sampleNews)
+  const [items, setItems] = React.useState<ExtendedNewsItem[]>(sampleNews)
   const [loading, setLoading] = React.useState<boolean>(false)
   const [error, setError] = React.useState<string | null>(null)
 
@@ -26,7 +71,7 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
   const [visible, setVisible] = React.useState(3)
   const canLoadMore = visible < items.length
 
-  const sortByDateDesc = (arr: NewsItem[]) =>
+  const sortByDateDesc = (arr: ExtendedNewsItem[]) =>
     [...arr].sort(
       (a, b) =>
         new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime(),
@@ -39,7 +84,7 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
       setError(null)
       const res = await fetch('/api/news', { cache: 'no-store' })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data = (await res.json()) as NewsItem[]
+      const data = (await res.json()) as ExtendedNewsItem[]
       if (!cancelled && Array.isArray(data)) setItems(data)
     } catch (e: any) {
       console.error('[home] failed to load /api/news', e)
@@ -173,6 +218,10 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
               className='object-cover object-center opacity-85 md:group-hover:scale-105 transition-transform duration-500'
             />
             <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent md:group-hover:from-black/90 md:group-hover:via-black/60 transition-colors duration-300' />
+
+            {/* Testimonials preview for featured article */}
+            <TestimonialsPreview items={feature.testimonials || []} />
+
             <div className='relative z-10 flex flex-col justify-end h-full p-5 md:p-8'>
               <div className='mb-2'>
                 <Badge
@@ -217,6 +266,10 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
               className='object-cover object-center opacity-85 md:group-hover:scale-105 transition-transform duration-500'
             />
             <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent md:group-hover:from-black/90 md:group-hover:via-black/60 transition-colors duration-300' />
+
+            {/* Testimonials preview for side card */}
+            <TestimonialsPreview items={item.testimonials || []} />
+
             <div className='relative z-10 flex flex-col justify-end h-full p-4'>
               <div className='mb-1'>
                 <Badge
@@ -268,6 +321,10 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
                   className='object-cover object-center opacity-85 md:group-hover:scale-105 transition-transform duration-500'
                 />
                 <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent md:group-hover:from-black/90 md:group-hover:via-black/60 transition-colors duration-300' />
+
+                {/* Testimonials preview for rest cards */}
+                <TestimonialsPreview items={item.testimonials || []} />
+
                 <div className='relative z-10 flex flex-col justify-end h-full p-4'>
                   <div className='mb-1'>
                     <Badge

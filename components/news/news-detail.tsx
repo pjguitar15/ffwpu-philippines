@@ -102,11 +102,11 @@ export function TestimonialsSection({ items }: { items: Testimonial[] }) {
         </p>
       </div>
 
-      <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         {items.slice(0, 3).map((t, i) => (
           <article
             key={i}
-            className='relative rounded-xl border border-slate-200 bg-white/70 backdrop-blur-md shadow-sm hover:shadow-md transition-shadow'
+            className='relative rounded-xl border border-slate-200 bg-white/70 backdrop-blur-md shadow-sm hover:shadow-md transition-shadow mb-6'
           >
             <div className='absolute -top-7 left-1/2 -translate-x-1/2 h-14 w-14 rounded-full ring-4 ring-white overflow-hidden shadow'>
               {t.avatar ? (
@@ -124,10 +124,10 @@ export function TestimonialsSection({ items }: { items: Testimonial[] }) {
             </div>
 
             <div className='px-5 pb-5 pt-10'>
-              <p className='text-slate-700 leading-relaxed'>
-                <span className='text-amber-500 text-xl align-top'>“</span>
+              <p className='text-slate-700 leading-relaxed font-serif text-sm'>
+                <span className='text-amber-500 text-sm align-top'>“</span>
                 {t.quote}
-                <span className='text-amber-500 text-xl align-top'>”</span>
+                <span className='text-amber-500 text-sm align-top'>”</span>
               </p>
               <div className='mt-4'>
                 <p className='font-semibold text-amber-600'>{t.name}</p>
@@ -545,6 +545,7 @@ export default function NewsDetailClient() {
 
               {/* Content */}
               <ArticleBody content={item.content} />
+
               <GallerySection images={item.gallery || []} title={item.title} />
               <hr className='mt-8' />
               {/* Testimonials under the article body */}
