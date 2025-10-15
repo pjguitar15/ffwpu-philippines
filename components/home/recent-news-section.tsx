@@ -121,7 +121,7 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
   const [error, setError] = React.useState<string | null>(null)
 
   // Show 3 initially (feature + 2)
-  const [visible, setVisible] = React.useState(3)
+  const [visible, setVisible] = React.useState(9)
   const canLoadMore = visible < items.length
 
   const sortByDateDesc = (arr: ExtendedNewsItem[]) =>
