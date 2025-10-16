@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { resourceLimits } from 'worker_threads'
 
 interface Letter {
   _id: string
@@ -29,35 +30,35 @@ interface Letter {
   isPublic: boolean
 }
 
-function LetterCard({ 
-  letter, 
-  index, 
-  onClick 
-}: { 
+function LetterCard({
+  letter,
+  index,
+  onClick,
+}: {
   letter: Letter
   index: number
-  onClick: (letter: Letter) => void 
+  onClick: (letter: Letter) => void
 }) {
   const [isHovered, setIsHovered] = useState(false)
-  
+
   // Generate a consistent random rotation for each letter based on its ID
   const rotation = useMemo(() => {
     const hash = letter._id.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.charCodeAt(0);
-      return a & a;
-    }, 0);
-    return (hash % 5) - 2; // Random rotation between -2 and 2 degrees for subtle poster effect
-  }, [letter._id]);
+      a = (a << 5) - a + b.charCodeAt(0)
+      return a & a
+    }, 0)
+    return (hash % 5) - 2 // Random rotation between -2 and 2 degrees for subtle poster effect
+  }, [letter._id])
 
   // Get a random pastel color from PAPER_COLORS constant
   const pastelColor = useMemo(() => {
     const hash = letter._id.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.charCodeAt(0);
-      return a & a;
-    }, 0);
-    return PAPER_COLORS[Math.abs(hash) % PAPER_COLORS.length];
-  }, [letter._id]);
-  
+      a = (a << 5) - a + b.charCodeAt(0)
+      return a & a
+    }, 0)
+    return PAPER_COLORS[Math.abs(hash) % PAPER_COLORS.length]
+  }, [letter._id])
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
@@ -90,6 +91,7 @@ function LetterCard({
               variant='secondary'
               className='bg-green-100 text-green-800 border-green-300'
             >
+              {letter.isPublic.toString()}
               <Globe className='w-3 h-3 mr-1' />
               Public
             </Badge>
@@ -198,16 +200,16 @@ function ViewLetterModal({
   // Get same pastel color logic as letter card
   const pastelColor = useMemo(() => {
     const hash = letter._id.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.charCodeAt(0);
-      return a & a;
-    }, 0);
-    return PAPER_COLORS[Math.abs(hash) % PAPER_COLORS.length];
-  }, [letter._id]);
+      a = (a << 5) - a + b.charCodeAt(0)
+      return a & a
+    }, 0)
+    return PAPER_COLORS[Math.abs(hash) % PAPER_COLORS.length]
+  }, [letter._id])
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <React.Fragment key="view-letter-modal">
+        <React.Fragment key='view-letter-modal'>
           {/* Blurred backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -231,15 +233,21 @@ function ViewLetterModal({
               onClick={(e) => e.stopPropagation()}
             >
               {/* Privacy indicator */}
-              <div className="absolute top-4 left-4 z-20">
+              <div className='absolute top-4 left-4 z-20'>
                 {letter.isPublic ? (
-                  <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-300">
-                    <Globe className="w-3 h-3 mr-1" />
+                  <Badge
+                    variant='secondary'
+                    className='bg-green-100 text-green-800 border-green-300'
+                  >
+                    <Globe className='w-3 h-3 mr-1' />
                     Public Letter
                   </Badge>
                 ) : (
-                  <Badge variant="secondary" className="bg-amber-100 text-amber-800 border-amber-300">
-                    <Lock className="w-3 h-3 mr-1" />
+                  <Badge
+                    variant='secondary'
+                    className='bg-amber-100 text-amber-800 border-amber-300'
+                  >
+                    <Lock className='w-3 h-3 mr-1' />
                     Private Letter
                   </Badge>
                 )}
@@ -250,7 +258,9 @@ function ViewLetterModal({
                 onClick={onClose}
                 className='absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 hover:bg-white border border-gray-300 hover:border-gray-400 transition-all duration-200 group cursor-pointer'
               >
-                <span className='text-gray-600 group-hover:text-gray-800 text-xl'>×</span>
+                <span className='text-gray-600 group-hover:text-gray-800 text-xl'>
+                  ×
+                </span>
               </button>
 
               {/* Letter content */}
@@ -301,7 +311,9 @@ export default function AdminLettersPage() {
   const [filteredLetters, setFilteredLetters] = useState<Letter[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [privacyFilter, setPrivacyFilter] = useState<'all' | 'public' | 'private'>('all')
+  const [privacyFilter, setPrivacyFilter] = useState<
+    'all' | 'public' | 'private'
+  >('all')
   const [viewingLetter, setViewingLetter] = useState<Letter | null>(null)
 
   // Fetch all letters
@@ -310,7 +322,7 @@ export default function AdminLettersPage() {
       setIsLoading(true)
       const response = await fetch('/api/admin/letters')
       const result = await response.json()
-      
+
       if (result.success) {
         setLetters(result.data)
       } else {
@@ -333,17 +345,18 @@ export default function AdminLettersPage() {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(letter =>
-        letter.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        letter.region.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        letter.content.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (letter) =>
+          letter.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          letter.region.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          letter.content.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     }
 
     // Apply privacy filter
     if (privacyFilter !== 'all') {
-      filtered = filtered.filter(letter => 
-        privacyFilter === 'public' ? letter.isPublic : !letter.isPublic
+      filtered = filtered.filter((letter) =>
+        privacyFilter === 'public' ? letter.isPublic : !letter.isPublic,
       )
     }
 
@@ -354,13 +367,13 @@ export default function AdminLettersPage() {
     setViewingLetter(letter)
   }
 
-  const publicCount = letters.filter(l => l.isPublic).length
-  const privateCount = letters.filter(l => !l.isPublic).length
+  const publicCount = letters.filter((l) => l.isPublic).length
+  const privateCount = letters.filter((l) => !l.isPublic).length
 
   return (
     <div className='flex min-h-screen bg-gray-50'>
       <AdminSidebar />
-      
+
       <main className='flex-1 p-6'>
         <div className='max-w-7xl mx-auto'>
           {/* Header */}
@@ -377,31 +390,41 @@ export default function AdminLettersPage() {
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
             <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                <CardTitle className='text-sm font-medium'>Total Letters</CardTitle>
+                <CardTitle className='text-sm font-medium'>
+                  Total Letters
+                </CardTitle>
                 <Mail className='h-4 w-4 text-muted-foreground' />
               </CardHeader>
               <CardContent>
                 <div className='text-2xl font-bold'>{letters.length}</div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                <CardTitle className='text-sm font-medium'>Public Letters</CardTitle>
+                <CardTitle className='text-sm font-medium'>
+                  Public Letters
+                </CardTitle>
                 <Globe className='h-4 w-4 text-green-600' />
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold text-green-600'>{publicCount}</div>
+                <div className='text-2xl font-bold text-green-600'>
+                  {publicCount}
+                </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                <CardTitle className='text-sm font-medium'>Private Letters</CardTitle>
+                <CardTitle className='text-sm font-medium'>
+                  Private Letters
+                </CardTitle>
                 <Lock className='h-4 w-4 text-amber-600' />
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold text-amber-600'>{privateCount}</div>
+                <div className='text-2xl font-bold text-amber-600'>
+                  {privateCount}
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -417,8 +440,13 @@ export default function AdminLettersPage() {
                 className='pl-10'
               />
             </div>
-            
-            <Select value={privacyFilter} onValueChange={(value: 'all' | 'public' | 'private') => setPrivacyFilter(value)}>
+
+            <Select
+              value={privacyFilter}
+              onValueChange={(value: 'all' | 'public' | 'private') =>
+                setPrivacyFilter(value)
+              }
+            >
               <SelectTrigger className='w-full sm:w-48'>
                 <Filter className='h-4 w-4 mr-2' />
                 <SelectValue placeholder='Filter by privacy' />
@@ -441,8 +469,8 @@ export default function AdminLettersPage() {
               <div className='text-center py-20'>
                 <Mail className='w-16 h-16 text-gray-300 mx-auto mb-4' />
                 <p className='text-gray-500 font-handwriting text-xl'>
-                  {searchTerm || privacyFilter !== 'all' 
-                    ? 'No letters match your filters.' 
+                  {searchTerm || privacyFilter !== 'all'
+                    ? 'No letters match your filters.'
                     : 'No letters yet. Letters will appear here once they are submitted.'}
                 </p>
               </div>
