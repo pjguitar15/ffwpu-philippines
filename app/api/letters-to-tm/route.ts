@@ -24,12 +24,12 @@ function generateLetterProps(seed: number) {
   }
 }
 
-// GET - Fetch all letters
+// GET - Fetch all public letters
 export async function GET() {
   try {
     await dbConnect()
     
-    const letters = await LetterToTM.find({})
+    const letters = await LetterToTM.find({ isPublic: true })
       .sort({ createdAt: -1 })
       .lean()
     
@@ -42,7 +42,8 @@ export async function GET() {
       createdAt: letter.createdAt.toISOString(),
       color: letter.color,
       rotation: letter.rotation,
-      position: letter.position
+      position: letter.position,
+      isPublic: letter.isPublic
     }))
     
     return NextResponse.json({
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
     await dbConnect()
     
     const body = await request.json()
-    const { name, region, content } = body
+    const { name, region, content, isPublic = true } = body
     
     // Validation
     if (!name || !region || !content) {
@@ -97,25 +98,32 @@ export async function POST(request: NextRequest) {
     const letterProps = generateLetterProps(seed)
     
     // Create new letter
-    const newLetter = new LetterToTM({
+    const letterData = {
       name: name.trim(),
       region: region.trim(),
       content: content.trim(),
+      isPublic: Boolean(isPublic),
       ...letterProps
-    })
+    }
+    
+    console.log('Creating letter with data:', letterData)
+    const newLetter = new LetterToTM(letterData)
+    console.log('New letter object before save:', newLetter.toObject())
     
     const savedLetter = await newLetter.save()
+    console.log('Saved letter from DB:', savedLetter.toObject())
     
     // Transform response to match frontend interface
     const transformedLetter = {
-      _id: savedLetter._id.toString(),
+      _id: (savedLetter._id as any).toString(),
       name: savedLetter.name,
       region: savedLetter.region,
       content: savedLetter.content,
-      createdAt: savedLetter.createdAt.toISOString(),
+      createdAt: (savedLetter.createdAt as Date).toISOString(),
       color: savedLetter.color,
       rotation: savedLetter.rotation,
-      position: savedLetter.position
+      position: savedLetter.position,
+      isPublic: savedLetter.isPublic
     }
     
     return NextResponse.json({

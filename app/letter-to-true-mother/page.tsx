@@ -21,6 +21,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { HighlightTitle } from '@/components/ui/highlight-title'
 import { LETTER_CONFIG, PAPER_COLORS } from '../../constants/letter-to-true-mother'
+import { useToast } from '@/hooks/use-toast'
 import './styles.css'
 
 interface Letter {
@@ -32,47 +33,56 @@ interface Letter {
   color: string
   rotation: number
   position: { x: number; y: number }
+  isPublic: boolean
 }
 
-function LetterCard({ letter, index, onClick }: { letter: Letter; index: number; onClick: (letter: Letter) => void }) {
+function LetterCard({
+  letter,
+  index,
+  onClick,
+}: {
+  letter: Letter
+  index: number
+  onClick: (letter: Letter) => void
+}) {
   const [isHovered, setIsHovered] = useState(false)
-  
+
   // Generate a consistent random rotation for each letter based on its ID
   const rotation = useMemo(() => {
     const hash = letter._id.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.charCodeAt(0);
-      return a & a;
-    }, 0);
-    return (hash % 5) - 2; // Random rotation between -2 and 2 degrees for subtle poster effect
-  }, [letter._id]);
+      a = (a << 5) - a + b.charCodeAt(0)
+      return a & a
+    }, 0)
+    return (hash % 5) - 2 // Random rotation between -2 and 2 degrees for subtle poster effect
+  }, [letter._id])
 
   // Get a random pastel color from PAPER_COLORS constant
   const pastelColor = useMemo(() => {
     const hash = letter._id.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.charCodeAt(0);
-      return a & a;
-    }, 0);
-    return PAPER_COLORS[Math.abs(hash) % PAPER_COLORS.length];
-  }, [letter._id]);
-  
+      a = (a << 5) - a + b.charCodeAt(0)
+      return a & a
+    }, 0)
+    return PAPER_COLORS[Math.abs(hash) % PAPER_COLORS.length]
+  }, [letter._id])
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ 
-        opacity: 1, 
-        scale: 1
+      animate={{
+        opacity: 1,
+        scale: 1,
       }}
-      transition={{ 
+      transition={{
         delay: index * 0.05,
         duration: 0.3,
-        ease: "easeOut"
+        ease: 'easeOut',
       }}
       className='cursor-pointer w-full'
       onClick={() => onClick(letter)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Card 
+      <Card
         className={`${pastelColor} border-2 transition-all duration-200 ease-out relative ${
           isHovered ? 'shadow-lg scale-105 -translate-y-1' : 'shadow-md'
         }`}
@@ -81,66 +91,66 @@ function LetterCard({ letter, index, onClick }: { letter: Letter; index: number;
         }}
       >
         {/* Corner fold effect */}
-        <div className="absolute top-0 right-0 w-5 h-5 bg-white opacity-40 transform rotate-45 translate-x-2.5 -translate-y-2.5"></div>
-        
+        <div className='absolute top-0 right-0 w-5 h-5 bg-white opacity-40 transform rotate-45 translate-x-2.5 -translate-y-2.5'></div>
+
         {/* Paper tape effect - realistic positioning */}
-        <div 
-          className="absolute w-12 h-6 bg-white/70 opacity-90 shadow-sm border border-gray-200/50"
+        <div
+          className='absolute w-12 h-6 bg-white/70 opacity-90 shadow-sm border border-gray-200/50'
           style={{
             top: '-8px',
             left: '20%',
-            transform: `rotate(${rotation * 0.5}deg)`
+            transform: `rotate(${rotation * 0.5}deg)`,
           }}
         >
           {/* Tape texture lines */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-full h-px bg-gray-200/30"></div>
+          <div className='absolute inset-0 flex items-center justify-center'>
+            <div className='w-full h-px bg-gray-200/30'></div>
           </div>
         </div>
-        
+
         <CardContent className='p-4 h-full flex flex-col relative'>
           {/* Enhanced dot pattern for note-like texture */}
-          <div className="absolute inset-0 opacity-3 pointer-events-none">
-            <div className="grid grid-cols-10 gap-3 h-full w-full p-4">
+          <div className='absolute inset-0 opacity-3 pointer-events-none'>
+            <div className='grid grid-cols-10 gap-3 h-full w-full p-4'>
               {Array.from({ length: 40 }).map((_, i) => (
-                <div key={i} className="w-1 h-1 bg-gray-500 rounded-full"></div>
+                <div key={i} className='w-1 h-1 bg-gray-500 rounded-full'></div>
               ))}
             </div>
           </div>
-          
+
           {/* Handwritten note header */}
-          <div className="relative z-10 mb-3">
-            <p className="text-xs font-handwriting text-gray-500 italic text-center">
+          <div className='relative z-10 mb-3'>
+            <p className='text-xs font-handwriting text-gray-500 italic text-center'>
               Dear True Mother,
             </p>
           </div>
-          
+
           {/* Message content - main area */}
           <div className='flex-1 overflow-hidden relative z-10 mb-3'>
             <p className='text-sm text-gray-800 font-handwriting leading-relaxed line-clamp-4 font-medium'>
               "{letter.content}"
             </p>
           </div>
-          
+
           {/* Signature section */}
           <div className='relative z-10 mt-auto'>
-            <div className="text-right mb-2">
+            <div className='text-right mb-2'>
               <p className='text-xs font-handwriting text-gray-600 italic'>
                 With love,
               </p>
             </div>
-            
+
             {/* Author signature area */}
             <div className='space-y-1 border-t border-gray-300/50 pt-2'>
-              <div className="flex items-center justify-between">
+              <div className='flex items-center justify-between'>
                 <p className='text-xs font-bold text-gray-700 font-handwriting flex items-center gap-1'>
                   💝 {letter.name}
                 </p>
                 <p className='text-xs text-gray-500 font-handwriting'>
-                  {new Date(letter.createdAt).toLocaleDateString('en-US', { 
-                    month: 'short', 
+                  {new Date(letter.createdAt).toLocaleDateString('en-US', {
+                    month: 'short',
                     day: 'numeric',
-                    year: '2-digit'
+                    year: '2-digit',
                   })}
                 </p>
               </div>
@@ -149,15 +159,15 @@ function LetterCard({ letter, index, onClick }: { letter: Letter; index: number;
               </p>
             </div>
           </div>
-          
+
           {/* Heart decoration */}
-          <div className="absolute top-3 right-8 opacity-20">
-            <span className="text-red-400 text-lg">💕</span>
+          <div className='absolute top-3 right-8 opacity-20'>
+            <span className='text-red-400 text-lg'>💕</span>
           </div>
-          
+
           {/* Small decorative elements */}
-          <div className="absolute bottom-3 left-3 opacity-10">
-            <div className="flex gap-1">
+          <div className='absolute bottom-3 left-3 opacity-10'>
+            <div className='flex gap-1'>
               <div className='w-1 h-1 bg-pink-400 rounded-full' />
               <div className='w-1 h-1 bg-blue-400 rounded-full' />
               <div className='w-1 h-1 bg-purple-400 rounded-full' />
@@ -189,6 +199,7 @@ function AddLetterModal({
     name: '',
     region: '',
     content: '',
+    isPublic: true,
   })
   const [wordCount, setWordCount] = useState(0)
 
@@ -213,7 +224,7 @@ function AddLetterModal({
     ) {
       await onSubmit(formData)
       // Reset form only if submission was successful (modal will close)
-      setFormData({ name: '', region: '', content: '' })
+      setFormData({ name: '', region: '', content: '', isPublic: true })
       setWordCount(0)
     }
   }
@@ -224,9 +235,9 @@ function AddLetterModal({
   }, [])
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode='wait'>
       {isOpen && (
-        <>
+        <React.Fragment key='add-letter-modal'>
           {/* Blurred backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -386,7 +397,65 @@ function AddLetterModal({
                     </div>
                   </div>
 
-                  {/* Action buttons */}
+                  {/* Privacy Options */}
+                  <div className='bg-white/60 rounded-lg p-4 border border-gray-300 space-y-3'>
+                    <h3 className='text-lg font-handwriting text-gray-800 font-semibold'>
+                      ✨ Letter Visibility
+                    </h3>
+                    <p className='text-sm font-handwriting text-gray-600 italic'>
+                      Choose how you'd like to share your letter:
+                    </p>
+
+                    <div className='space-y-3'>
+                      <label className='flex items-center gap-3 cursor-pointer group'>
+                        <input
+                          type='radio'
+                          name='privacy'
+                          value='public'
+                          checked={formData.isPublic}
+                          onChange={() =>
+                            setFormData((prev) => ({ ...prev, isPublic: true }))
+                          }
+                          className='w-4 h-4 text-rose-500 border-gray-300 focus:ring-rose-500 focus:ring-2'
+                        />
+                        <div className='flex-1'>
+                          <div className='text-base font-handwriting text-gray-800 group-hover:text-gray-900 transition-colors'>
+                            🌟 Post in Public
+                          </div>
+                          <div className='text-sm font-handwriting text-gray-600'>
+                            Share your love with everyone - inspire others with
+                            your heartfelt message
+                          </div>
+                        </div>
+                      </label>
+
+                      <label className='flex items-center gap-3 cursor-pointer group'>
+                        <input
+                          type='radio'
+                          name='privacy'
+                          value='private'
+                          checked={!formData.isPublic}
+                          onChange={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              isPublic: false,
+                            }))
+                          }
+                          className='w-4 h-4 text-rose-500 border-gray-300 focus:ring-rose-500 focus:ring-2'
+                        />
+                        <div className='flex-1'>
+                          <div className='text-base font-handwriting text-gray-800 group-hover:text-gray-900 transition-colors'>
+                            🔒 Keep It Private
+                          </div>
+                          <div className='text-sm font-handwriting text-gray-600'>
+                            Only for True Mother's eyes - a personal message
+                            just between you two
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
                   <div className='flex gap-4 pt-6'>
                     <Button
                       type='button'
@@ -429,7 +498,7 @@ function AddLetterModal({
               </div>
             </div>
           </motion.div>
-        </>
+        </React.Fragment>
       )}
     </AnimatePresence>
   )
@@ -570,11 +639,12 @@ export default function LetterToTrueMotherPage() {
   const [viewingLetter, setViewingLetter] = useState<Letter | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast()
 
   // Debug function to track state changes
   const handleViewLetter = (letter: Letter) => {
-    console.log('Setting viewing letter:', letter.name);
-    setViewingLetter(letter);
+    console.log('Setting viewing letter:', letter.name)
+    setViewingLetter(letter)
   }
 
   // Fetch letters from API
@@ -583,7 +653,7 @@ export default function LetterToTrueMotherPage() {
       setIsLoading(true)
       const response = await fetch('/api/letters-to-tm')
       const result = await response.json()
-      
+
       if (result.success) {
         setLetters(result.data)
       } else {
@@ -601,7 +671,12 @@ export default function LetterToTrueMotherPage() {
     fetchLetters()
   }, [])
 
-  const handleAddLetter = async (letterData: Omit<Letter, '_id' | 'createdAt' | 'color' | 'rotation' | 'position'>) => {
+  const handleAddLetter = async (
+    letterData: Omit<
+      Letter,
+      '_id' | 'createdAt' | 'color' | 'rotation' | 'position'
+    >,
+  ) => {
     try {
       setIsSubmitting(true)
       const response = await fetch('/api/letters-to-tm', {
@@ -611,12 +686,25 @@ export default function LetterToTrueMotherPage() {
         },
         body: JSON.stringify(letterData),
       })
-      
+
       const result = await response.json()
-      
+
       if (result.success) {
-        // Add new letter to the existing letters
-        setLetters(prev => [result.data, ...prev])
+        // Convert to boolean to ensure proper comparison
+        const isPublic = Boolean(result.data.isPublic)
+
+        // Only add public letters to the displayed letters
+        if (isPublic) {
+          setLetters((prev) => [result.data, ...prev])
+        } else {
+          // Show toast for private letters
+          toast({
+            title: '💌 Letter Sent Privately',
+            description:
+              'Your heartfelt message has been sent directly to True Mother. Thank you for sharing your love.',
+            duration: 5000,
+          })
+        }
         setIsModalOpen(false)
       } else {
         console.error('Failed to create letter:', result.error)

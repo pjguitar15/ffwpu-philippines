@@ -8,6 +8,7 @@ export interface LetterToTMDoc extends mongoose.Document {
   color: string
   rotation: number
   position: { x: number; y: number }
+  isPublic: boolean
   createdAt: Date
   updatedAt: Date
 }
@@ -18,48 +19,58 @@ const LetterToTMSchema = new Schema<LetterToTMDoc>(
       type: String,
       required: [true, 'Name is required'],
       trim: true,
-      maxlength: [100, 'Name cannot exceed 100 characters']
+      maxlength: [100, 'Name cannot exceed 100 characters'],
     },
     region: {
       type: String,
       required: [true, 'Region is required'],
       trim: true,
-      maxlength: [100, 'Region cannot exceed 100 characters']
+      maxlength: [100, 'Region cannot exceed 100 characters'],
     },
     content: {
       type: String,
       required: [true, 'Content is required'],
       trim: true,
-      maxlength: [1000, 'Content cannot exceed 1000 characters']
+      maxlength: [1000, 'Content cannot exceed 1000 characters'],
     },
     color: {
       type: String,
       required: true,
-      default: '#fdf2f8'
+      default: '#fdf2f8',
     },
     rotation: {
       type: Number,
       required: true,
-      default: 0
+      default: 0,
     },
     position: {
       x: {
         type: Number,
         required: true,
-        default: 0
+        default: 0,
       },
       y: {
         type: Number,
         required: true,
-        default: 0
-      }
-    }
+        default: 0,
+      },
+    },
+    isPublic: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 )
 
-const LetterToTM = models.LetterToTM || model<LetterToTMDoc>('LetterToTM', LetterToTMSchema)
+// Delete the model if it exists to ensure fresh schema in development
+if (models.LetterToTM) {
+  delete models.LetterToTM
+}
+
+const LetterToTM = model<LetterToTMDoc>('LetterToTM', LetterToTMSchema)
 
 export default LetterToTM
