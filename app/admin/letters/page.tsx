@@ -61,21 +61,21 @@ function LetterCard({
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ 
-        opacity: 1, 
-        scale: 1
+      animate={{
+        opacity: 1,
+        scale: 1,
       }}
-      transition={{ 
+      transition={{
         delay: index * 0.02,
         duration: 0.3,
-        ease: "easeOut"
+        ease: 'easeOut',
       }}
       className='cursor-pointer w-full max-w-xs'
       onClick={() => onClick(letter)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Card 
+      <Card
         className={`${pastelColor} border-2 transition-all duration-200 ease-out relative ${
           isHovered ? 'shadow-lg scale-105 -translate-y-1' : 'shadow-md'
         }`}
@@ -84,81 +84,87 @@ function LetterCard({
         }}
       >
         {/* Privacy indicator */}
-        <div className="absolute top-2 right-2 z-10">
+        <div className='absolute top-2 right-2 z-10'>
           {letter.isPublic ? (
-            <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-300">
-              <Globe className="w-3 h-3 mr-1" />
+            <Badge
+              variant='secondary'
+              className='bg-green-100 text-green-800 border-green-300'
+            >
+              <Globe className='w-3 h-3 mr-1' />
               Public
             </Badge>
           ) : (
-            <Badge variant="secondary" className="bg-amber-100 text-amber-800 border-amber-300">
-              <Lock className="w-3 h-3 mr-1" />
+            <Badge
+              variant='secondary'
+              className='bg-amber-100 text-amber-800 border-amber-300'
+            >
+              <Lock className='w-3 h-3 mr-1' />
               Private
             </Badge>
           )}
         </div>
 
         {/* Corner fold effect */}
-        <div className="absolute top-0 right-0 w-5 h-5 bg-white opacity-40 transform rotate-45 translate-x-2.5 -translate-y-2.5"></div>
-        
+        <div className='absolute top-0 right-0 w-5 h-5 bg-white opacity-40 transform rotate-45 translate-x-2.5 -translate-y-2.5'></div>
+
         {/* Paper tape effect - realistic positioning */}
-        <div 
-          className="absolute w-12 h-6 bg-white/70 opacity-90 shadow-sm border border-gray-200/50"
+        <div
+          className='absolute w-12 h-6 bg-white/70 opacity-90 shadow-sm border border-gray-200/50'
           style={{
             top: '-8px',
             left: '20%',
-            transform: `rotate(${rotation * 0.5}deg)`
+            transform: `rotate(${rotation * 0.5}deg)`,
           }}
         >
           {/* Tape texture lines */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-full h-px bg-gray-200/30"></div>
+          <div className='absolute inset-0 flex items-center justify-center'>
+            <div className='w-full h-px bg-gray-200/30'></div>
           </div>
         </div>
-        
-        <CardContent className='p-4 h-32 flex flex-col relative'>
+
+        <CardContent className='p-4 flex flex-col relative'>
           {/* Enhanced dot pattern for note-like texture */}
-          <div className="absolute inset-0 opacity-3 pointer-events-none">
-            <div className="grid grid-cols-10 gap-3 h-full w-full p-4">
+          <div className='absolute inset-0 opacity-3 pointer-events-none'>
+            <div className='grid grid-cols-10 gap-3 h-full w-full p-4'>
               {Array.from({ length: 40 }).map((_, i) => (
-                <div key={i} className="w-1 h-1 bg-gray-500 rounded-full"></div>
+                <div key={i} className='w-1 h-1 bg-gray-500 rounded-full'></div>
               ))}
             </div>
           </div>
-          
+
           {/* Handwritten note header */}
-          <div className="relative z-10 mb-2">
-            <p className="text-xs font-handwriting text-gray-500 italic text-center">
+          <div className='relative z-10 mb-2'>
+            <p className='text-xs font-handwriting text-gray-500 italic text-center'>
               Dear True Mother,
             </p>
           </div>
-          
+
           {/* Message content - main area */}
           <div className='flex-1 overflow-hidden relative z-10 mb-2'>
             <p className='text-sm text-gray-800 font-handwriting leading-relaxed line-clamp-3 font-medium'>
               "{letter.content}"
             </p>
           </div>
-          
+
           {/* Signature section */}
           <div className='relative z-10 mt-auto'>
-            <div className="text-right mb-1">
+            <div className='text-right mb-1'>
               <p className='text-xs font-handwriting text-gray-600 italic'>
                 With love,
               </p>
             </div>
-            
+
             {/* Author signature area */}
             <div className='space-y-1 border-t border-gray-300/50 pt-1'>
-              <div className="flex items-center justify-between">
+              <div className='flex items-center justify-between'>
                 <p className='text-xs font-bold text-gray-700 font-handwriting flex items-center gap-1'>
                   💝 {letter.name}
                 </p>
                 <p className='text-xs text-gray-500 font-handwriting'>
-                  {new Date(letter.createdAt).toLocaleDateString('en-US', { 
-                    month: 'short', 
+                  {new Date(letter.createdAt).toLocaleDateString('en-US', {
+                    month: 'short',
                     day: 'numeric',
-                    year: '2-digit'
+                    year: '2-digit',
                   })}
                 </p>
               </div>
@@ -167,10 +173,10 @@ function LetterCard({
               </p>
             </div>
           </div>
-          
+
           {/* Heart decoration */}
-          <div className="absolute top-3 right-8 opacity-20">
-            <span className="text-red-400 text-lg">💕</span>
+          <div className='absolute top-3 right-8 opacity-20'>
+            <span className='text-red-400 text-lg'>💕</span>
           </div>
         </CardContent>
       </Card>
