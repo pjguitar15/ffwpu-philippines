@@ -19,6 +19,7 @@ import {
   KeyRound,
   Radio,
   Video,
+  Heart,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
@@ -130,6 +131,11 @@ export function AdminSidebar() {
         href: '/admin/hj-media-works',
         label: 'HJ Media Works',
         icon: Video,
+      },
+      {
+        href: '/admin/letters',
+        label: 'Letters to True Mother',
+        icon: Heart,
       },
     ],
     [],
