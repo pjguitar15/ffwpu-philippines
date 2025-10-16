@@ -50,16 +50,16 @@ const extraNavItems: NavItem[] = [
     icon: Info,
   },
   {
-    href: '/about/history',
-    label: 'Our History',
-    desc: 'Roots of our movement',
-    icon: Clock,
-  },
-  {
     href: '/about/true-parents',
     label: 'True Parents',
     desc: 'Rev. Moon & Holy Mother Han',
     icon: Heart,
+  },
+  {
+    href: '/about/history',
+    label: 'Our History',
+    desc: 'Roots of our movement',
+    icon: Clock,
   },
 ]
 

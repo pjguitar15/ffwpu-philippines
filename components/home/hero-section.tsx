@@ -44,8 +44,8 @@ export function HeroSection() {
       <div className='pointer-events-none absolute -bottom-24 -left-16 h-80 w-80 rounded-full blur-3xl bg-gradient-to-tr from-fuchsia-400/20 to-emerald-400/10' />
 
       {/* Content */}
-      <div className='container mx-auto px-4 md:px-6 h-[70vh] grid place-items-center py-14 md:py-16'>
-        <div className='relative z-10 mx-auto max-w-5xl text-center space-y-7'>
+      <div className='container mx-auto px-4 md:px-6 grid place-items-center md:py-16'>
+        <div className='relative z-10 mx-auto max-w-5xl text-center space-y-7 py-[7rem]'>
           {/* Eyebrow */}
           <p className='mx-auto inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[10px] md:text-xs font-semibold uppercase tracking-widest text-white/80 ring-1 ring-white/20 backdrop-blur [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.8))]'>
             <Sparkles className='h-3.5 w-3.5' />

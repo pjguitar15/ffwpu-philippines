@@ -106,24 +106,37 @@ export function TestimonialsSection({ items }: { items: Testimonial[] }) {
         {items.slice(0, 3).map((t, i) => (
           <article
             key={i}
-            className='relative rounded-xl border border-slate-200 bg-white/70 backdrop-blur-md shadow-sm hover:shadow-md transition-shadow mb-6'
+            className='relative rounded-xl border border-slate-200 bg-white/70 backdrop-blur-md shadow-sm hover:shadow-md transition-shadow mb-6 overflow-visible'
           >
-            <div className='absolute -top-7 left-1/2 -translate-x-1/2 h-14 w-14 rounded-full ring-4 ring-white overflow-hidden shadow'>
+            <div className='absolute -top-7 left-1/2 -translate-x-1/2 h-14 w-14 rounded-full ring-4 ring-white overflow-visible shadow group/avatar'>
               {t.avatar ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={t.avatar}
-                  alt={`${t.name} avatar`}
-                  className='h-full w-full object-cover'
-                />
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={t.avatar}
+                    alt={`${t.name} avatar`}
+                    className='h-full w-full object-cover cursor-pointer rounded-full'
+                  />
+                  {/* Avatar tooltip - appears above the avatar */}
+                  <div className='absolute -top-80 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full ring-4 ring-white overflow-hidden shadow-xl opacity-0 invisible group-hover/avatar:opacity-100 group-hover/avatar:visible transition-all duration-300 z-50 bg-white pointer-events-none'>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={t.avatar}
+                      alt={`${t.name} avatar - enlarged`}
+                      className='h-full w-full object-cover'
+                    />
+                    {/* Tooltip arrow pointing down */}
+                    <div className='absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-white ring-2 ring-white rotate-45'></div>
+                  </div>
+                </>
               ) : (
-                <div className='h-full w-full grid place-items-center bg-slate-200 text-slate-600 text-base font-semibold'>
+                <div className='h-full w-full grid place-items-center bg-slate-200 text-slate-600 text-base font-semibold rounded-full'>
                   {t.name?.[0]?.toUpperCase() ?? '⦿'}
                 </div>
               )}
             </div>
 
-            <div className='px-5 pb-5 pt-10'>
+            <div className='px-5 pb-5 pt-10 overflow-hidden rounded-xl'>
               <p className='text-slate-700 leading-relaxed font-serif text-sm'>
                 <span className='text-amber-500 text-sm align-top'>“</span>
                 {t.quote}

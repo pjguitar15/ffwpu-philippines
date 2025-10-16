@@ -223,11 +223,6 @@ export const mainNavItems: MainNavItem[] = [
         icon: FiInfo,
       },
       {
-        label: 'Our History',
-        href: '/about/history',
-        icon: FiClock,
-      },
-      {
         label: 'True Parents',
         href: '/about/true-parents',
         icon: FiUsers,
@@ -265,6 +260,12 @@ export const mainNavItems: MainNavItem[] = [
     ],
   },
   {
+    href: '/about/history',
+    label: 'Our History',
+    desc: 'Our journey & milestones',
+    icon: FiClock,
+  },
+  {
     href: '/news',
     label: 'News',
     desc: 'Latest updates & reports',
@@ -297,7 +298,10 @@ function DrawerList({
         // If item has dropdown, use DrawerMenuItem for nested handling
         if (item.dropdown && item.dropdown.length > 0) {
           return (
-            <div key={item.href} className='rounded-xl overflow-hidden bg-white border border-gray-200'>
+            <div
+              key={item.href}
+              className='rounded-xl overflow-hidden bg-white border border-gray-200'
+            >
               <DrawerMenuItem item={item} onChoose={onChoose} />
             </div>
           )
@@ -474,7 +478,7 @@ export function Header() {
           </div>
         )}
         <header className='relative z-[900] w-full bg-background border-b'>
-          <div className='container mx-auto flex h-16 items-center px-4 gap-3 min-w-0'>
+          <div className='mx-auto flex h-16 items-center px-12 gap-3 min-w-0'>
             <div className='flex items-center gap-3 min-w-0'>
               <Link href='/' className='flex items-center space-x-2 shrink-0'>
                 <Image
@@ -494,7 +498,7 @@ export function Header() {
                   <div className='hidden lg:block h-9 w-[clamp(12rem,28vw,22rem)] rounded-full bg-muted/60' />
                 }
               >
-                <div className='hidden md:block min-w-[12rem] ms-3'>
+                <div className='hidden lg:block min-w-[12rem] ms-3'>
                   <HeaderSearch variant='desktop' className='h-9 w-full' />
                 </div>
               </Suspense>
