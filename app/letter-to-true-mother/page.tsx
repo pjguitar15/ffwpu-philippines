@@ -644,7 +644,7 @@ export default function LetterToTrueMotherPage() {
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
                 className='flex-1 text-center lg:text-left space-y-6'
               >
                 {/* Title */}
@@ -661,8 +661,9 @@ export default function LetterToTrueMotherPage() {
                 </div>
 
                 <p className='text-lg md:text-xl text-gray-700 max-w-2xl lg:max-w-none lg:w-3/4 font-handwriting leading-relaxed'>
-                  Send your heartfelt messages of love, support, and encouragement 
-                  to our beloved True Mother. Your words of comfort bring strength and hope. 🌸💕
+                  Send your heartfelt messages of love, support, and
+                  encouragement to our beloved True Mother. Your words of
+                  comfort bring strength and hope. 🌸💕
                 </p>
 
                 <motion.div>
@@ -705,20 +706,131 @@ export default function LetterToTrueMotherPage() {
         <section className='pb-16'>
           <div className='container mx-auto px-4'>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 justify-items-center'>
-              {isLoading ? (
-                // Loading state
-                Array.from({ length: 8 }).map((_, index) => (
+              {isLoading
+                ? // Loading state - Note-style skeletons
+                  Array.from({ length: 8 }).map((_, index) => {
+                    // Get a random color and rotation for each skeleton
+                    const skeletonColor =
+                      PAPER_COLORS[index % PAPER_COLORS.length]
+                    const skeletonRotation = (index % 5) - 2 // Random rotation like real cards
+
+                    return (
+                      <div
+                        key={index}
+                        className={`w-64 h-32 ${skeletonColor} border-2 rounded-lg shadow-md relative animate-pulse`}
+                        style={{
+                          transform: `rotate(${skeletonRotation}deg)`,
+                        }}
+                      >
+                        {/* Paper tape effect */}
+                        <div
+                          className='absolute w-12 h-6 bg-white/70 opacity-90 shadow-sm border border-gray-200/50'
+                          style={{
+                            top: '-8px',
+                            left: '20%',
+                            transform: `rotate(${skeletonRotation * 0.5}deg)`,
+                          }}
+                        >
+                          <div className='absolute inset-0 flex items-center justify-center'>
+                            <div className='w-full h-px bg-gray-200/30'></div>
+                          </div>
+                        </div>
+
+                        {/* Skeleton content */}
+                        <div className='p-4 h-full flex flex-col relative'>
+                          {/* Header skeleton */}
+                          <div className='mb-3 text-center'>
+                            <div className='h-3 bg-gray-300/50 rounded w-24 mx-auto'></div>
+                          </div>
+
+                          {/* Content skeleton */}
+                          <div className='flex-1 space-y-2 mb-3'>
+                            <div className='h-3 bg-gray-300/50 rounded w-full'></div>
+                            <div className='h-3 bg-gray-300/50 rounded w-5/6'></div>
+                            <div className='h-3 bg-gray-300/50 rounded w-4/6'></div>
+                          </div>
+
+                          {/* Signature skeleton */}
+                          <div className='mt-auto'>
+                            <div className='text-right mb-2'>
+                              <div className='h-2 bg-gray-300/50 rounded w-16 ml-auto'></div>
+                            </div>
+                            <div className='border-t border-gray-300/50 pt-2'>
+                              <div className='flex items-center justify-between'>
+                                <div className='h-3 bg-gray-300/50 rounded w-16'></div>
+                                <div className='h-2 bg-gray-300/50 rounded w-12'></div>
+                              </div>
+                              <div className='h-2 bg-gray-300/50 rounded w-20 mt-1'></div>
+                            </div>
+                          </div>
+
+                          {/* Heart decoration */}
+                          <div className='absolute top-3 right-8 opacity-20'>
+                            <div className='w-4 h-4 bg-gray-300/50 rounded-full'></div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })
+                : letters.map((letter, index) => (
+                    <LetterCard
+                      key={letter._id}
+                      letter={letter}
+                      index={index}
+                      onClick={handleViewLetter}
+                    />
+                  ))}
+
+              {/* Add Note Card - Only show when not loading */}
+              {!isLoading && (
+                <div
+                  onClick={() => setIsModalOpen(true)}
+                  className='w-64 h-32 bg-gray-100 border-2 border-gray-200 border-dashed rounded-lg shadow-md relative cursor-pointer transition-all duration-200 ease-out hover:bg-gray-200 hover:border-gray-300 hover:shadow-lg hover:scale-105 group'
+                  style={{
+                    transform: 'rotate(1deg)',
+                  }}
+                >
+                  {/* Paper tape effect */}
                   <div
-                    key={index}
-                    className='w-64 h-32 bg-gray-200 rounded-lg animate-pulse'
-                  />
-                ))
-              ) : (
-                letters.map((letter, index) => (
-                  <LetterCard key={letter._id} letter={letter} index={index} onClick={handleViewLetter} />
-                ))
+                    className='absolute w-12 h-6 bg-white/70 opacity-90 shadow-sm border border-gray-200/50'
+                    style={{
+                      top: '-8px',
+                      left: '20%',
+                      transform: 'rotate(0.5deg)',
+                    }}
+                  >
+                    <div className='absolute inset-0 flex items-center justify-center'>
+                      <div className='w-full h-px bg-gray-200/30'></div>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className='p-4 h-full flex flex-col items-center justify-center relative'>
+                    {/* Plus icon */}
+                    <div className='mb-2 text-gray-400 group-hover:text-gray-600 transition-colors duration-200'>
+                      <svg
+                        width='32'
+                        height='32'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke='currentColor'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      >
+                        <line x1='12' y1='5' x2='12' y2='19'></line>
+                        <line x1='5' y1='12' x2='19' y2='12'></line>
+                      </svg>
+                    </div>
+
+                    {/* Text */}
+                    <p className='text-sm font-handwriting text-gray-500 group-hover:text-gray-700 transition-colors duration-200 text-center'>
+                      Write a Letter
+                    </p>
+                  </div>
+                </div>
               )}
-              
+
               {!isLoading && letters.length === 0 && (
                 <div className='col-span-full text-center py-20'>
                   <Mail className='w-24 h-24 text-gray-300 mx-auto mb-4' />

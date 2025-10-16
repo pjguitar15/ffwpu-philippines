@@ -483,15 +483,23 @@ export function Header() {
       {/* FIXED header above everything */}
       <div ref={headerRef} className='fixed inset-x-0 top-0 z-[900]'>
         {isHome && !isScrolled && (
-          <div className='bg-gradient-to-r from-blue-800 via-cyan-800 to-sky-800 text-white py-2 px-4 text-center text-sm shadow-sm transition-all duration-300'>
-            <p className='block lg:hidden font-medium tracking-wide'>
-              ✨ Sunday Service • 10:00 AM (Manila)
-            </p>
-            <p className='hidden lg:block font-medium tracking-wide'>
-              ✨ Join us for our{' '}
-              <span className='font-semibold'>Weekly Sunday Service</span> •
-              Every Sunday at 10:00 AM (Manila)
-            </p>
+          <div className='bg-gradient-to-r from-rose-300 via-pink-300 to-rose-400 text-gray-800 py-2 px-4 text-center text-sm shadow-sm transition-all duration-300'>
+            <Link
+              href='/letter-to-true-mother'
+              className='block hover:text-white transition-all duration-200 cursor-pointer rounded-sm px-2 py-1 -mx-2 -my-1'
+            >
+              <p className='block lg:hidden font-medium tracking-wide'>
+                💌 Send Your Letter to True Mother →
+              </p>
+              <p className='hidden lg:block font-medium tracking-wide'>
+                💌{' '}
+                <span className='underline decoration-2 underline-offset-2'>
+                  Share your love with{' '}
+                  <span className='font-semibold'>True Mother</span>
+                </span>{' '}
+                • Send heartfelt messages of comfort and encouragement →
+              </p>
+            </Link>
           </div>
         )}
         <header className='relative z-[900] w-full bg-background border-b'>

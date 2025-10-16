@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { ClientMetadata } from '@/components/seo/client-metadata'
 import { pageMetadataConfigs } from '@/lib/metadata'
 import { AnnouncementBanner } from '@/components/announcement-banner'
@@ -79,30 +80,110 @@ export default function HomePage() {
         <main className='flex-1'>
           <HeroSection />
 
-          {/* Letters to True Mother CTA Section */}
-          <section className='relative py-16'>
-            <SectionGlare />
-            <SideBySide
-              withSocials
-              imgUrl='/letter-for-tm.png'
-              imgAlt='True Mother - Letters of Comfort'
-              eyebrow='Messages of Love • FFWPU Philippines'
-              title='Share Your Heart with True Mother'
-              highlightedText='True Mother'
-              highlightedGradientClassName='bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 bg-clip-text text-transparent'
-              sideText='LETTERS OF COMFORT'
-              description='Send heartfelt messages of love, support, and encouragement to our beloved True Mother. Your words of comfort bring strength and hope during these precious times. Join thousands of members worldwide who have shared their hearts through beautiful handwritten notes.'
-              bottomLinks={[
-                {
-                  label: 'Write Your Letter 💌',
-                  href: '/letter-to-true-mother',
-                },
-                {
-                  label: 'Read Other Letters',
-                  href: '/letter-to-true-mother',
-                },
-              ]}
-            />
+          {/* Letters to True Mother - Compact CTA Section */}
+          <section className='bg-gradient-to-r from-rose-50 via-pink-50 to-purple-50 border-y border-rose-100'>
+            <div className='container mx-auto px-4 py-6'>
+              <div className='flex flex-col lg:flex-row items-center justify-between gap-8 mx-auto'>
+                {/* Left side - Image */}
+                <div className='flex-shrink-0'>
+                  <div className='relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-pink-200 shadow-md'>
+                    <Image
+                      src='/letter-for-tm.png'
+                      alt='True Mother'
+                      width={80}
+                      height={80}
+                      className='object-cover'
+                    />
+                  </div>
+                </div>
+
+                {/* Center - Content */}
+                <div className='flex-1 text-center lg:text-left'>
+                  <h3 className='text-2xl md:text-3xl font-handwriting font-bold text-gray-800 mb-1'>
+                    Share Your Love with{' '}
+                    <span className='bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent'>
+                      True Mother
+                    </span>{' '}
+                    💌
+                  </h3>
+                  <p className='text-sm md:text-base font-handwriting text-gray-600'>
+                    Send heartfelt messages of comfort and encouragement
+                  </p>
+                </div>
+
+                {/* Sample Notes - Design Elements */}
+                <div className='hidden lg:flex flex-shrink-0 gap-4'>
+                  {/* First Note */}
+                  <div className='bg-yellow-100 border-yellow-200 border-2 w-40 h-28 rounded-lg shadow-md relative transform rotate-3 hover:rotate-1 transition-transform duration-200'>
+                    {/* Paper tape effect */}
+                    <div className='absolute w-8 h-4 bg-white/70 opacity-90 shadow-sm border border-gray-200/50 -top-2 left-6'></div>
+
+                    {/* Note content */}
+                    <div className='p-3 h-full flex flex-col justify-between'>
+                      <div className='text-center mb-1'>
+                        <p className='text-xs font-handwriting text-gray-500 italic'>
+                          Dear True Mother,
+                        </p>
+                      </div>
+                      <div className='flex-1'>
+                        <p className='text-xs font-handwriting text-gray-700 leading-tight'>
+                          "Thank you for your endless love and guidance..."
+                        </p>
+                      </div>
+                      <div className='text-right'>
+                        <p className='text-xs font-handwriting text-gray-600 italic'>
+                          With love,
+                        </p>
+                        <p className='text-xs font-handwriting text-gray-700 font-normal'>
+                          💝 Maria
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Second Note - Only on XL screens */}
+                  <div className='hidden xl:block bg-pink-100 border-pink-200 border-2 w-40 h-28 rounded-lg shadow-md relative transform -rotate-2 hover:rotate-0 transition-transform duration-200'>
+                    {/* Paper tape effect */}
+                    <div className='absolute w-8 h-4 bg-white/70 opacity-90 shadow-sm border border-gray-200/50 -top-2 right-6'></div>
+
+                    {/* Note content */}
+                    <div className='p-3 h-full flex flex-col justify-between'>
+                      <div className='text-center mb-1'>
+                        <p className='text-xs font-handwriting text-gray-500 italic'>
+                          Dear True Mother,
+                        </p>
+                      </div>
+                      <div className='flex-1'>
+                        <p className='text-xs font-handwriting text-gray-700 leading-tight'>
+                          "Your wisdom guides us through each day..."
+                        </p>
+                      </div>
+                      <div className='text-right'>
+                        <p className='text-xs font-handwriting text-gray-600 italic'>
+                          Gratefully,
+                        </p>
+                        <p className='text-xs font-handwriting text-gray-700 font-normal'>
+                          🌸 Sarah
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right side - CTA Button */}
+                <div className='flex-shrink-0'>
+                  <a
+                    href='/letter-to-true-mother'
+                    className='inline-flex items-center gap-2 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-handwriting px-6 py-3 rounded-full shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group hover:scale-105'
+                  >
+                    <span>Write a Letter</span>
+                    <span className='group-hover:translate-x-0.5 transition-transform duration-200'>
+                      💌
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </section>
 
           <div className='container mx-auto py-12 space-y-16'>
