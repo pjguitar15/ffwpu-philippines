@@ -78,6 +78,33 @@ export default function HomePage() {
       <div className='min-h-screen flex flex-col'>
         <main className='flex-1'>
           <HeroSection />
+
+          {/* Letters to True Mother CTA Section */}
+          <section className='relative py-16'>
+            <SectionGlare />
+            <SideBySide
+              withSocials
+              imgUrl='/letter-for-tm.png'
+              imgAlt='True Mother - Letters of Comfort'
+              eyebrow='Messages of Love • FFWPU Philippines'
+              title='Share Your Heart with True Mother'
+              highlightedText='True Mother'
+              highlightedGradientClassName='bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 bg-clip-text text-transparent'
+              sideText='LETTERS OF COMFORT'
+              description='Send heartfelt messages of love, support, and encouragement to our beloved True Mother. Your words of comfort bring strength and hope during these precious times. Join thousands of members worldwide who have shared their hearts through beautiful handwritten notes.'
+              bottomLinks={[
+                {
+                  label: 'Write Your Letter 💌',
+                  href: '/letter-to-true-mother',
+                },
+                {
+                  label: 'Read Other Letters',
+                  href: '/letter-to-true-mother',
+                },
+              ]}
+            />
+          </section>
+
           <div className='container mx-auto py-12 space-y-16'>
             <AnnouncementBanner />
             {/* Recent news with soft background accent */}

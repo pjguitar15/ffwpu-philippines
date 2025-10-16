@@ -169,35 +169,48 @@ function LetterCard({ letter, index, onClick }: { letter: Letter; index: number;
   )
 }
 
-function AddLetterModal({ 
-  isOpen, 
-  onClose, 
+function AddLetterModal({
+  isOpen,
+  onClose,
   onSubmit,
-  isSubmitting
-}: { 
+  isSubmitting,
+}: {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (letter: Omit<Letter, '_id' | 'createdAt' | 'color' | 'rotation' | 'position'>) => Promise<void>
+  onSubmit: (
+    letter: Omit<
+      Letter,
+      '_id' | 'createdAt' | 'color' | 'rotation' | 'position'
+    >,
+  ) => Promise<void>
   isSubmitting?: boolean
 }) {
   const [formData, setFormData] = useState({
     name: '',
     region: '',
-    content: ''
+    content: '',
   })
   const [wordCount, setWordCount] = useState(0)
 
   const handleContentChange = (value: string) => {
-    const words = value.trim().split(/\s+/).filter(word => word.length > 0)
+    const words = value
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length > 0)
     if (words.length <= LETTER_CONFIG.MAX_WORDS) {
-      setFormData(prev => ({ ...prev, content: value }))
+      setFormData((prev) => ({ ...prev, content: value }))
       setWordCount(words.length)
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (formData.name && formData.region && formData.content && wordCount <= LETTER_CONFIG.MAX_WORDS) {
+    if (
+      formData.name &&
+      formData.region &&
+      formData.content &&
+      wordCount <= LETTER_CONFIG.MAX_WORDS
+    ) {
       await onSubmit(formData)
       // Reset form only if submission was successful (modal will close)
       setFormData({ name: '', region: '', content: '' })
@@ -207,8 +220,8 @@ function AddLetterModal({
 
   // Get a soft pastel color for the note
   const noteColor = useMemo(() => {
-    return PAPER_COLORS[2]; // Use a consistent warm color for writing
-  }, []);
+    return PAPER_COLORS[2] // Use a consistent warm color for writing
+  }, [])
 
   return (
     <AnimatePresence>
@@ -219,131 +232,153 @@ function AddLetterModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm cursor-pointer"
+            className='fixed inset-0 z-[9999] bg-black/20 backdrop-blur-sm cursor-pointer'
             onClick={onClose}
           />
-          
+
           {/* Modal container */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", duration: 0.5 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            transition={{ type: 'spring', duration: 0.5 }}
+            className='fixed inset-0 z-[9999] flex items-center justify-center lg:p-4'
           >
             {/* Note-style modal */}
             <div
-              className={`${noteColor} border-2 shadow-2xl rounded-lg max-w-2xl w-full max-h-[90vh] relative cursor-auto`}
+              className={`${noteColor} border-2 shadow-2xl rounded-lg max-w-2xl w-full py-4 lg:py-0 max-h-[90vh] overflow-y-auto relative cursor-auto`}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Corner fold effect */}
-              <div className="absolute top-0 right-0 w-6 h-6 bg-white opacity-40 transform rotate-45 translate-x-3 -translate-y-3"></div>
-              
+              <div className='absolute top-0 right-0 w-6 h-6 bg-white opacity-40 transform rotate-45 translate-x-3 -translate-y-3'></div>
+
               {/* Close button (X) */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 hover:bg-white border border-gray-300 hover:border-gray-400 transition-all duration-200 group cursor-pointer"
+                className='absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 hover:bg-white border border-gray-300 hover:border-gray-400 transition-all duration-200 group cursor-pointer'
               >
                 <svg
-                  className="w-5 h-5 text-gray-600 group-hover:text-gray-800"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
+                  className='w-5 h-5 text-gray-600 group-hover:text-gray-800'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                  xmlns='http://www.w3.org/2000/svg'
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M6 18L18 6M6 6l12 12'
+                  />
                 </svg>
               </button>
-              
+
               {/* Subtle dot pattern background */}
-              <div className="absolute inset-0 opacity-5 pointer-events-none rounded-lg overflow-hidden">
-                <div className="grid grid-cols-12 gap-4 h-full w-full p-6">
+              <div className='absolute inset-0 opacity-5 pointer-events-none rounded-lg overflow-hidden'>
+                <div className='grid grid-cols-12 gap-4 h-full w-full p-6'>
                   {Array.from({ length: 60 }).map((_, i) => (
-                    <div key={i} className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                    <div
+                      key={i}
+                      className='w-1 h-1 bg-gray-400 rounded-full'
+                    ></div>
                   ))}
                 </div>
               </div>
 
-              <div className="relative z-10 p-8 pr-16">
+              <div className='relative z-10 p-2 lg:p-8 lg:pr-12'>
                 {/* Header */}
-                <div className="text-center mb-8">
-                  <h2 className="text-3xl font-handwriting font-bold text-gray-800 mb-2">
+                <div className='text-center mb-4 md:mb-8'>
+                  <h2 className='text-xl md:text-3xl font-handwriting font-bold text-gray-800 mb-1 md:mb-2'>
                     💌 Write to True Mother 💌
                   </h2>
-                  <p className="text-lg font-handwriting text-gray-600 italic">
+                  <p className='text-sm md:text-lg font-handwriting text-gray-600 italic'>
                     Share your heartfelt message of love and encouragement
                   </p>
                 </div>
-                
-                <form onSubmit={handleSubmit} className="space-y-6">
+
+                <form onSubmit={handleSubmit} className='space-y-6'>
                   {/* Letter format with handwritten styling */}
-                  <div className="bg-white/60 rounded-lg p-6 border border-gray-300 space-y-5">
+                  <div className='bg-white/60 rounded-lg p-6 border border-gray-300 space-y-5'>
                     {/* Date line */}
-                    <div className="text-right">
-                      <p className="text-base font-handwriting text-gray-600">
-                        {new Date().toLocaleDateString('en-US', { 
+                    <div className='text-right'>
+                      <p className='text-base font-handwriting text-gray-600'>
+                        {new Date().toLocaleDateString('en-US', {
                           year: 'numeric',
-                          month: 'long', 
-                          day: 'numeric' 
+                          month: 'long',
+                          day: 'numeric',
                         })}
                       </p>
                     </div>
-                    
+
                     {/* Greeting */}
                     <div>
-                      <p className="text-lg font-handwriting text-gray-800 mb-4">
+                      <p className='text-lg font-handwriting text-gray-800 mb-4'>
                         Dear True Mother,
                       </p>
                     </div>
-                    
+
                     {/* Message content */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <label className="text-sm font-handwriting text-gray-600 italic">
+                    <div className='space-y-2'>
+                      <div className='flex items-center justify-between'>
+                        <label className='text-sm font-handwriting text-gray-600 italic'>
                           Your heartfelt message:
                         </label>
-                        <span className={`text-xs font-handwriting ${
-                          wordCount > LETTER_CONFIG.MAX_WORDS ? 'text-red-500' : 'text-gray-500'
-                        }`}>
+                        <span
+                          className={`text-xs font-handwriting ${
+                            wordCount > LETTER_CONFIG.MAX_WORDS
+                              ? 'text-red-500'
+                              : 'text-gray-500'
+                          }`}
+                        >
                           {wordCount}/{LETTER_CONFIG.MAX_WORDS} words
                         </span>
                       </div>
                       <Textarea
-                        id="content"
+                        id='content'
                         value={formData.content}
                         onChange={(e) => handleContentChange(e.target.value)}
-                        placeholder="I want to tell you how much you mean to me..."
-                        className="min-h-[140px] bg-transparent border-none resize-none font-handwriting text-lg text-gray-800 placeholder-gray-400 focus:ring-0 focus:outline-none p-0"
+                        placeholder='I want to tell you how much you mean to me...'
+                        className='min-h-[140px] bg-transparent border-none resize-none font-handwriting text-lg text-gray-800 placeholder-gray-400 focus:ring-0 focus:outline-none p-0'
                         required
                       />
                     </div>
-                    
+
                     {/* Signature section */}
-                    <div className="pt-4 space-y-3">
-                      <p className="text-lg font-handwriting text-gray-800">
+                    <div className='pt-4 space-y-3'>
+                      <p className='text-lg font-handwriting text-gray-800'>
                         With love and respect,
                       </p>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                         <div>
                           <Input
-                            id="name"
-                            type="text"
+                            id='name'
+                            type='text'
                             value={formData.name}
-                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                            placeholder="Your name"
-                            className="bg-transparent border-0 border-b-2 border-gray-300 rounded-none font-handwriting text-lg text-gray-800 focus:border-gray-500 focus:ring-0 placeholder-gray-400"
+                            onChange={(e) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                name: e.target.value,
+                              }))
+                            }
+                            placeholder='Your name'
+                            className='bg-transparent border-0 border-b-2 border-gray-300 rounded-none font-handwriting text-lg text-gray-800 focus:border-gray-500 focus:ring-0 placeholder-gray-400'
                             required
                           />
                         </div>
                         <div>
                           <Input
-                            id="region"
-                            type="text"
+                            id='region'
+                            type='text'
                             value={formData.region}
-                            onChange={(e) => setFormData(prev => ({ ...prev, region: e.target.value }))}
-                            placeholder="Your region/province"
-                            className="bg-transparent border-0 border-b-2 border-gray-300 rounded-none font-handwriting text-lg text-gray-800 focus:border-gray-500 focus:ring-0 placeholder-gray-400"
+                            onChange={(e) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                region: e.target.value,
+                              }))
+                            }
+                            placeholder='Your region/province'
+                            className='bg-transparent border-0 border-b-2 border-gray-300 rounded-none font-handwriting text-lg text-gray-800 focus:border-gray-500 focus:ring-0 placeholder-gray-400'
                             required
                           />
                         </div>
@@ -352,38 +387,44 @@ function AddLetterModal({
                   </div>
 
                   {/* Action buttons */}
-                  <div className="flex gap-4 pt-6">
+                  <div className='flex gap-4 pt-6'>
                     <Button
-                      type="button"
-                      variant="outline"
+                      type='button'
+                      variant='outline'
                       onClick={onClose}
-                      className="flex-1 font-handwriting border-gray-400 hover:bg-gray-50 text-gray-700 cursor-pointer bg-white/80"
+                      className='flex-1 font-handwriting border-gray-400 hover:bg-gray-50 text-gray-700 cursor-pointer bg-white/80'
                     >
                       Maybe Later
                     </Button>
                     <Button
-                      type="submit"
-                      className="flex-1 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-handwriting cursor-pointer shadow-lg hover:shadow-xl"
-                      disabled={!formData.name || !formData.region || !formData.content || wordCount > LETTER_CONFIG.MAX_WORDS || isSubmitting}
+                      type='submit'
+                      className='flex-1 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-handwriting cursor-pointer shadow-lg hover:shadow-xl'
+                      disabled={
+                        !formData.name ||
+                        !formData.region ||
+                        !formData.content ||
+                        wordCount > LETTER_CONFIG.MAX_WORDS ||
+                        isSubmitting
+                      }
                     >
                       {isSubmitting ? (
                         <>
-                          <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                          <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent' />
                           Sending with Love...
                         </>
                       ) : (
                         <>
-                          <Send className="w-4 h-4 mr-2" />
+                          <Send className='w-4 h-4 mr-2' />
                           Send My Letter 💌
                         </>
                       )}
                     </Button>
                   </div>
                 </form>
-                
+
                 {/* Small corner decoration */}
-                <div className="absolute bottom-6 right-6 opacity-15">
-                  <div className="w-4 h-4 bg-gray-400 rounded-full" />
+                <div className='absolute bottom-6 right-6 opacity-15'>
+                  <div className='w-4 h-4 bg-gray-400 rounded-full' />
                 </div>
               </div>
             </div>
@@ -394,7 +435,11 @@ function AddLetterModal({
   )
 }
 
-function ViewLetterModal({ letter, isOpen, onClose }: { 
+function ViewLetterModal({
+  letter,
+  isOpen,
+  onClose,
+}: {
   letter: Letter | null
   isOpen: boolean
   onClose: () => void
@@ -404,20 +449,20 @@ function ViewLetterModal({ letter, isOpen, onClose }: {
   // Get same pastel color logic as letter card
   const pastelColor = useMemo(() => {
     const hash = letter._id.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.charCodeAt(0);
-      return a & a;
-    }, 0);
-    return PAPER_COLORS[Math.abs(hash) % PAPER_COLORS.length];
-  }, [letter._id]);
+      a = (a << 5) - a + b.charCodeAt(0)
+      return a & a
+    }, 0)
+    return PAPER_COLORS[Math.abs(hash) % PAPER_COLORS.length]
+  }, [letter._id])
 
   // Slight rotation for the modal
   const rotation = useMemo(() => {
     const hash = letter._id.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.charCodeAt(0);
-      return a & a;
-    }, 0);
-    return (hash % 3) - 1; // Random rotation between -1 and 1 degrees
-  }, [letter._id]);
+      a = (a << 5) - a + b.charCodeAt(0)
+      return a & a
+    }, 0)
+    return (hash % 3) - 1 // Random rotation between -1 and 1 degrees
+  }, [letter._id])
 
   return (
     <AnimatePresence>
@@ -428,8 +473,8 @@ function ViewLetterModal({ letter, isOpen, onClose }: {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ type: "spring", duration: 0.5 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm cursor-pointer"
+            transition={{ type: 'spring', duration: 0.5 }}
+            className='fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm cursor-pointer'
             onClick={onClose}
           >
             {/* Note-style modal */}
@@ -437,69 +482,78 @@ function ViewLetterModal({ letter, isOpen, onClose }: {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: "spring", duration: 0.5 }}
-              className={`${pastelColor} border-2 shadow-2xl rounded-lg max-w-2xl w-full max-h-[90vh] relative cursor-auto`}
+              transition={{ type: 'spring', duration: 0.5 }}
+              className={`${pastelColor} border-2 shadow-2xl rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative cursor-auto`}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Corner fold effect */}
-              <div className="absolute top-0 right-0 w-6 h-6 bg-white opacity-40 transform rotate-45 translate-x-3 -translate-y-3"></div>
-              
+              <div className='absolute top-0 right-0 w-6 h-6 bg-white opacity-40 transform rotate-45 translate-x-3 -translate-y-3'></div>
+
               {/* Close button (X) */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 hover:bg-white border border-gray-300 hover:border-gray-400 transition-all duration-200 group cursor-pointer"
+                className='absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 hover:bg-white border border-gray-300 hover:border-gray-400 transition-all duration-200 group cursor-pointer'
               >
                 <svg
-                  className="w-5 h-5 text-gray-600 group-hover:text-gray-800"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
+                  className='w-5 h-5 text-gray-600 group-hover:text-gray-800'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                  xmlns='http://www.w3.org/2000/svg'
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M6 18L18 6M6 6l12 12'
+                  />
                 </svg>
               </button>
-              
+
               {/* Subtle dot pattern background */}
-              <div className="absolute inset-0 opacity-5 pointer-events-none rounded-lg overflow-hidden">
-                <div className="grid grid-cols-12 gap-4 h-full w-full p-6">
+              <div className='absolute inset-0 opacity-5 pointer-events-none rounded-lg overflow-hidden'>
+                <div className='grid grid-cols-12 gap-4 h-full w-full p-6'>
                   {Array.from({ length: 60 }).map((_, i) => (
-                    <div key={i} className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                    <div
+                      key={i}
+                      className='w-1 h-1 bg-gray-400 rounded-full'
+                    ></div>
                   ))}
                 </div>
               </div>
 
-              <div className="relative z-10 p-8 pr-16">
+              <div className='relative z-10 p-8 pr-16'>
                 {/* Header */}
-                <div className="text-center mb-8">
-                  <h2 className="text-3xl font-handwriting font-bold text-gray-800 mb-3">
+                <div className='text-center mb-8'>
+                  <h2 className='text-3xl font-handwriting font-bold text-gray-800 mb-3'>
                     Letter from {letter.name}
                   </h2>
-                  <div className="space-y-2">
-                    <p className="text-lg text-gray-600 font-handwriting flex items-center justify-center gap-2">
-                      <span className="text-green-500">📍</span>
+                  <div className='space-y-2'>
+                    <p className='text-lg text-gray-600 font-handwriting flex items-center justify-center gap-2'>
+                      <span className='text-green-500'>📍</span>
                       From {letter.region}
                     </p>
-                    <p className="text-base text-gray-500 font-handwriting">
-                      📅 {new Date(letter.createdAt).toLocaleDateString('en-US', { 
+                    <p className='text-base text-gray-500 font-handwriting'>
+                      📅{' '}
+                      {new Date(letter.createdAt).toLocaleDateString('en-US', {
                         year: 'numeric',
-                        month: 'long', 
-                        day: 'numeric' 
+                        month: 'long',
+                        day: 'numeric',
                       })}
                     </p>
                   </div>
                 </div>
-                
+
                 {/* Letter content */}
-                <div className="mb-8">
-                  <p className="text-xl text-gray-800 font-handwriting leading-relaxed whitespace-pre-wrap">
+                <div className='mb-8'>
+                  <p className='text-xl text-gray-800 font-handwriting leading-relaxed whitespace-pre-wrap'>
                     {letter.content}
                   </p>
                 </div>
-                
+
                 {/* Small corner decoration */}
-                <div className="absolute bottom-6 right-6 opacity-15">
-                  <div className="w-4 h-4 bg-gray-400 rounded-full" />
+                <div className='absolute bottom-6 right-6 opacity-15'>
+                  <div className='w-4 h-4 bg-gray-400 rounded-full' />
                 </div>
               </div>
             </motion.div>
