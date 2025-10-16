@@ -421,9 +421,21 @@ function DrawerGroup({
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const pathname = usePathname()
   const isActive = (href: string) => pathname === href
   const isHome = pathname === '/'
+
+  // Track scroll position to hide/show banner
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10)
+    }
+
+    handleScroll() // Check initial position
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // FIX: make header fixed and measured, overlay/drawer use full viewport (under header by z-index)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -465,8 +477,8 @@ export function Header() {
     <>
       {/* FIXED header above everything */}
       <div ref={headerRef} className='fixed inset-x-0 top-0 z-[900]'>
-        {isHome && (
-          <div className='bg-gradient-to-r from-blue-800 via-cyan-800 to-sky-800 text-white py-2 px-4 text-center text-sm shadow-sm'>
+        {isHome && !isScrolled && (
+          <div className='bg-gradient-to-r from-blue-800 via-cyan-800 to-sky-800 text-white py-2 px-4 text-center text-sm shadow-sm transition-all duration-300'>
             <p className='block lg:hidden font-medium tracking-wide'>
               ✨ Sunday Service • 10:00 AM (Manila)
             </p>
