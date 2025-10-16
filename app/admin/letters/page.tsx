@@ -91,7 +91,6 @@ function LetterCard({
               variant='secondary'
               className='bg-green-100 text-green-800 border-green-300'
             >
-              {letter.isPublic.toString()}
               <Globe className='w-3 h-3 mr-1' />
               Public
             </Badge>
