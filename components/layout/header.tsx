@@ -257,6 +257,11 @@ export const mainNavItems: MainNavItem[] = [
         href: '/hj-testimonies',
         icon: FiBookOpen,
       },
+      {
+        label: 'Letter to True Mother',
+        href: '/letter-to-true-mother',
+        icon: FiHeart,
+      },
     ],
   },
   {
