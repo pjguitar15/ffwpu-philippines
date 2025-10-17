@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import imageCompression from 'browser-image-compression'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -278,22 +279,32 @@ export function NewsForm({
   }, [values.title, values.author, values.date, values.image, values.content])
 
   async function uploadFile(file: File) {
-    const MAX_BYTES = 10 * 1024 * 1024 // 10MB default to match server route
     if (!file.type.startsWith('image/')) {
       setUploadError('Please select an image file')
       return
     }
-    if (file.size > MAX_BYTES) {
-      setUploadError('File too large (max 10MB)')
-      return
-    }
+
     setUploadError(null)
     setUploading(true)
     setUploadPct(0)
+
     try {
+      // Compress image if needed
+      let fileToUpload = file
+      const MAX_BYTES = 10 * 1024 * 1024 // 10MB (Cloudinary free tier limit)
+      if (file.size > MAX_BYTES) {
+        const options = {
+          maxSizeMB: 9, // Target 9MB to stay safely under 10MB
+          maxWidthOrHeight: 2048,
+          useWebWorker: true,
+          fileType: file.type,
+        }
+        fileToUpload = await imageCompression(file, options)
+      }
+
       await new Promise<void>((resolve, reject) => {
         const fd = new FormData()
-        fd.append('file', file)
+        fd.append('file', fileToUpload)
         const xhr = new XMLHttpRequest()
         xhr.open('POST', '/api/cloudinary-upload')
         xhr.upload.onprogress = (e) => {
