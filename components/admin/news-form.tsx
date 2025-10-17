@@ -184,11 +184,19 @@ export function NewsForm({
                   // remove pending
                   setPendingGallery((prev) => prev.filter((p) => p.id !== id))
                 } else {
+                  // Handle specific error messages based on status code
+                  let errorMessage = 'Upload failed'
+                  if (xhr.status === 413) {
+                    errorMessage =
+                      data?.error ||
+                      'File is too large. Please choose a smaller image.'
+                  } else {
+                    errorMessage = data?.error || 'Upload failed'
+                  }
+
                   setPendingGallery((prev) =>
                     prev.map((p) =>
-                      p.id === id
-                        ? { ...p, error: data?.error || 'Upload failed' }
-                        : p,
+                      p.id === id ? { ...p, error: errorMessage } : p,
                     ),
                   )
                 }
@@ -301,7 +309,16 @@ export function NewsForm({
               setUploadPct(100)
               resolve()
             } else {
-              reject(new Error(data?.error || 'Upload failed'))
+              // Handle specific error messages based on status code
+              let errorMessage = 'Upload failed'
+              if (xhr.status === 413) {
+                errorMessage =
+                  data?.error ||
+                  'File is too large. Please choose a smaller image.'
+              } else {
+                errorMessage = data?.error || 'Upload failed'
+              }
+              reject(new Error(errorMessage))
             }
           } catch (e) {
             reject(new Error('Upload failed'))
@@ -377,7 +394,16 @@ export function NewsForm({
               }))
               resolve()
             } else {
-              reject(new Error(data?.error || 'Upload failed'))
+              // Handle specific error messages based on status code
+              let errorMessage = 'Upload failed'
+              if (xhr.status === 413) {
+                errorMessage =
+                  data?.error ||
+                  'File is too large. Please choose a smaller image.'
+              } else {
+                errorMessage = data?.error || 'Upload failed'
+              }
+              reject(new Error(errorMessage))
             }
           } catch {
             reject(new Error('Upload failed'))

@@ -239,7 +239,18 @@ export default function EventForm({
               setValues((v) => ({ ...v, image: data.url }))
               setUploadPct(100)
               resolve()
-            } else reject(new Error(data?.error || 'Upload failed'))
+            } else {
+              // Handle specific error messages based on status code
+              let errorMessage = 'Upload failed'
+              if (xhr.status === 413) {
+                errorMessage =
+                  data?.error ||
+                  'File is too large. Please choose a smaller image.'
+              } else {
+                errorMessage = data?.error || 'Upload failed'
+              }
+              reject(new Error(errorMessage))
+            }
           } catch {
             reject(new Error('Upload failed'))
           }
