@@ -50,18 +50,20 @@ const DEFAULT_ORGS: AffiliatedOrg[] = [
   {
     name: 'Tong-Il Moo-Do',
     logoUrl: '/logos/timd-logo.webp',
-    href: 'https://timd.org',
+    href: 'https://tongilmoodo.org/',
     contribution: 'Culture',
   },
   {
     name: 'Sun Hwa International Academy',
     logoUrl: '/logos/shia-logo.webp',
     contribution: 'Education',
+    href: 'https://www.facebook.com/sunhwaacademyph',
   },
   {
     name: 'IPLC (Intl. Peace Leadership College)',
     logoUrl: '/logos/iplc-logo.webp',
     contribution: 'Higher Ed',
+    href: 'https://www.facebook.com/profile.php?id=100063610582473',
   },
 ]
 
