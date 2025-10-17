@@ -284,9 +284,13 @@ export default function EventModal({
 
                             {/* Description */}
                             {event.description && (
-                              <p className='text-slate-700 text-sm mb-6 leading-relaxed'>
-                                {event.description}
-                              </p>
+                              <div className='text-slate-700 text-sm mb-6 leading-relaxed space-y-3'>
+                                {event.description.split('\n').map((line, index) => (
+                                  <p key={index} className='whitespace-pre-wrap'>
+                                    {line}
+                                  </p>
+                                ))}
+                              </div>
                             )}
 
                             {/* Footer actions */}
@@ -414,9 +418,13 @@ export default function EventModal({
 
                       {/* Description */}
                       {event.description && (
-                        <p className='mt-4 text-slate-700 text-sm'>
-                          {event.description}
-                        </p>
+                        <div className='mt-4 text-slate-700 text-sm leading-relaxed space-y-3'>
+                          {event.description.split('\n').map((line, index) => (
+                            <p key={index} className='whitespace-pre-wrap'>
+                              {line}
+                            </p>
+                          ))}
+                        </div>
                       )}
 
                       {/* Footer actions */}
