@@ -108,7 +108,22 @@ function LetterCard({
           </div>
         </div>
 
-        <CardContent className='p-4 h-full flex flex-col relative'>
+        <CardContent className='p-4 h-full flex flex-col relative overflow-hidden'>
+          {/* Horizontal lines for notebook paper effect */}
+          <div className='absolute inset-0 pointer-events-none'>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className='absolute w-full h-px bg-blue-300/50'
+                style={{
+                  top: `${20 + i * 14}px`,
+                  left: '16px',
+                  right: '16px',
+                }}
+              />
+            ))}
+          </div>
+
           {/* Enhanced dot pattern for note-like texture */}
           <div className='absolute inset-0 opacity-3 pointer-events-none'>
             <div className='grid grid-cols-10 gap-3 h-full w-full p-4'>
@@ -119,34 +134,34 @@ function LetterCard({
           </div>
 
           {/* Handwritten note header */}
-          <div className='relative z-10 mb-3'>
+          <div className='relative z-10 mb-2'>
             <p className='text-xs font-handwriting text-gray-500 italic text-center'>
               Dear True Mother,
             </p>
           </div>
 
           {/* Message content - main area */}
-          <div className='flex-1 overflow-hidden relative z-10 mb-3'>
-            <p className='text-sm text-gray-800 font-handwriting leading-relaxed line-clamp-4 font-medium'>
+          <div className='flex-1 overflow-hidden relative z-10 mb-2'>
+            <p className='text-xs text-gray-800 font-handwriting leading-relaxed line-clamp-3 font-medium break-words'>
               "{letter.content}"
             </p>
           </div>
 
           {/* Signature section */}
           <div className='relative z-10 mt-auto'>
-            <div className='text-right mb-2'>
+            <div className='text-right mb-1'>
               <p className='text-xs font-handwriting text-gray-600 italic'>
                 With love,
               </p>
             </div>
 
             {/* Author signature area */}
-            <div className='space-y-1 border-t border-gray-300/50 pt-2'>
+            <div className='space-y-1 border-t border-gray-300/50 pt-1'>
               <div className='flex items-center justify-between'>
-                <p className='text-xs font-bold text-gray-700 font-handwriting flex items-center gap-1'>
-                  💝 {letter.name}
+                <p className='text-xs font-bold text-gray-700 font-handwriting flex items-center gap-1 truncate'>
+                  💝 <span className='truncate'>{letter.name}</span>
                 </p>
-                <p className='text-xs text-gray-500 font-handwriting'>
+                <p className='text-xs text-gray-500 font-handwriting flex-shrink-0'>
                   {new Date(letter.createdAt).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
@@ -154,8 +169,8 @@ function LetterCard({
                   })}
                 </p>
               </div>
-              <p className='text-xs text-gray-600 font-handwriting flex items-center gap-1'>
-                📍 {letter.region}
+              <p className='text-xs text-gray-600 font-handwriting flex items-center gap-1 truncate'>
+                📍 <span className='truncate'>{letter.region}</span>
               </p>
             </div>
           </div>
@@ -229,9 +244,9 @@ function AddLetterModal({
     }
   }
 
-  // Get a soft pastel color for the note
+  // Get a soft pink pastel color for the notepad
   const noteColor = useMemo(() => {
-    return PAPER_COLORS[2] // Use a consistent warm color for writing
+    return 'bg-pink-50' // Use a pink pastel color like a notepad
   }, [])
 
   return (
@@ -253,11 +268,11 @@ function AddLetterModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', duration: 0.5 }}
-            className='fixed inset-0 z-[9999] flex items-center justify-center lg:p-4'
+            className='fixed inset-0 z-[9999] flex items-center justify-center p-0 lg:p-4'
           >
             {/* Note-style modal */}
             <div
-              className={`${noteColor} border-2 shadow-2xl rounded-lg max-w-2xl w-full py-4 lg:py-0 max-h-[90vh] overflow-y-auto relative cursor-auto`}
+              className={`${noteColor} border-2 shadow-2xl rounded-none lg:rounded-lg max-w-2xl w-full h-full lg:h-auto lg:max-h-[90vh] overflow-y-auto relative cursor-auto`}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Corner fold effect */}
@@ -284,6 +299,30 @@ function AddLetterModal({
                 </svg>
               </button>
 
+              {/* Horizontal lines for lined paper effect */}
+              <div className='absolute inset-0 pointer-events-none'>
+                {Array.from({ length: 30 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className='absolute w-full h-px bg-blue-300/40'
+                    style={{
+                      top: `${60 + i * 24}px`,
+                      left: '32px',
+                      right: '32px',
+                    }}
+                  />
+                ))}
+                {/* Red margin line */}
+                <div
+                  className='absolute h-full w-px bg-red-300/50'
+                  style={{
+                    left: '80px',
+                    top: '60px',
+                    bottom: '60px',
+                  }}
+                />
+              </div>
+
               {/* Subtle dot pattern background */}
               <div className='absolute inset-0 opacity-5 pointer-events-none rounded-lg overflow-hidden'>
                 <div className='grid grid-cols-12 gap-4 h-full w-full p-6'>
@@ -296,11 +335,11 @@ function AddLetterModal({
                 </div>
               </div>
 
-              <div className='relative z-10 p-2 lg:p-8 lg:pr-12'>
+              <div className='relative z-10 p-4 lg:p-8'>
                 {/* Header */}
                 <div className='text-center mb-4 md:mb-8'>
                   <h2 className='text-xl md:text-3xl font-handwriting font-bold text-gray-800 mb-1 md:mb-2'>
-                    💌 Write to True Mother 💌
+                    Write to True Mother
                   </h2>
                   <p className='text-sm md:text-lg font-handwriting text-gray-600 italic'>
                     Share your heartfelt message of love and encouragement
@@ -309,7 +348,7 @@ function AddLetterModal({
 
                 <form onSubmit={handleSubmit} className='space-y-6'>
                   {/* Letter format with handwritten styling */}
-                  <div className='bg-white/60 rounded-lg p-6 border border-gray-300 space-y-5'>
+                  <div className='p-6 space-y-5'>
                     {/* Date line */}
                     <div className='text-right'>
                       <p className='text-base font-handwriting text-gray-600'>
@@ -349,7 +388,7 @@ function AddLetterModal({
                         value={formData.content}
                         onChange={(e) => handleContentChange(e.target.value)}
                         placeholder='I want to tell you how much you mean to me...'
-                        className='min-h-[140px] bg-transparent border-none resize-none font-handwriting text-lg text-gray-800 placeholder-gray-400 focus:ring-0 focus:outline-none p-0'
+                        className='min-h-[140px] bg-white/80 border border-gray-200 rounded-lg resize-none font-handwriting text-lg text-gray-800 placeholder-gray-400 focus:ring-1 focus:ring-gray-300 focus:border-gray-400 p-4'
                         required
                       />
                     </div>
@@ -373,7 +412,7 @@ function AddLetterModal({
                               }))
                             }
                             placeholder='Your name'
-                            className='bg-transparent border-0 border-b-2 border-gray-300 rounded-none font-handwriting text-lg text-gray-800 focus:border-gray-500 focus:ring-0 placeholder-gray-400'
+                            className='bg-white/80 border border-gray-200 rounded-lg font-handwriting text-lg text-gray-800 focus:border-gray-400 focus:ring-1 focus:ring-gray-300 placeholder-gray-400 px-3 py-2'
                             required
                           />
                         </div>
@@ -389,7 +428,7 @@ function AddLetterModal({
                               }))
                             }
                             placeholder='Your region/province'
-                            className='bg-transparent border-0 border-b-2 border-gray-300 rounded-none font-handwriting text-lg text-gray-800 focus:border-gray-500 focus:ring-0 placeholder-gray-400'
+                            className='bg-white/80 border border-gray-200 rounded-lg font-handwriting text-lg text-gray-800 focus:border-gray-400 focus:ring-1 focus:ring-gray-300 placeholder-gray-400 px-3 py-2'
                             required
                           />
                         </div>
@@ -398,9 +437,9 @@ function AddLetterModal({
                   </div>
 
                   {/* Privacy Options */}
-                  <div className='bg-white/60 rounded-lg p-4 border border-gray-300 space-y-3'>
+                  <div className='p-4 space-y-3'>
                     <h3 className='text-lg font-handwriting text-gray-800 font-semibold'>
-                      ✨ Letter Visibility
+                      Letter Visibility
                     </h3>
                     <p className='text-sm font-handwriting text-gray-600 italic'>
                       Choose how you'd like to share your letter:
@@ -484,7 +523,7 @@ function AddLetterModal({
                       ) : (
                         <>
                           <Send className='w-4 h-4 mr-2' />
-                          Send My Letter 💌
+                          Send My Letter
                         </>
                       )}
                     </Button>
@@ -579,6 +618,30 @@ function ViewLetterModal({
                 </svg>
               </button>
 
+              {/* Horizontal lines for lined paper effect */}
+              <div className='absolute inset-0 pointer-events-none'>
+                {Array.from({ length: 25 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className='absolute w-full h-px bg-blue-300/40'
+                    style={{
+                      top: `${60 + i * 24}px`,
+                      left: '32px',
+                      right: '32px',
+                    }}
+                  />
+                ))}
+                {/* Red margin line */}
+                <div
+                  className='absolute h-full w-px bg-red-300/50'
+                  style={{
+                    left: '80px',
+                    top: '60px',
+                    bottom: '60px',
+                  }}
+                />
+              </div>
+
               {/* Subtle dot pattern background */}
               <div className='absolute inset-0 opacity-5 pointer-events-none rounded-lg overflow-hidden'>
                 <div className='grid grid-cols-12 gap-4 h-full w-full p-6'>
@@ -591,7 +654,7 @@ function ViewLetterModal({
                 </div>
               </div>
 
-              <div className='relative z-10 p-8 pr-16'>
+              <div className='relative z-10 p-8'>
                 {/* Header */}
                 <div className='text-center mb-8'>
                   <h2 className='text-3xl font-handwriting font-bold text-gray-800 mb-3'>

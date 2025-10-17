@@ -503,7 +503,7 @@ export function Header() {
           </div>
         )}
         <header className='relative z-[900] w-full bg-background border-b'>
-          <div className='mx-auto flex h-16 items-center px-12 gap-3 min-w-0'>
+          <div className='mx-auto flex h-16 items-center px-4 md:px-12 gap-3 min-w-0'>
             <div className='flex items-center gap-3 min-w-0'>
               <Link href='/' className='flex items-center space-x-2 shrink-0'>
                 <Image
