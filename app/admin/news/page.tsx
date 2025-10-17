@@ -54,6 +54,13 @@ import {
 } from '@/components/ui/tooltip'
 import { Skeleton } from '@/components/ui/skeleton'
 
+type Testimonial = {
+  name: string
+  role?: string
+  avatar?: string
+  quote: string
+}
+
 interface NewsItem {
   id: string
   title: string
@@ -64,6 +71,91 @@ interface NewsItem {
   image?: string
   slug?: string
   content?: string
+  testimonials?: Testimonial[]
+}
+
+// Small testimonials preview component for admin table
+function TestimonialsPreview({ items }: { items: Testimonial[] }) {
+  if (!items?.length) {
+    return (
+      <div className='text-xs text-slate-400 italic'>
+        No testimonies
+      </div>
+    )
+  }
+
+  return (
+    <div className='group/tooltip relative'>
+      <div className='bg-gradient-to-r from-amber-400/90 to-orange-400/90 backdrop-blur-sm border border-amber-300/50 rounded-full px-2 py-1 flex items-center gap-1 shadow-sm cursor-help transition-all duration-200 hover:from-amber-500/95 hover:to-orange-500/95 hover:scale-105 w-fit'>
+        <div className='flex -space-x-1'>
+          {items.slice(0, 2).map((t, i) => (
+            <div
+              key={i}
+              className='h-4 w-4 rounded-full ring-1 ring-white overflow-hidden bg-amber-100'
+            >
+              {t.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={t.avatar}
+                  alt={`${t.name} avatar`}
+                  className='h-full w-full object-cover'
+                />
+              ) : (
+                <div className='h-full w-full grid place-items-center bg-amber-200 text-amber-800 text-[8px] font-bold'>
+                  {t.name?.[0]?.toUpperCase() ?? '⦿'}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        <span className='text-[10px] font-semibold text-white leading-none'>
+          {items.length} reflection{items.length !== 1 ? 's' : ''}
+        </span>
+      </div>
+
+      {/* Tooltip */}
+      <div className='absolute top-8 right-0 bg-white/95 backdrop-blur-lg border border-amber-200 rounded-lg shadow-xl p-3 min-w-[280px] max-w-[320px] opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 z-30'>
+        <div className='text-xs font-semibold text-amber-700 mb-2 border-b border-amber-100 pb-1'>
+          Participant Reflections
+        </div>
+        <div className='space-y-2 max-h-[200px] overflow-y-auto'>
+          {items.slice(0, 4).map((t, i) => (
+            <div key={i} className='flex gap-2'>
+              <div className='h-6 w-6 rounded-full ring-1 ring-amber-200 overflow-hidden bg-amber-100 flex-shrink-0'>
+                {t.avatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={t.avatar}
+                    alt={`${t.name} avatar`}
+                    className='h-full w-full object-cover'
+                  />
+                ) : (
+                  <div className='h-full w-full grid place-items-center bg-amber-200 text-amber-700 text-[10px] font-bold'>
+                    {t.name?.[0]?.toUpperCase() ?? '⦿'}
+                  </div>
+                )}
+              </div>
+              <div className='flex-1 min-w-0'>
+                <div className='text-[10px] font-medium text-amber-600'>
+                  {t.name}
+                  {t.role && (
+                    <span className='text-slate-500 ml-1'>• {t.role}</span>
+                  )}
+                </div>
+                <p className='text-[11px] text-slate-600 leading-relaxed mt-0.5'>
+                  <span className='text-amber-500'>"</span>
+                  {t.quote.length > 60
+                    ? `${t.quote.substring(0, 60)}...`
+                    : t.quote}
+                  <span className='text-amber-500'>"</span>
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 // Deterministic color palette for tag badges to add a subtle, friendly splash of color
@@ -381,6 +473,9 @@ export default function AdminNewsPage() {
                           Views
                         </TableHead>
                         <TableHead className='text-slate-700 py-3'>
+                          Testimonies
+                        </TableHead>
+                        <TableHead className='text-slate-700 py-3'>
                           Actions
                         </TableHead>
                       </TableRow>
@@ -413,6 +508,9 @@ export default function AdminNewsPage() {
                               </TableCell>
                               <TableCell className='py-4'>
                                 <Skeleton className='h-4 w-12' />
+                              </TableCell>
+                              <TableCell className='py-4'>
+                                <Skeleton className='h-6 w-16 rounded-full' />
                               </TableCell>
                               <TableCell className='py-4'>
                                 <div className='flex items-center gap-2'>
@@ -545,6 +643,9 @@ export default function AdminNewsPage() {
                                     {item.views || 0}
                                   </span>
                                 </div>
+                              </TableCell>
+                              <TableCell className='py-4'>
+                                <TestimonialsPreview items={item.testimonials || []} />
                               </TableCell>
                               <TableCell className='py-4'>
                                 <div className='flex items-center gap-2'>
