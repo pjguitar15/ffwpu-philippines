@@ -28,6 +28,7 @@ import {
   Eye,
   ImageIcon,
   Filter,
+  Loader2,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { NewsForm } from '@/components/admin/news-form'
@@ -100,6 +101,7 @@ export default function AdminNewsPage() {
   const [editItem, setEditItem] = useState<any | null>(null)
   const [previewItem, setPreviewItem] = useState<any | null>(null)
   const [deleteItem, setDeleteItem] = useState<any | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const [loading, setLoading] = useState(true)
   const PAGE_SIZE = 5
   const [page, setPage] = useState(1)
@@ -172,6 +174,7 @@ export default function AdminNewsPage() {
   }, [searchQuery, newsItems, filterStatus, filterAuthor, filterTag])
 
   const handleDelete = async (id: string) => {
+    setDeleting(true)
     try {
       const res = await fetch(`/api/news/${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error(await res.text())
@@ -189,6 +192,8 @@ export default function AdminNewsPage() {
         description: 'Please try again.',
         variant: 'destructive' as any,
       })
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -685,10 +690,16 @@ export default function AdminNewsPage() {
                 </div>
               </div>
               <div className='px-6 pb-4 flex justify-end gap-2'>
-                <Button variant='secondary' onClick={() => setDeleteItem(null)}>
+                <Button
+                  className='cursor-pointer'
+                  variant='secondary'
+                  onClick={() => setDeleteItem(null)}
+                >
                   Cancel
                 </Button>
                 <Button
+                  className='cursor-pointer'
+                  disabled={deleting}
                   variant='destructive'
                   onClick={async () => {
                     if (!deleteItem) return
@@ -696,7 +707,14 @@ export default function AdminNewsPage() {
                     setDeleteItem(null)
                   }}
                 >
-                  Delete
+                  {deleting ? (
+                    <>
+                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                      Deleting...
+                    </>
+                  ) : (
+                    'Delete'
+                  )}
                 </Button>
               </div>
             </DialogContent>
