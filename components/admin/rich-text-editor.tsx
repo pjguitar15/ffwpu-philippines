@@ -47,7 +47,7 @@ export default function RichTextEditor({
 
   useEffect(() => {
     try {
-      document.execCommand('defaultParagraphSeparator', false, 'p')
+      document.execCommand('defaultParagraphSeparator', false, 'div')
     } catch {}
   }, [])
 
@@ -97,6 +97,72 @@ export default function RichTextEditor({
 
   const sanitizeInPlace = (root: HTMLElement) => {
     normalizeTopLevelDivsToP(root)
+
+    // Remove Google Docs wrapper spans and unwrap their content
+    Array.from(root.querySelectorAll('span[id*="docs-internal-guid"]')).forEach(
+      (span) => {
+        const parent = span.parentNode
+        while (span.firstChild) {
+          parent?.insertBefore(span.firstChild, span)
+        }
+        span.remove()
+      },
+    )
+
+    // Remove unwanted attributes but preserve text alignment
+    Array.from(root.querySelectorAll('*')).forEach((el) => {
+      const element = el as HTMLElement
+      
+      // Preserve text alignment styles, remove everything else
+      const currentStyle = element.getAttribute('style')
+      if (currentStyle) {
+        const alignmentMatch = currentStyle.match(/text-align:\s*(left|center|right|justify)/i)
+        if (alignmentMatch) {
+          element.setAttribute('style', `text-align: ${alignmentMatch[1].toLowerCase()}`)
+        } else {
+          element.removeAttribute('style')
+        }
+      }
+      
+      // Remove other unwanted attributes
+      element.removeAttribute('font')
+      element.removeAttribute('face')
+      element.removeAttribute('size')
+      element.removeAttribute('color')
+      element.removeAttribute('dir')
+      // Don't remove id completely as some elements might need it, but remove Google Docs ids
+      const id = element.getAttribute('id')
+      if (id && id.includes('docs-internal-guid')) {
+        element.removeAttribute('id')
+      }
+    })
+
+    // Handle empty paragraphs properly (don't remove them all)
+    Array.from(root.querySelectorAll('p')).forEach((p) => {
+      const hasMedia = p.querySelector('img,iframe,video,audio,svg,canvas')
+      const text = (p.textContent || '').replace(/\u00A0/g, ' ').trim()
+      const isEmpty = !hasMedia && text === ''
+
+      if (isEmpty) {
+        // Keep empty paragraphs but ensure they have exactly one <br>
+        if (
+          p.childNodes.length !== 1 ||
+          (p.firstChild as HTMLElement)?.nodeName !== 'BR'
+        ) {
+          while (p.firstChild) p.removeChild(p.firstChild)
+          p.appendChild(document.createElement('br'))
+        }
+      } else {
+        // Remove trailing <br>s from non-empty paragraphs
+        while (
+          p.lastChild &&
+          p.lastChild.nodeType === 1 &&
+          (p.lastChild as HTMLElement).tagName === 'BR'
+        ) {
+          p.removeChild(p.lastChild)
+        }
+      }
+    })
 
     // Collapse <br><br> runs globally
     Array.from(root.querySelectorAll('br')).forEach((br) => {
@@ -348,21 +414,7 @@ export default function RichTextEditor({
           }
 
           if (e.key === 'Enter') {
-            const sel = window.getSelection()
-            if (sel && sel.anchorNode) {
-              let node: Node | null = sel.anchorNode
-              while (node && (node as HTMLElement).nodeType === 3)
-                node = node.parentNode
-              const el = node as HTMLElement | null
-              if (el) {
-                const bq = el.closest('blockquote') as HTMLElement | null
-                if (bq && (bq.textContent || '').trim() === '') {
-                  e.preventDefault()
-                  document.execCommand('formatBlock', false, 'P')
-                  return
-                }
-              }
-            }
+            // Let the default behavior happen but clean up after
             setTimeout(() => {
               if (ref.current) {
                 sanitizeInPlace(ref.current)
@@ -409,13 +461,13 @@ export default function RichTextEditor({
           text-decoration: underline;
         }
 
-        /* >>> Paragraph spacing so Enter shows a visible gap <<< */
+        /* >>> Minimal paragraph spacing for natural flow <<< */
         :global(.rte p) {
-          margin: 0;
-        } /* reset */
-        :global(.rte p + p) {
-          margin-top: 0.75rem;
-        } /* one Enter = one gap */
+          margin: 0 0 0.1rem 0;
+        } /* tiny bottom margin */
+        :global(.rte p:last-child) {
+          margin-bottom: 0;
+        } /* no margin on last paragraph */
 
         :global(.rte h1) {
           font-size: 1.5rem;

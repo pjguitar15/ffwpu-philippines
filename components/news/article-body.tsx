@@ -88,9 +88,7 @@ export function ArticleBody({ content }: { content: string }) {
         :global(.news-article) {
           line-height: 1.8;
         }
-        :global(.news-article p) {
-          margin: 0 0 1rem 0;
-        }
+
         :global(.news-article p:last-child) {
           margin-bottom: 0;
         }
