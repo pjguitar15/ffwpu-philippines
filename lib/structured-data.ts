@@ -263,6 +263,34 @@ export function generateFAQSchema(faqs: Array<{
   }
 }
 
+// Song / Music Composition schema for lyrics pages
+export function generateSongSchema(song: {
+  id: string
+  title: string
+  artist: string
+  album?: string
+  lyrics: string
+  category: string
+}): StructuredDataSchema {
+  const songUrl = `${baseUrl}/music/lyrics/${song.category}/${song.id}`
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MusicComposition',
+    '@id': `${songUrl}#composition`,
+    name: song.title,
+    composer: song.artist,
+    lyricist: song.artist,
+    inLanguage: 'en-PH',
+    iswcCode: song.id,
+    text: song.lyrics.slice(0, 5000),
+    genre: song.category,
+    url: songUrl,
+    publisher: {
+      '@id': `${baseUrl}#organization`
+    }
+  }
+}
+
 // Utility to inject structured data into pages
 export function injectStructuredData(schemas: StructuredDataSchema[]): string {
   return schemas.map(schema => 

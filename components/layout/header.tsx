@@ -23,6 +23,7 @@ import {
   FiHome,
   FiShoppingBag,
   FiShoppingCart,
+  FiMusic,
 } from 'react-icons/fi'
 import { useCart } from '@/context/CartContext'
 import { HeaderSearch } from './header-search'
@@ -218,6 +219,12 @@ export const mainNavItems: MainNavItem[] = [
     label: 'Updates',
     desc: 'Latest updates & reports',
     icon: FiFileText,
+  },
+  {
+    href: '/music/lyrics',
+    label: 'Songs',
+    desc: 'Browse lyrics & play audio',
+    icon: FiMusic,
   },
   // About dropdown nav
   {
@@ -533,7 +540,7 @@ export function Header() {
                   <div className='hidden lg:block h-9 w-[clamp(12rem,28vw,22rem)] rounded-full bg-muted/60' />
                 }
               >
-                <div className='hidden lg:block min-w-[12rem] ms-3'>
+                <div className='hidden xl:block min-w-[12rem] ms-3'>
                   <HeaderSearch variant='desktop' className='h-9 w-full' />
                 </div>
               </Suspense>

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { categories, getSongsByCategory } from '@/data/music-songs'
 
 export const revalidate = 300
 
@@ -130,7 +131,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // De-dupe by URL
-  const all = [...staticRoutes, ...dynamicNews, ...dynamicEvents]
+  // Lyrics library & songs
+  const lyricsBase: MetadataRoute.Sitemap = [
+    {
+      url: joinUrl(siteUrl, '/music/lyrics'),
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+  ]
+  const lyricCats: MetadataRoute.Sitemap = categories.map((c) => ({
+    url: joinUrl(siteUrl, `/music/lyrics/${c.key}`),
+    lastModified: now,
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }))
+  const lyricSongs: MetadataRoute.Sitemap = categories.flatMap((c) =>
+    getSongsByCategory(c.key).map((s) => ({
+      url: joinUrl(siteUrl, `/music/lyrics/${c.key}/${s.id}`),
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+    })),
+  )
+
+  const all = [
+    ...staticRoutes,
+    ...dynamicNews,
+    ...dynamicEvents,
+    ...lyricsBase,
+    ...lyricCats,
+    ...lyricSongs,
+  ]
   const dedup = Array.from(new Map(all.map((x) => [x.url, x])).values())
 
   return dedup
