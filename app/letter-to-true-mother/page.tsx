@@ -272,7 +272,7 @@ function AddLetterModal({
           >
             {/* Note-style modal */}
             <div
-              className={`${noteColor} border-2 shadow-2xl rounded-none lg:rounded-lg max-w-2xl w-full h-full lg:h-auto lg:max-h-[90vh] overflow-y-auto relative cursor-auto`}
+              className={`${noteColor} overflow-y-scroll max-h-[90vh] relative cursor-auto shadow-lg letter-modal-scroll`}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Corner fold effect */}
@@ -582,7 +582,7 @@ function ViewLetterModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ type: 'spring', duration: 0.5 }}
-            className='fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm cursor-pointer'
+            className='fixed inset-0 z-[9999] flex items-center justify-center bg-black/20 backdrop-blur-sm cursor-pointer'
             onClick={onClose}
           >
             {/* Note-style modal */}
@@ -591,12 +591,9 @@ function ViewLetterModal({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', duration: 0.5 }}
-              className={`${pastelColor} border-2 shadow-2xl rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative cursor-auto`}
+              className={`${pastelColor} max-w-2xl overflow-x-hidden relative cursor-auto rounded-xl`}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Corner fold effect */}
-              <div className='absolute top-0 right-0 w-6 h-6 bg-white opacity-40 transform rotate-45 translate-x-3 -translate-y-3'></div>
-
               {/* Close button (X) */}
               <button
                 onClick={onClose}
@@ -619,7 +616,7 @@ function ViewLetterModal({
               </button>
 
               {/* Horizontal lines for lined paper effect */}
-              <div className='absolute inset-0 pointer-events-none'>
+              <div className='absolute inset-0 pointer-events-none overflow-hidden'>
                 {Array.from({ length: 25 }).map((_, i) => (
                   <div
                     key={i}
@@ -644,7 +641,7 @@ function ViewLetterModal({
 
               {/* Subtle dot pattern background */}
               <div className='absolute inset-0 opacity-5 pointer-events-none rounded-lg overflow-hidden'>
-                <div className='grid grid-cols-12 gap-4 h-full w-full p-6'>
+                <div className='grid grid-cols-12 gap-4 h-full w-full'>
                   {Array.from({ length: 60 }).map((_, i) => (
                     <div
                       key={i}
@@ -654,8 +651,7 @@ function ViewLetterModal({
                 </div>
               </div>
 
-              <div className='relative z-10 p-8'>
-                {/* Header */}
+              <div className='relative z-10 p-5'>
                 <div className='text-center mb-8'>
                   <h2 className='text-3xl font-handwriting font-bold text-gray-800 mb-3'>
                     Letter from {letter.name}
@@ -676,14 +672,12 @@ function ViewLetterModal({
                   </div>
                 </div>
 
-                {/* Letter content */}
-                <div className='mb-8'>
+                <div className='max-h-[50vh] overflow-y-scroll w-full letter-modal-scroll'>
                   <p className='text-xl text-gray-800 font-handwriting leading-relaxed whitespace-pre-wrap'>
                     {letter.content}
                   </p>
                 </div>
 
-                {/* Small corner decoration */}
                 <div className='absolute bottom-6 right-6 opacity-15'>
                   <div className='w-4 h-4 bg-gray-400 rounded-full' />
                 </div>
@@ -789,14 +783,14 @@ export default function LetterToTrueMotherPage() {
         <section className='relative overflow-hidden py-16'>
           {/* Floating elements removed for clean design */}
 
-          <div className='relative container mx-auto px-4 md:px-6'>
-            <div className='flex flex-col lg:flex-row items-center justify-between gap-8'>
+          <div className='container mx-auto px-4 md:px-6'>
+            <div className='flex flex-col lg:flex-row items-center justify-between gap-8 py-5 md:py-14'>
               {/* Text Content - Left Side */}
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
-                className='flex-1 text-center lg:text-left space-y-6'
+                className='flex-1 text-center lg:text-left space-y-6 z-20'
               >
                 {/* Title */}
                 <div className='flex items-center justify-center lg:justify-start gap-3 mb-4'>
@@ -813,8 +807,8 @@ export default function LetterToTrueMotherPage() {
 
                 <p className='text-lg md:text-xl text-gray-700 max-w-2xl lg:max-w-none lg:w-3/4 font-handwriting leading-relaxed'>
                   Send your heartfelt messages of love, support, and
-                  encouragement to our beloved True Mother. Your words of
-                  comfort bring strength and hope. 🌸💕
+                  encouragement to our beloved True Mother. <br />
+                  Your words of comfort bring strength and hope. 🌸💕
                 </p>
 
                 <motion.div>
@@ -835,15 +829,33 @@ export default function LetterToTrueMotherPage() {
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3, duration: 0.6 }}
-                className='relative flex-shrink-0 hidden lg:block'
+                className='absolute top-0 right-0 flex-shrink-0 hidden lg:block z-10'
               >
                 <div className='relative'>
                   <Image
-                    src='/letter-for-tm.png'
+                    src='/letter-to-tm-bg.webp'
                     alt='True Mother'
-                    width={320}
+                    width={880}
                     height={280}
-                    className='object-cover rounded-lg'
+                    className='object-cover rounded-lg opacity-80'
+                  />
+                  {/* Fade effect at bottom */}
+                  <div className='absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none rounded-b-lg'></div>
+                </div>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+                className='absolute top-0 left-0 flex-shrink-0 z-10'
+              >
+                <div className='relative'>
+                  <Image
+                    src='/cwg-pattern.webp'
+                    alt='True Mother'
+                    width={880}
+                    height={280}
+                    className='object-cover rounded-lg opacity-30'
                   />
                   {/* Fade effect at bottom */}
                   <div className='absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none rounded-b-lg'></div>
@@ -854,7 +866,7 @@ export default function LetterToTrueMotherPage() {
         </section>
 
         {/* Letters Collage Section */}
-        <section className='pb-16'>
+        <section className='pb-16 pt-12'>
           <div className='container mx-auto px-4'>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 justify-items-center'>
               {isLoading
