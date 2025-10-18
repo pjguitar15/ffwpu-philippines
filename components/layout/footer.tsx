@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Separator } from '@/components/ui/separator'
 import { mainNavItems, type DropdownNavItem, type MainNavItem } from './header'
+import { Code, Terminal } from 'lucide-react'
 
 type NavItem = {
   href: string
@@ -169,10 +170,40 @@ export function Footer() {
         </div>
         <Separator className='my-8' />
         {/* bottom bar */}
-        <div className='flex flex-col md:flex-row items-center justify-between gap-3 px-1'>
+        <div className='flex flex-col-reverse md:flex-row items-center justify-between gap-3 px-1'>
           <p className='text-sm text-muted-foreground text-center md:text-left'>
             © {new Date().getFullYear()} Family Federation for World Peace and
             Unification Philippines. All rights reserved.
+          </p>
+          <p className='text-xs text-muted-foreground text-center md:text-left flex items-center gap-1'>
+            <span>Developed by</span>
+            <div className='relative group inline-block'>
+              <a
+                className='text-blue-500 font-semibold inline-flex items-center gap-1'
+                href='https://philcodes-portfolio.vercel.app/'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                <span className='inline-flex items-center'>
+                  <span className='mr-1'>
+                    <Terminal className='h-4 w-4' />
+                  </span>
+                  Philcob Suzuki Josol
+                </span>
+              </a>
+              {/* Tooltip above */}
+              <div className='absolute left-0 -translate-x-1/2 bottom-full mb-2 z-10 hidden group-hover:block'>
+                <div className='bg-background border rounded shadow-lg p-2 flex flex-col items-center w-[400px]'>
+                  <Image
+                    src='/phil-codes.png'
+                    alt='Philcob Suzuki Josol'
+                    width={400}
+                    height={280}
+                    className='rounded mb-2'
+                  />
+                </div>
+              </div>
+            </div>
           </p>
         </div>
       </div>
