@@ -5,7 +5,9 @@ import { Suspense } from "react"
 import './globals.css'
 import UnderConstruction from '@/components/under-construction'
 import { SiteShell } from '@/components/layout/site-shell'
-import { Toaster } from "@/components/ui/toaster"
+import { CartProvider } from '@/context/CartContext'
+import { CartUrlSyncWrapper } from './CartUrlSyncWrapper'
+import { Toaster } from '@/components/ui/toaster'
 import { ThemeProvider } from '@/components/theme-provider'
 import { OgAuto } from '@/components/og-auto'
 
@@ -136,11 +138,18 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <OgAuto />
           </Suspense>
-          <SiteShell
-            isUnderConstruction={process.env.IS_UNDER_CONSTRUCTION === 'true'}
-          >
-            {children}
-          </SiteShell>
+          <CartProvider>
+            {/* Sync cart param globally */}
+            <CartUrlSyncWrapper>
+              <SiteShell
+                isUnderConstruction={
+                  process.env.IS_UNDER_CONSTRUCTION === 'true'
+                }
+              >
+                {children}
+              </SiteShell>
+            </CartUrlSyncWrapper>
+          </CartProvider>
           <Toaster />
         </ThemeProvider>
       </body>

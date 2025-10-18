@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300" role="img" aria-label="Holy Items Placeholder">
+  <rect width="400" height="300" fill="#f8fafc" />
+  <circle cx="200" cy="140" r="70" fill="#e0e7ff" stroke="#6366f1" stroke-width="6" />
+  <text x="200" y="250" font-size="28" text-anchor="middle" fill="#475569" font-family="Arial, sans-serif">Holy Items</text>
+</svg>

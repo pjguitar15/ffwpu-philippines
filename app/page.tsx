@@ -104,9 +104,8 @@ export default function HomePage() {
                     <span className='bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent'>
                       True Mother
                     </span>{' '}
-                    💌
                   </h3>
-                  <p className='text-sm md:text-base font-handwriting text-gray-600'>
+                  <p className='text-sm font-handwriting text-gray-600'>
                     Send heartfelt messages of comfort and encouragement
                   </p>
                 </div>
@@ -177,9 +176,6 @@ export default function HomePage() {
                     className='inline-flex items-center gap-2 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-handwriting px-6 py-3 rounded-full shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group hover:scale-105'
                   >
                     <span>Write a Letter</span>
-                    <span className='group-hover:translate-x-0.5 transition-transform duration-200'>
-                      💌
-                    </span>
                   </a>
                 </div>
               </div>

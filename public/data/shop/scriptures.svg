@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300" role="img" aria-label="Scriptures & Texts Placeholder">
+  <rect width="400" height="300" fill="#f8fafc" />
+  <rect x="90" y="70" width="220" height="160" rx="12" fill="#ffe4e6" stroke="#fb7185" stroke-width="6" />
+  <text x="200" y="250" font-size="24" text-anchor="middle" fill="#475569" font-family="Arial, sans-serif">Scriptures</text>
+</svg>

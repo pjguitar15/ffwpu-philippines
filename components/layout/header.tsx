@@ -21,7 +21,10 @@ import {
   FiMail,
   FiUser,
   FiHome,
+  FiShoppingBag,
+  FiShoppingCart,
 } from 'react-icons/fi'
+import { useCart } from '@/context/CartContext'
 import { HeaderSearch } from './header-search'
 import { LiveIndicator } from '@/components/ui/live-indicator'
 
@@ -210,6 +213,12 @@ export const mainNavItems: MainNavItem[] = [
     desc: 'Welcome & featured highlights',
     icon: FiFileText,
   },
+  {
+    href: '/news',
+    label: 'Updates',
+    desc: 'Latest updates & reports',
+    icon: FiFileText,
+  },
   // About dropdown nav
   {
     href: '/about',
@@ -271,10 +280,10 @@ export const mainNavItems: MainNavItem[] = [
     icon: FiClock,
   },
   {
-    href: '/news',
-    label: 'Updates',
-    desc: 'Latest updates & reports',
-    icon: FiFileText,
+    href: '/shop',
+    label: 'Shop',
+    desc: 'Holy items & devotional texts',
+    icon: FiShoppingBag,
   },
   {
     href: '/contact',
@@ -425,6 +434,7 @@ function DrawerGroup({
 }
 
 export function Header() {
+  const { items } = useCart()
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const pathname = usePathname()
@@ -664,6 +674,22 @@ export function Header() {
               >
                 <FiPhone className='h-4 w-4' strokeWidth={2.5} />
               </Link>
+
+              {items.length > 0 && (
+                <Link
+                  href='/shop/cart'
+                  aria-label='Cart'
+                  className={cn(
+                    'hidden md:flex h-10 w-10 items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full cursor-pointer shrink-0 transition-all duration-150 relative',
+                    'hover:-translate-y-0.5',
+                  )}
+                >
+                  <FiShoppingCart className='h-4 w-4' strokeWidth={2.5} />
+                  <span className='absolute -top-1 -right-1 bg-pink-600 text-white text-[10px] font-semibold px-1.5 py-0.5 leading-none'>
+                    {items.reduce((sum, i) => sum + i.quantity, 0)}
+                  </span>
+                </Link>
+              )}
 
               <button
                 type='button'
