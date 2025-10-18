@@ -266,7 +266,7 @@ export const mainNavItems: MainNavItem[] = [
   },
   {
     href: '/about/history',
-    label: 'Our History',
+    label: 'History',
     desc: 'Our journey & milestones',
     icon: FiClock,
   },

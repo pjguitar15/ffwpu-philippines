@@ -20,6 +20,7 @@ import {
   Radio,
   Video,
   Heart,
+  FormInput,
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
@@ -136,6 +137,11 @@ export function AdminSidebar() {
         href: '/admin/letters',
         label: 'Letters to True Mother',
         icon: Heart,
+      },
+      {
+        href: '/admin/form-builder',
+        label: 'Form Builder',
+        icon: FormInput,
       },
     ],
     [],

@@ -57,7 +57,7 @@ const extraNavItems: NavItem[] = [
   },
   {
     href: '/about/history',
-    label: 'Our History',
+    label: 'History',
     desc: 'Roots of our movement',
     icon: Clock,
   },
