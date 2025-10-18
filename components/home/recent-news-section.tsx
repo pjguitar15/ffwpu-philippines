@@ -209,11 +209,11 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
         >
           <Link
             href='/news'
-            aria-label='View all news'
+            aria-label='View all updates'
             className='inline-flex items-center'
           >
             <Newspaper className='mr-2 h-4 w-4' />
-            View All News
+            View All Updates
             <ArrowRight className='ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5' />
           </Link>
         </Button>

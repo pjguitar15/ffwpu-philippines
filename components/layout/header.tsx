@@ -272,7 +272,7 @@ export const mainNavItems: MainNavItem[] = [
   },
   {
     href: '/news',
-    label: 'News',
+    label: 'Updates',
     desc: 'Latest updates & reports',
     icon: FiFileText,
   },
@@ -547,7 +547,7 @@ export function Header() {
                   .filter(
                     (item) =>
                       item.label !== 'Contact' &&
-                      item.label !== 'News' &&
+                      item.label !== 'Updates' &&
                       item.label !== 'Home',
                   ) // Exclude Contact, News, and Home from main nav
                   .map((item) =>
@@ -604,7 +604,7 @@ export function Header() {
                     isActive('/news') ? 'font-bold text-slate-900' : '',
                   )}
                 >
-                  News
+                  Updates
                 </Link>
 
                 {/* Contact link - full text on lg+ screens */}
@@ -638,7 +638,7 @@ export function Header() {
               {/* News icon button - ONLY on md screens */}
               <Link
                 href='/news'
-                aria-label='News'
+                aria-label='Updates'
                 className={cn(
                   'hidden md:flex lg:hidden h-10 w-10 items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full cursor-pointer shrink-0 transition-all duration-150',
                   'hover:-translate-y-0.5',

@@ -172,7 +172,7 @@ export const pageMetadataConfigs = {
     canonical: '/news',
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'News', url: '/news' },
+      { name: 'Updates', url: '/news' },
     ],
   },
   hjMediaWorks: {
