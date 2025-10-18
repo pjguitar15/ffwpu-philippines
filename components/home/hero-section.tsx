@@ -67,10 +67,9 @@ export function HeroSection() {
             />
 
             <p className='mx-auto mt-4 max-w-3xl text-base md:text-lg text-white font-medium leading-relaxed [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.8))]'>
-              FFWPU Philippines is a Heavenly Parent–centered family, deepening
-              faith through Cheon Shim Won devotion, cherishing the Blessing as
-              the foundation of true families, advancing the Philippine
-              Providence, and living True Parents’ vision.
+              Building God-centered families and communities across the
+              Philippines through the teachings of True Parents, fostering
+              peace, unity, and spiritual growth.
             </p>
           </div>
 
