@@ -175,7 +175,7 @@ export function Footer() {
             © {new Date().getFullYear()} Family Federation for World Peace and
             Unification Philippines. All rights reserved.
           </p>
-          <p className='text-xs text-muted-foreground text-center md:text-left flex items-center gap-1'>
+          <div className='text-xs text-muted-foreground text-center md:text-left flex items-center gap-1'>
             <span>Developed by</span>
             <div className='relative group inline-block'>
               <a
@@ -204,7 +204,7 @@ export function Footer() {
                 </div>
               </div>
             </div>
-          </p>
+          </div>
         </div>
       </div>
     </footer>

@@ -13,6 +13,28 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 const MotionDiv = motion.div
 
+// Custom scrollbar styles
+const scrollbarStyles = `
+  .event-modal-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db #f3f4f6;
+  }
+  .event-modal-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .event-modal-scroll::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 3px;
+  }
+  .event-modal-scroll::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+  }
+  .event-modal-scroll::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+`
+
 type EventItem = {
   id: number | string
   title: string
@@ -45,9 +67,16 @@ export default function EventModal({
     document.addEventListener('keydown', onEsc)
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    
+    // Add custom scrollbar styles
+    const styleElement = document.createElement('style')
+    styleElement.textContent = scrollbarStyles
+    document.head.appendChild(styleElement)
+    
     return () => {
       document.removeEventListener('keydown', onEsc)
       document.body.style.overflow = prev
+      document.head.removeChild(styleElement)
     }
   }, [onClose])
 
@@ -237,7 +266,7 @@ export default function EventModal({
                           </div>
 
                           {/* Content */}
-                          <div className='p-6 pt-20 h-full overflow-y-auto'>
+                          <div className='p-6 pt-20 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100'>
                             <h3 className='text-2xl font-extrabold tracking-wide text-slate-900 leading-tight mb-6'>
                               {event.title}
                             </h3>
@@ -284,12 +313,17 @@ export default function EventModal({
 
                             {/* Description */}
                             {event.description && (
-                              <div className='text-slate-700 text-sm mb-6 leading-relaxed space-y-3'>
-                                {event.description.split('\n').map((line, index) => (
-                                  <p key={index} className='whitespace-pre-wrap'>
-                                    {line}
-                                  </p>
-                                ))}
+                              <div className='text-slate-700 text-sm mb-6 leading-relaxed space-y-3 lg:max-h-64 overflow-y-auto event-modal-scroll pr-2'>
+                                {event.description
+                                  .split('\n')
+                                  .map((line, index) => (
+                                    <p
+                                      key={index}
+                                      className='whitespace-pre-wrap break-words'
+                                    >
+                                      {line}
+                                    </p>
+                                  ))}
                               </div>
                             )}
 
@@ -372,7 +406,7 @@ export default function EventModal({
                       delay: 0.05,
                     }}
                   >
-                    <div className='rounded-xl md:rounded-2xl bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85 ring-1 ring-slate-200 shadow-lg p-4 md:p-7 text-slate-800'>
+                                        <div className='rounded-xl md:rounded-2xl bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85 ring-1 ring-slate-200 shadow-lg p-4 md:p-7 text-slate-800 max-h-[80vh] event-modal-scroll'>
                       {/* Title */}
                       <h3 className='mt-3 text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wide text-slate-900 leading-tight'>
                         {event.title}
@@ -418,9 +452,9 @@ export default function EventModal({
 
                       {/* Description */}
                       {event.description && (
-                        <div className='mt-4 text-slate-700 text-sm leading-relaxed space-y-3'>
+                        <div className='mt-4 text-slate-700 text-sm leading-relaxed space-y-3 lg:max-h-64 overflow-y-auto event-modal-scroll pr-2'>
                           {event.description.split('\n').map((line, index) => (
-                            <p key={index} className='whitespace-pre-wrap'>
+                            <p key={index} className='whitespace-pre-wrap break-words'>
                               {line}
                             </p>
                           ))}

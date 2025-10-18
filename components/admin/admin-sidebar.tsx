@@ -59,7 +59,10 @@ function clearCachedUser() {
 export function AdminSidebar() {
   // Start with a consistent SSR-safe state, then hydrate from cache on mount
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null)
+  const [isClient, setIsClient] = useState(false)
+
   useEffect(() => {
+    setIsClient(true)
     const cached = readCachedUser()
     if (cached) setAdminUser(cached)
   }, [])
@@ -158,11 +161,12 @@ export function AdminSidebar() {
     [],
   )
 
-  const roleLabel = adminUser
-    ? adminUser.role === 'super_admin'
-      ? 'super admin'
-      : adminUser.role
-    : ''
+  const roleLabel =
+    isClient && adminUser
+      ? adminUser.role === 'super_admin'
+        ? 'super admin'
+        : adminUser.role
+      : 'Loading...'
 
   return (
     <div className='w-64 bg-card border-r h-screen flex flex-col sticky top-0'>
@@ -200,10 +204,10 @@ export function AdminSidebar() {
           </div>
           <div className='flex-1 min-w-0'>
             <p className='font-medium text-sm truncate'>
-              {adminUser?.name || 'Admin'}
+              {isClient ? adminUser?.name || 'Admin' : 'Admin'}
             </p>
             <p className='text-xs text-muted-foreground capitalize'>
-              {roleLabel.replace('_', ' ')}
+              {isClient ? roleLabel.replace('_', ' ') : 'Loading...'}
             </p>
           </div>
         </div>
@@ -252,7 +256,7 @@ export function AdminSidebar() {
           })}
         </div>
 
-        {adminUser?.role === 'super_admin' && (
+        {isClient && adminUser?.role === 'super_admin' && (
           <>
             <Separator className='my-4' />
             <div className='space-y-3'>
