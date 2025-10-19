@@ -266,6 +266,7 @@ export const pageMetadataConfigs = {
       'messages',
       'testimonials',
     ],
+    image: '/letter-to-tm-bg.webp',
     canonical: '/letter-to-true-mother',
     breadcrumbs: [
       { name: 'Home', url: '/' },
