@@ -635,6 +635,20 @@ export function Header() {
                 >
                   Contact
                 </Link>
+
+                {/* Donate link (always last) */}
+                {/* <Link
+                  href='/donate'
+                  className={cn(
+                    'hidden lg:flex text-sm font-semibold rounded-full px-4 py-2 items-center gap-2 text-indigo-700 bg-indigo-50/70 hover:bg-indigo-100 transition-all duration-150 shadow-sm',
+                    'hover:-translate-y-0.5',
+                    isActive('/donate')
+                      ? 'text-indigo-800 bg-indigo-100 ring-1 ring-indigo-300'
+                      : '',
+                  )}
+                >
+                  Donate
+                </Link> */}
               </nav>
 
               {/* Home icon button - ONLY on md screens */}
