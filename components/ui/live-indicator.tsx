@@ -24,9 +24,14 @@ export function LiveIndicator({ className = '' }: LiveIndicatorProps) {
         if (response.ok) {
           const data = await response.json()
           setLivestream(data)
+        } else {
+          // Silently handle error - API might not be configured
+          setLivestream(null)
         }
       } catch (error) {
-        console.error('Error fetching livestream status:', error)
+        // Silently handle fetch errors - this is expected in development
+        // when database is not configured
+        setLivestream(null)
       } finally {
         setIsLoading(false)
       }

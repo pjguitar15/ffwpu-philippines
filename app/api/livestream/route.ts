@@ -22,11 +22,13 @@ export async function GET() {
     
     return NextResponse.json(livestream)
   } catch (error) {
-    console.error('Error fetching livestream:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch livestream settings' },
-      { status: 500 }
-    )
+    // Return default inactive state when database is not available
+    return NextResponse.json({
+      url: '',
+      isActive: false,
+      title: 'Live Stream',
+      description: '',
+    })
   }
 }
 
