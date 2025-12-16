@@ -212,18 +212,18 @@ export const CHURCH_BRANCHES: ChurchBranch[] = [
     leaderName: 'Rev. John Bastol',
     leaderRole: 'Regional Leader',
   },
-  {
-    slug: 'butuan',
-    name: 'Butuan Church',
-    venue: 'FFWPU Butuan Church',
-    address: 'Purok 1, Brgy. Lumbocan, Butuan City,CARAGA',
-    phone: '0938 304 5730',
-    email: 'percy.apas@yahoo.com',
-    area: 'Area 5',
-    region: 'Region 13',
-    leaderName: 'Rev. Percinita Apas',
-    leaderRole: 'Regional Leader',
-  },
+  // {
+  //   slug: 'butuan',
+  //   name: 'Butuan Church',
+  //   venue: 'FFWPU Butuan Church',
+  //   address: 'Purok 1, Brgy. Lumbocan, Butuan City,CARAGA',
+  //   phone: '0938 304 5730',
+  //   email: 'percy.apas@yahoo.com',
+  //   area: 'Area 5',
+  //   region: 'Region 13',
+  //   leaderName: 'Rev. Percinita Apas',
+  //   leaderRole: 'Regional Leader',
+  // },
 ]
 
 export function sortBranches(list: ChurchBranch[]) {

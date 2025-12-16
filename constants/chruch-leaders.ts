@@ -294,12 +294,12 @@ export const LEADERS: Leader[] = [
     // tag: 'R12',
     order: 3, // within Area 5
   },
-  {
-    name: 'Rev. Percy Apas',
-    title: 'Butuan Church',
-    photoUrl: '/leaders/percinita-apas.png',
-    level: 'Region',
-    // tag: 'R13',
-    order: 4, // within Area 5
-  },
+  // {
+  //   name: 'Rev. Percy Apas',
+  //   title: 'Butuan Church',
+  //   photoUrl: '/leaders/percinita-apas.png',
+  //   level: 'Region',
+  //   // tag: 'R13',
+  //   order: 4, // within Area 5
+  // },
 ]

@@ -25,7 +25,7 @@ export const REGIONS = [
   'R10',
   'R11',
   'R12',
-  'R13',
+  // 'R13',
 ] as const
 export type Region = (typeof REGIONS)[number]
 
@@ -51,7 +51,13 @@ export const AREA_REGION_MAP: Record<Area, readonly Region[]> = {
   'Area 2': ['R1', 'R2'],
   'Area 3': ['R4A', 'R4B', 'R5'],
   'Area 4': ['R6', 'R7', 'R8'],
-  'Area 5': ['R9', 'R10', 'R11', 'R12', 'R13'],
+  'Area 5': [
+    'R9',
+    'R10',
+    'R11',
+    'R12',
+    // 'R13'
+  ],
 } as const
 
 // ✅ Region → Churches
@@ -71,5 +77,5 @@ export const REGION_CHURCHES: Record<Region, readonly string[]> = {
   R10: ['Cagayan de Oro Church'],
   R11: ['Davao Church'],
   R12: ['Gen. Santos Church'],
-  R13: ['Butuan Church'], // add Butuan Church if you want
+  // R13: ['Butuan Church'], // add Butuan Church if you want
 } as const
