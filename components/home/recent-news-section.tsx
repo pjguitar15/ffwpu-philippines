@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { NewsItem } from '@/data/news'
 import { HighlightTitle } from '../ui/highlight-title'
-import Image from 'next/image'
 import { ArrowRight, Newspaper, ChevronDown } from 'lucide-react'
 import * as React from 'react'
 import { excerptFromHtml } from '@/lib/text'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AnimatePresence, motion } from 'framer-motion'
+import { NewsImage } from '@/components/news/news-image'
 
 type Testimonial = {
   name: string
@@ -262,13 +262,17 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
                        md:col-span-2 md:row-span-2
                        aspect-[16/9] md:aspect-auto md:h-[500px] bg-black/80'
           >
-            <Image
+            <NewsImage
               src={feature.image}
               alt={feature.title}
-              fill
+              title={feature.title}
+              tag={feature.tags?.[0]}
+              date={feature.date}
               priority
               sizes='(max-width: 768px) 100vw, 66vw'
-              className='object-cover object-center opacity-85 md:group-hover:scale-105 transition-transform duration-500'
+              className='absolute inset-0'
+              imageClassName='opacity-85 md:group-hover:scale-105 transition-transform duration-500'
+              placeholderClassName='md:group-hover:scale-105 transition-transform duration-500'
             />
             <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent md:group-hover:from-black/90 md:group-hover:via-black/60 transition-colors duration-300' />
 
@@ -311,12 +315,16 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
                        bg-black/80 min-h-0
                        aspect-[16/10] md:aspect-auto md:h-[240px]'
           >
-            <Image
+            <NewsImage
               src={item.image}
               alt={item.title}
-              fill
+              title={item.title}
+              tag={item.tags?.[0]}
+              date={item.date}
               sizes='(max-width: 768px) 100vw, 33vw'
-              className='object-cover object-center opacity-85 md:group-hover:scale-105 transition-transform duration-500'
+              className='absolute inset-0'
+              imageClassName='opacity-85 md:group-hover:scale-105 transition-transform duration-500'
+              placeholderClassName='md:group-hover:scale-105 transition-transform duration-500'
             />
             <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent md:group-hover:from-black/90 md:group-hover:via-black/60 transition-colors duration-300' />
 
@@ -366,12 +374,16 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
                 href={`/news/${item.slug}`}
                 className='relative block bg-black/80 min-h-0 aspect-[16/10] md:aspect-auto md:h-[240px]'
               >
-                <Image
+                <NewsImage
                   src={item.image}
                   alt={item.title}
-                  fill
+                  title={item.title}
+                  tag={item.tags?.[0]}
+                  date={item.date}
                   sizes='(max-width: 768px) 100vw, 33vw'
-                  className='object-cover object-center opacity-85 md:group-hover:scale-105 transition-transform duration-500'
+                  className='absolute inset-0'
+                  imageClassName='opacity-85 md:group-hover:scale-105 transition-transform duration-500'
+                  placeholderClassName='md:group-hover:scale-105 transition-transform duration-500'
                 />
                 <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent md:group-hover:from-black/90 md:group-hover:via-black/60 transition-colors duration-300' />
 

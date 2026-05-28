@@ -16,6 +16,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { ArticleBody } from './article-body'
+import { NewsImage } from './news-image'
 import {
   FadeIn,
   FadeInItem,
@@ -183,11 +184,12 @@ export function GallerySection({
             key={`${src}-${idx}`}
             className='overflow-hidden rounded-lg ring-1 ring-black/10 shadow bg-white'
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <NewsImage
               src={src}
               alt={`${title} gallery image ${idx + 1}`}
-              className='h-56 w-full object-cover'
+              title={title}
+              tag='Gallery'
+              className='h-56 w-full'
             />
           </div>
         ))}
@@ -466,11 +468,15 @@ export default function NewsDetailClient() {
           {/* HERO (title at the top, no meta on image) */}
           <PopInItem className='relative rounded-xl ring-1 ring-black/10 shadow overflow-hidden'>
             <div className='relative w-full'>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <NewsImage
                 src={item.image}
                 alt={item.title}
-                className='w-full h-[320px] md:h-[420px] object-cover'
+                title={item.title}
+                tag={item.tags?.[0]}
+                date={item.date}
+                className='h-[320px] w-full md:h-[420px]'
+                priority
+                sizes='(max-width: 768px) 100vw, 1200px'
               />
             </div>
           </PopInItem>
@@ -584,11 +590,16 @@ export default function NewsDetailClient() {
                   <PopInItem key={item.slug} className='block'>
                     <Link href={`/news/${item.slug}`} className='block group'>
                       <div className='relative rounded-lg overflow-hidden ring-1 ring-black/10 shadow bg-white'>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                        <NewsImage
                           src={item.image}
                           alt={item.title}
-                          className='w-full h-32 object-cover group-hover:scale-[1.02] transition'
+                          title={item.title}
+                          tag={item.tags?.[0]}
+                          date={item.date}
+                          className='h-32 w-full'
+                          imageClassName='group-hover:scale-[1.02] transition'
+                          placeholderClassName='group-hover:scale-[1.02] transition'
+                          sizes='320px'
                         />
                       </div>
                       <div className='mt-2 text-xs text-slate-600'>
@@ -622,11 +633,16 @@ export default function NewsDetailClient() {
                           className='block group'
                         >
                           <div className='relative rounded-lg overflow-hidden ring-1 ring-black/10 shadow bg-white'>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            <NewsImage
                               src={item.image}
                               alt={item.title}
-                              className='w-full h-32 object-cover group-hover:scale-[1.02] transition'
+                              title={item.title}
+                              tag={item.tags?.[0]}
+                              date={item.date}
+                              className='h-32 w-full'
+                              imageClassName='group-hover:scale-[1.02] transition'
+                              placeholderClassName='group-hover:scale-[1.02] transition'
+                              sizes='320px'
                             />
                           </div>
                           <div className='mt-2 text-xs text-slate-600'>

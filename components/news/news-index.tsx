@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import {
   Calendar,
   Eye,
@@ -20,6 +19,7 @@ import { SectionShell } from '@/components/ui/section-shell'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { excerptFromHtml } from '@/lib/text'
 import { PopInItem } from '@/components/ui/motion'
+import { NewsImage } from '@/components/news/news-image'
 
 // Small testimonials preview component for news cards
 function TestimonialsPreview({ items }: { items: Array<{ name: string; role?: string; avatar?: string; quote: string }> }) {
@@ -367,11 +367,13 @@ export function NewsIndex({
               >
                 <Link href={`/news/${item.slug}`} className='block bg-white'>
                   <div className='relative h-44 md:h-52'>
-                    <Image
+                    <NewsImage
                       src={item.image}
                       alt={item.title}
-                      fill
-                      className='object-cover'
+                      title={item.title}
+                      tag={item.tags?.[0]}
+                      date={item.date}
+                      className='absolute inset-0'
                       sizes='(max-width: 768px) 100vw, 33vw'
                     />
                     <div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent' />
@@ -427,11 +429,13 @@ export function NewsIndex({
               >
                 <Link href={`/news/${item.slug}`} className='contents bg-white'>
                   <div className='relative h-44 md:h-full'>
-                    <Image
+                    <NewsImage
                       src={item.image}
                       alt={item.title}
-                      fill
-                      className='object-cover'
+                      title={item.title}
+                      tag={item.tags?.[0]}
+                      date={item.date}
+                      className='absolute inset-0'
                       sizes='260px'
                     />
                     <div className='absolute bottom-2 left-2 flex gap-2'>
