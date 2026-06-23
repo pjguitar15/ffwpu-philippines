@@ -25,7 +25,7 @@ export default function RegionalDirectorMessagePage() {
   September 14, 2025`,
     ],
     about:
-      'Rev. Sodusta has served as Regional Director of FFWPU Philippines for several years, guiding the movement with wisdom and compassion. His leadership is marked by a deep commitment to family values, interfaith harmony, and the vision of a peaceful world. He is respected for his integrity, dedication, and ability to inspire others to live for the greater good.',
+      'Rev. Sodusta has served as Regional Director of FFWPU Philippines for one year, guiding the movement with wisdom and compassion. His leadership is marked by a deep commitment to family values, interfaith harmony, and the vision of a peaceful world. He is respected for his integrity, dedication, and ability to inspire others to live for the greater good.',
   }
 
   return <OfficialMessage {...message} position="Regional Director" />
