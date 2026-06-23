@@ -5,9 +5,9 @@ export const LEADERS: Leader[] = [
   // National (sorted by order)
   // ─────────────────────────────────────────
   {
-    name: 'Rev. Ronnie Sodusta',
+    name: 'Rev. Leo Angelo Halog',
     title: 'National Leader / Regional Director',
-    photoUrl: '/leaders/ronnie-sodusta.png',
+    photoUrl: '/leaders/leo-angelo-halog.webp',
     level: 'National',
     tag: 'Head Office',
     order: 1,
@@ -51,7 +51,7 @@ export const LEADERS: Leader[] = [
   },
   {
     name: 'Mrs. Shirley Vergara',
-    title: 'Church Nurturing, Tithes & Offerings Department Director',
+    title: 'Itinerant Worker, FFWPU Philippines',
     photoUrl: '/leaders/shirley-vergara.png',
     level: 'Department',
     tag: 'Tithes & Offerings / Women',
@@ -65,14 +65,6 @@ export const LEADERS: Leader[] = [
     level: 'Department',
     tag: 'Membership / Data',
     order: 1,
-  },
-  {
-    name: 'Mr. Angelito Cainday',
-    title: 'Director, Church Growth Department',
-    photoUrl: '/leaders/angelito-cainday.png',
-    level: 'Department',
-    tag: 'Growth',
-    order: 2,
   },
   {
     name: 'Mr. Venus Agustin',
@@ -145,7 +137,7 @@ export const LEADERS: Leader[] = [
   },
   {
     name: 'Mr. Angelito Cainday',
-    title: 'Area 4 Leader • Visayas',
+    title: 'Area Director of Visayas',
     photoUrl: '/leaders/angelito-cainday.png',
     level: 'Area',
     tag: 'Area 4',
@@ -250,14 +242,6 @@ export const LEADERS: Leader[] = [
     level: 'Region',
     // tag: 'R6',
     order: 1, // within Area 4
-  },
-  {
-    name: 'Rev. Romel Pinson',
-    title: 'Cebu Church',
-    photoUrl: '/leaders/romel-pinson.png',
-    level: 'Region',
-    // tag: 'R7',
-    order: 2, // within Area 4
   },
   // {
   //   name: 'Rev. Editha Cipriano',
