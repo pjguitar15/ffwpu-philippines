@@ -1,292 +1,404 @@
-"use client"
-import Link from 'next/link'
-import { categories, getSongsByCategory, MUSIC_FEATURES } from '@/data/music-songs'
+'use client'
+
 import Image from 'next/image'
-import { FiSearch, FiHeart, FiGrid, FiList } from 'react-icons/fi'
-import { useMusicPlayer } from '@/context/MusicPlayerContext'
+import Link from 'next/link'
 import { useMemo, useState } from 'react'
+import { BookOpen, Grid3X3, Heart, ListMusic, Search } from 'lucide-react'
+import {
+  categories,
+  formatDuration,
+  getSongsByCategory,
+  MUSIC_FEATURES,
+  SongCategory,
+  SongMeta,
+} from '@/data/music-songs'
+import { useMusicPlayer } from '@/context/MusicPlayerContext'
 import { cn } from '@/lib/utils'
+import { DEFAULT_COVER, getSongCover } from '@/lib/music-covers'
 
-// Tiny blur placeholder (transparent pixel)
-const BLUR = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='
+type ViewMode = 'grid' | 'list'
 
-interface CategoryViewState {
-  [key: string]: number // number of items currently shown per category
+function getDisplayNumber(song: SongMeta, songs: SongMeta[], index: number) {
+  const sufferingIndex = songs.findIndex((s) => s.id === 'holy-suffering')
+  const newLifeIndex = songs.findIndex((s) => s.id === 'holy-new-life')
+  const pairStart = Math.min(
+    sufferingIndex === -1 ? Infinity : sufferingIndex,
+    newLifeIndex === -1 ? Infinity : newLifeIndex,
+  )
+  const isSharedPair =
+    song.id === 'holy-suffering' || song.id === 'holy-new-life'
+
+  if (pairStart === Infinity) return index + 1
+  if (isSharedPair) return 21
+  if (index > pairStart + 1) return index
+  if (index === pairStart + 1) return index
+  return index + 1
 }
 
 export default function MusicLyricsLanding() {
-  const { playSong, addToQueue, favorites, current } = useMusicPlayer()
+  const { favorites, current } = useMusicPlayer()
   const [query, setQuery] = useState('')
-  // Pagination removed: always show full list per category
-  const [shown] = useState<CategoryViewState>(() => {
-    const initial: CategoryViewState = {}
-    for (const c of categories) initial[c.key] = Infinity
-    return initial
-  })
-  const [activeCat, setActiveCat] = useState<string>('all')
-  const [view, setView] = useState<'grid' | 'list'>(MUSIC_FEATURES.ENABLE_TILE_VIEW_DEFAULT ? 'grid' : 'list')
+  const [activeCat, setActiveCat] = useState<'all' | SongCategory>('all')
+  const [view, setView] = useState<ViewMode>(
+    MUSIC_FEATURES.ENABLE_TILE_VIEW_DEFAULT ? 'grid' : 'list',
+  )
 
   const normalizedQuery = query.trim().toLowerCase()
-
-  const filtered = useMemo(() => {
+  const categoryResults = useMemo(() => {
     return categories.map((cat) => {
-      const list = getSongsByCategory(cat.key)
-      const afterSearch = normalizedQuery
-        ? list.filter(
-            (s) =>
-              s.title.toLowerCase().includes(normalizedQuery) ||
-              s.artist.toLowerCase().includes(normalizedQuery) ||
-              s.lyrics.toLowerCase().includes(normalizedQuery),
-          )
-        : list
-      return { cat, list: afterSearch }
+      const songs = getSongsByCategory(cat.key).filter((song) => {
+        if (!normalizedQuery) return true
+        return `${song.title} ${song.artist} ${song.album} ${song.lyrics}`
+          .toLowerCase()
+          .includes(normalizedQuery)
+      })
+
+      return { cat, songs }
     })
   }, [normalizedQuery])
 
-  const visibleCats = filtered.filter(
-    ({ list, cat }) => list.length > 0 && (activeCat === 'all' || cat.key === activeCat),
+  const totalSongs = categoryResults.reduce(
+    (sum, result) => sum + result.songs.length,
+    0,
+  )
+  const visibleCategories = categoryResults.filter(
+    ({ cat, songs }) =>
+      songs.length > 0 && (activeCat === 'all' || activeCat === cat.key),
   )
 
-  // showMore removed
-
   return (
-    <main className='max-w-[1400px] mx-auto px-6 lg:px-10 py-10 min-h-screen flex flex-col gap-10'>
-      {/* Sticky search + category bar */}
-      <div className='sticky top-[70px] z-30 -mx-6 lg:-mx-10 px-6 lg:px-10 py-4 backdrop-blur bg-white/70 border rounded-xl flex flex-col gap-4'>
-        <div className='flex flex-col md:flex-row md:items-center gap-4'>
-          <div className='flex-1 flex items-center gap-3'>
-            <div className='relative w-full max-w-xl'>
-              <FiSearch className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500' />
-              <input
-                type='text'
-                placeholder='Search songs, artists, or lyrics keywords…'
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className='w-full h-11 rounded-md pl-10 pr-3 bg-white/80 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm placeholder:text-slate-400'
+    <main className='min-h-screen bg-[#f6f7f5] text-slate-950'>
+      <section className='border-b border-slate-200 bg-white'>
+        <div className='mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 py-7 sm:px-8 md:flex-row md:items-end md:justify-between md:py-10'>
+          <div className='flex items-start gap-4'>
+            <div className='relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-slate-100 shadow-sm ring-1 ring-slate-200 sm:h-20 sm:w-20'>
+              <Image
+                src={DEFAULT_COVER}
+                alt=''
+                fill
+                priority
+                sizes='80px'
+                className='object-cover'
               />
             </div>
+            <div>
+              <p className='text-sm font-medium text-emerald-700'>
+                FFWPU Philippines Music
+              </p>
+              <h1 className='mt-2 text-3xl font-semibold tracking-normal sm:text-4xl'>
+                Lyrics Library
+              </h1>
+              <p className='mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base'>
+                Search and browse devotional songs in a simple reading-focused
+                library.
+              </p>
+            </div>
           </div>
-          <div className='flex gap-2 flex-wrap items-center'>
-            <button
-              onClick={() => setActiveCat('all')}
-              className={cn(
-                'px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide border transition-colors',
-                activeCat === 'all'
-                  ? 'bg-gradient-to-r from-slate-800 via-cyan-700 to-teal-600 text-white border-transparent shadow'
-                  : 'bg-white text-slate-600 hover:bg-slate-100 border-slate-200',
-              )}
-            >
-              All ({filtered.reduce((sum, f) => sum + f.list.length, 0)})
-            </button>
-            {categories.map((c) => (
-              <button
-                key={c.key}
-                onClick={() => setActiveCat(c.key)}
-                className={cn(
-                  'px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide border transition-colors',
-                  activeCat === c.key
-                    ? 'bg-gradient-to-r from-slate-800 via-cyan-700 to-teal-600 text-white border-transparent shadow'
-                    : 'bg-white text-slate-600 hover:bg-slate-100 border-slate-200',
-                )}
-              >
-                {c.label} ({filtered.find((f) => f.cat.key === c.key)?.list.length || 0})
-              </button>
-            ))}
-            {/* View toggle */}
-            <div className='flex items-center gap-1 ml-2'>
-              <button
-                type='button'
-                aria-label='Grid view'
+
+          <div className='flex items-center gap-2 text-sm text-slate-500'>
+            <BookOpen className='h-4 w-4' />
+            <span>{totalSongs} songs</span>
+          </div>
+        </div>
+      </section>
+
+      <section className='sticky top-[64px] z-30 border-b border-slate-200 bg-[#f6f7f5]/95 backdrop-blur'>
+        <div className='mx-auto flex w-full max-w-6xl flex-col gap-3 px-5 py-3 sm:px-8 lg:flex-row lg:items-center lg:justify-between'>
+          <label className='flex h-11 min-w-0 items-center gap-2 rounded-md bg-white px-3 shadow-sm ring-1 ring-slate-200 lg:w-[420px]'>
+            <Search className='h-4 w-4 shrink-0 text-slate-400' />
+            <input
+              type='search'
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder='Search lyrics'
+              className='min-w-0 flex-1 bg-transparent text-sm text-slate-950 outline-none placeholder:text-slate-400'
+            />
+          </label>
+
+          <div className='flex items-center justify-between gap-3'>
+            <div className='flex min-w-0 gap-2 overflow-x-auto pb-1 lg:pb-0'>
+              <FilterPill
+                active={activeCat === 'all'}
+                label='All'
+                count={totalSongs}
+                onClick={() => setActiveCat('all')}
+              />
+              {categoryResults.map(({ cat, songs }) => (
+                <FilterPill
+                  key={cat.key}
+                  active={activeCat === cat.key}
+                  label={cat.label}
+                  count={songs.length}
+                  onClick={() => setActiveCat(cat.key)}
+                />
+              ))}
+            </div>
+
+            <div className='grid shrink-0 grid-cols-2 rounded-md bg-white p-1 shadow-sm ring-1 ring-slate-200'>
+              <IconButton
+                active={view === 'grid'}
+                label='Grid view'
                 onClick={() => setView('grid')}
-                className={cn('h-9 w-9 inline-flex items-center justify-center rounded-md border text-slate-600', view === 'grid' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white hover:bg-slate-100 border-slate-200')}
               >
-                <FiGrid className='h-4 w-4' />
-              </button>
-              <button
-                type='button'
-                aria-label='List view'
+                <Grid3X3 className='h-4 w-4' />
+              </IconButton>
+              <IconButton
+                active={view === 'list'}
+                label='List view'
                 onClick={() => setView('list')}
-                className={cn('h-9 w-9 inline-flex items-center justify-center rounded-md border text-slate-600', view === 'list' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white hover:bg-slate-100 border-slate-200')}
               >
-                <FiList className='h-4 w-4' />
-              </button>
+                <ListMusic className='h-4 w-4' />
+              </IconButton>
             </div>
           </div>
         </div>
+      </section>
+
+      <section className='mx-auto w-full max-w-6xl px-5 py-7 sm:px-8'>
         {normalizedQuery && (
-          <p className='text-xs text-slate-500'>
-            Showing results for <span className='font-semibold'>{query}</span>
+          <p className='mb-5 text-sm text-slate-600'>
+            {totalSongs} result{totalSongs === 1 ? '' : 's'} for{' '}
+            <span className='font-medium text-slate-950'>"{query}"</span>
           </p>
         )}
-      </div>
-      {/* Heading */}
-      <div className='text-center'>
-  <h1 className='text-3xl md:text-4xl font-bold tracking-tight mb-2 bg-clip-text text-transparent bg-gradient-to-r from-slate-800 via-cyan-700 to-teal-600'>Lyrics Library</h1>
-        <p className='text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed'>Browse devotional & inspirational songs. Hover a card for quick actions or click to open full lyrics.</p>
-      </div>
-      <div className={cn('flex flex-col gap-20', view === 'grid' && 'space-y-12')}>
-        {visibleCats.map(({ cat, list }) => {
-          const slice = list // show all
-          const remaining = 0
-          return (
-            <section key={cat.key} className='flex flex-col gap-6'>
-              {/* Category header */}
-              <div className='flex items-center gap-6 flex-wrap'>
-                <div
-                  className={`relative h-24 w-24 rounded-xl overflow-hidden shadow ring-1 ring-slate-200 bg-gradient-to-r ${cat.gradient}`}
+
+        <div className='space-y-9'>
+          {visibleCategories.map(({ cat, songs }) => (
+            <section key={cat.key}>
+              <div className='mb-4 flex items-center justify-between gap-4'>
+                <div>
+                  <h2 className='text-xl font-semibold text-slate-950'>
+                    {cat.label}
+                  </h2>
+                  <p className='mt-1 text-sm text-slate-500'>{cat.desc}</p>
+                </div>
+                <Link
+                  href={`/music/lyrics/${cat.key}`}
+                  className='hidden rounded-md bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:text-slate-950 sm:inline-flex'
                 >
-                  <Image
-                    src={cat.cover}
-                    alt={cat.label}
-                    fill
-                    placeholder='blur'
-                    blurDataURL={BLUR}
-                    className='object-cover opacity-90'
-                  />
-                </div>
-                <div className='min-w-0'>
-                  <h2 className='text-2xl font-bold tracking-tight'>{cat.label}</h2>
-                  <p className='text-sm text-slate-600 max-w-xl leading-relaxed'>{cat.desc}</p>
-                  <Link
-                    href={`/music/lyrics/${cat.key}`}
-                    className='mt-2 inline-flex text-[11px] font-semibold uppercase tracking-wide text-white px-3 py-2 rounded-md bg-gradient-to-r from-slate-800 via-cyan-700 to-teal-600 shadow hover:brightness-110'
-                  >
-                    Open Category →
-                  </Link>
-                </div>
+                  View all
+                </Link>
               </div>
-              {/* Song list area */}
-              {view === 'list' ? (
-                <div className='group relative'>
-                  <div className='overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent py-2'>
-                    <div className='min-w-max flex items-stretch gap-4'>
-                      {slice.map((song, idx) => {
-                      const isPlaying = current?.id === song.id
-                      const isFav = favorites.has(song.id)
-                      // Numbering adjustment with shared #21 for Suffering/New Life
-                      const sufferingIdx = slice.findIndex(s => s.id === 'holy-suffering')
-                      const newLifeIdx = slice.findIndex(s => s.id === 'holy-new-life')
-                      const sharedBase = Math.min(
-                        sufferingIdx === -1 ? Infinity : sufferingIdx,
-                        newLifeIdx === -1 ? Infinity : newLifeIdx
-                      )
-                      const lowered = song.title.toLowerCase()
-                      const isPair = song.id === 'holy-suffering' || song.id === 'holy-new-life'
-                      // Compute base numbering so that pair gets 21 and subsequent songs increment normally.
-                      // Original idx starts at 0, we want: when idx == sharedBase => 21, when idx == other pair => 21 also, when idx > sharedBase + 1 => (idx + 1) because two slots collapsed into one.
-                      let displayNumber = idx + 1
-                      if (sharedBase !== Infinity) {
-                        if (isPair) {
-                          displayNumber = 21
-                        } else if (idx > sharedBase + 1) {
-                          // subtract 1 for the extra collapsed number
-                          displayNumber = idx
-                        } else if (idx === sharedBase + 1 && song.id !== 'holy-new-life' && song.id !== 'holy-suffering') {
-                          // This is the second position after pair; if it's not the pair itself keep its original idx+1 - 1
-                          displayNumber = idx
-                        }
-                      }
-                      return (
-                        <div
-                          key={song.id}
-                          className={cn(
-                            'relative w-56 flex-shrink-0 rounded-xl border border-slate-200 bg-white/70 backdrop-blur-sm px-4 pt-4 pb-3 shadow-sm hover:shadow-md transition-all duration-200 group/song',
-                            isPlaying && 'ring-2 ring-cyan-600 shadow-cyan-200/60',
-                          )}
-                        >
-                          <Link
-                            href={`/music/lyrics/${cat.key}/${song.id}`}
-                            className='absolute inset-0'
-                            aria-label={`Open lyrics for ${song.title}`}
-                          />
-                          {/* Overlay gradient on hover */}
-                          <div className='absolute inset-0 rounded-xl opacity-0 group-hover/song:opacity-100 bg-gradient-to-br from-white/0 via-cyan-50 to-teal-100 pointer-events-none transition-opacity' />
-                          <div className='flex flex-col h-full relative z-10'>
-                            <div className='flex items-start justify-between gap-2 mb-2'>
-                              <p className='text-[11px] font-mono text-slate-400'>#{displayNumber}</p>
-                              {isFav && <FiHeart className='h-3.5 w-3.5 text-cyan-600' />}
-                            </div>
-                            <h3 className='text-sm font-semibold leading-snug line-clamp-2'>{song.title}</h3>
-                            <p className='text-[11px] text-slate-500 line-clamp-1 mt-1'>{song.artist}</p>
-                            {isPlaying && (
-                              <div className='mt-auto flex items-center justify-end text-[10px] text-cyan-600 font-mono pt-3'>
-                                <span className='inline-flex items-center gap-1 font-semibold'>• Playing</span>
-                              </div>
-                            )}
-                            {/* Play / queue controls removed per request */}
-                          </div>
-                        </div>
-                      )
-                      })}
-                      {slice.length === 0 && (
-                        <div className='py-6 px-4 text-sm text-slate-500'>No matches in this category.</div>
-                      )}
-                    </div>
-                  </div>
+
+              {view === 'grid' ? (
+                <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'>
+                  {songs.map((song, index) => (
+                    <SongCard
+                      key={song.id}
+                      song={song}
+                      category={cat.key}
+                      displayNumber={getDisplayNumber(song, songs, index)}
+                      isFavorite={favorites.has(song.id)}
+                      isPlaying={current?.id === song.id}
+                    />
+                  ))}
                 </div>
               ) : (
-                <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5'>
-                  {slice.map((song, idx) => {
-                    const isPlaying = current?.id === song.id
-                    const isFav = favorites.has(song.id)
-                    const sufferingIdx = slice.findIndex(s => s.id === 'holy-suffering')
-                    const newLifeIdx = slice.findIndex(s => s.id === 'holy-new-life')
-                    const sharedBase = Math.min(
-                      sufferingIdx === -1 ? Infinity : sufferingIdx,
-                      newLifeIdx === -1 ? Infinity : newLifeIdx
-                    )
-                    const isPair = song.id === 'holy-suffering' || song.id === 'holy-new-life'
-                    let displayNumber = idx + 1
-                    if (sharedBase !== Infinity) {
-                      if (isPair) {
-                        displayNumber = 21
-                      } else if (idx > sharedBase + 1) {
-                        displayNumber = idx
-                      } else if (idx === sharedBase + 1 && !isPair) {
-                        displayNumber = idx
-                      }
-                    }
-                    return (
-                      <div
-                        key={song.id}
-                        className={cn(
-                          'relative rounded-xl border border-slate-200 bg-white/70 backdrop-blur-sm px-4 pt-4 pb-3 shadow-sm hover:shadow-md transition-all duration-200 group/song flex flex-col',
-                          isPlaying && 'ring-2 ring-cyan-600 shadow-cyan-200/60',
-                        )}
-                      >
-                        <Link
-                          href={`/music/lyrics/${cat.key}/${song.id}`}
-                          className='absolute inset-0'
-                          aria-label={`Open lyrics for ${song.title}`}
-                        />
-                        <div className='flex items-start justify-between gap-2 mb-2'>
-                          <p className='text-[11px] font-mono text-slate-400'>#{displayNumber}</p>
-                          {isFav && <FiHeart className='h-3.5 w-3.5 text-cyan-600' />}
-                        </div>
-                        <h3 className='text-sm font-semibold leading-snug line-clamp-2'>{song.title}</h3>
-                        <p className='text-[11px] text-slate-500 line-clamp-1 mt-1'>{song.artist}</p>
-                        {isPlaying && (
-                          <div className='mt-auto flex items-center justify-end text-[10px] text-cyan-600 font-mono pt-3'>
-                            <span className='inline-flex items-center gap-1 font-semibold'>• Playing</span>
-                          </div>
-                        )}
-                        {/* Play / queue controls removed per request */}
-                      </div>
-                    )
-                  })}
-                  {slice.length === 0 && (
-                    <div className='col-span-full py-6 px-4 text-sm text-slate-500'>No matches in this category.</div>
-                  )}
+                <div className='overflow-hidden rounded-md bg-white shadow-sm ring-1 ring-slate-200'>
+                  {songs.map((song, index) => (
+                    <SongRow
+                      key={song.id}
+                      song={song}
+                      category={cat.key}
+                      displayNumber={getDisplayNumber(song, songs, index)}
+                      isFavorite={favorites.has(song.id)}
+                      isPlaying={current?.id === song.id}
+                    />
+                  ))}
                 </div>
               )}
-              {/* Pagination removed: all items displayed */}
             </section>
-          )
-        })}
-        {visibleCats.length === 0 && (
-          <p className='text-sm text-center text-slate-500'>No songs match “{query}”. Try a different keyword.</p>
+          ))}
+        </div>
+
+        {visibleCategories.length === 0 && (
+          <div className='rounded-md border border-dashed border-slate-300 bg-white px-5 py-12 text-center'>
+            <BookOpen className='mx-auto h-7 w-7 text-slate-400' />
+            <h2 className='mt-4 text-base font-semibold'>No lyrics found</h2>
+            <p className='mt-2 text-sm text-slate-500'>
+              Try a different title, artist, or lyric phrase.
+            </p>
+          </div>
         )}
-      </div>
+      </section>
     </main>
+  )
+}
+
+function FilterPill({
+  active,
+  label,
+  count,
+  onClick,
+}: {
+  active: boolean
+  label: string
+  count: number
+  onClick: () => void
+}) {
+  return (
+    <button
+      type='button'
+      onClick={onClick}
+      className={cn(
+        'h-9 shrink-0 rounded-full px-3 text-sm font-medium transition',
+        active
+          ? 'bg-emerald-600 text-white'
+          : 'bg-white text-slate-600 shadow-sm ring-1 ring-slate-200 hover:text-slate-950',
+      )}
+    >
+      {label}
+      <span
+        className={cn(
+          'ml-1.5 text-xs',
+          active ? 'text-white/70' : 'text-slate-400',
+        )}
+      >
+        {count}
+      </span>
+    </button>
+  )
+}
+
+function IconButton({
+  active,
+  label,
+  onClick,
+  children,
+}: {
+  active: boolean
+  label: string
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type='button'
+      aria-label={label}
+      onClick={onClick}
+      className={cn(
+        'grid h-8 w-9 place-items-center rounded-md transition',
+        active ? 'bg-slate-950 text-white' : 'text-slate-500 hover:text-slate-950',
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
+function SongCard({
+  song,
+  category,
+  displayNumber,
+  isFavorite,
+  isPlaying,
+}: {
+  song: SongMeta
+  category: SongCategory
+  displayNumber: number
+  isFavorite: boolean
+  isPlaying: boolean
+}) {
+  return (
+    <Link
+      href={`/music/lyrics/${category}/${song.id}`}
+      className={cn(
+        'group flex gap-4 rounded-md bg-white p-3 shadow-sm ring-1 ring-slate-200 transition hover:shadow-md',
+        isPlaying && 'ring-2 ring-emerald-200',
+      )}
+    >
+      <SongArtwork song={song} size='large' />
+      <div className='flex min-w-0 flex-1 flex-col'>
+        <div className='flex items-start justify-between gap-3'>
+          <span className='text-xs font-medium text-slate-400'>
+            #{displayNumber}
+          </span>
+          {isFavorite && (
+            <Heart className='h-4 w-4 fill-emerald-600 text-emerald-600' />
+          )}
+        </div>
+        <h3 className='mt-2 line-clamp-2 text-base font-semibold leading-snug text-slate-950 group-hover:underline'>
+          {song.title}
+        </h3>
+        <p className='mt-1 line-clamp-1 text-sm text-slate-500'>
+          {song.artist}
+        </p>
+        <div className='mt-auto flex items-center justify-between pt-4 text-xs text-slate-500'>
+          <span>{formatDuration(song.durationSec)}</span>
+          <span className='font-medium text-emerald-700'>
+            {isPlaying ? 'Playing' : 'Lyrics'}
+          </span>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+function SongRow({
+  song,
+  category,
+  displayNumber,
+  isFavorite,
+  isPlaying,
+}: {
+  song: SongMeta
+  category: SongCategory
+  displayNumber: number
+  isFavorite: boolean
+  isPlaying: boolean
+}) {
+  return (
+    <Link
+      href={`/music/lyrics/${category}/${song.id}`}
+      className={cn(
+        'grid grid-cols-[34px_48px_1fr_auto] items-center gap-3 border-b border-slate-100 px-3 py-3 transition last:border-b-0 hover:bg-slate-50 sm:grid-cols-[44px_52px_1fr_72px_auto]',
+        isPlaying && 'bg-emerald-50',
+      )}
+    >
+      <span className='text-sm font-medium text-slate-400'>
+        #{displayNumber}
+      </span>
+      <SongArtwork song={song} size='small' />
+      <div className='min-w-0'>
+        <h3 className='truncate text-sm font-semibold text-slate-950 sm:text-base'>
+          {song.title}
+        </h3>
+        <p className='mt-1 truncate text-xs text-slate-500 sm:text-sm'>
+          {song.artist}
+        </p>
+      </div>
+      <span className='hidden text-sm text-slate-500 sm:block'>
+        {formatDuration(song.durationSec)}
+      </span>
+      <div className='flex items-center gap-2 text-emerald-700'>
+        {isFavorite && <Heart className='h-4 w-4 fill-current' />}
+        <BookOpen className='h-4 w-4' />
+      </div>
+    </Link>
+  )
+}
+
+function SongArtwork({
+  song,
+  size,
+}: {
+  song: SongMeta
+  size: 'small' | 'large'
+}) {
+  return (
+    <div
+      className={cn(
+        'relative shrink-0 overflow-hidden rounded bg-slate-100 shadow-sm ring-1 ring-slate-200',
+        size === 'large' ? 'h-24 w-24' : 'h-12 w-12',
+      )}
+    >
+      <Image
+        src={getSongCover(song)}
+        alt=''
+        fill
+        sizes={size === 'large' ? '96px' : '48px'}
+        className='object-cover'
+      />
+    </div>
   )
 }

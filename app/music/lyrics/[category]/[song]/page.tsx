@@ -12,7 +12,8 @@ import { LyricsSidebar } from '@/components/music/LyricsSidebar'
 import { CategoryBadge } from '@/components/music/CategoryBadge'
 import { PlayerBar } from '@/components/music/PlayerBar'
 import { MUSIC_FEATURES } from '@/data/music-songs'
-// Image removed (no cover needed)
+import Image from 'next/image'
+import { getSongCover } from '@/lib/music-covers'
 
 export function generateStaticParams() {
   const params: { category: string; song: string }[] = []
@@ -25,7 +26,11 @@ export function generateStaticParams() {
 }
 
 // Next.js now provides params as a Promise for dynamic routes; must await before using.
-export async function generateMetadata({ params }: { params: Promise<{ category: SongCategory; song: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ category: SongCategory; song: string }>
+}): Promise<Metadata> {
   const { category, song: songId } = await params
   const song = getSong(category, songId)
   if (!song) return {}
@@ -69,13 +74,13 @@ export default async function SongLyricsPage({
   if (!song) return notFound()
   const list = getSongsByCategory(category)
   // Numbering logic: "Suffering" & "New Life" both display #21; songs after them shift by -1.
-  const sufferingIdx = list.findIndex(s => s.id === 'holy-suffering')
-  const newLifeIdx = list.findIndex(s => s.id === 'holy-new-life')
+  const sufferingIdx = list.findIndex((s) => s.id === 'holy-suffering')
+  const newLifeIdx = list.findIndex((s) => s.id === 'holy-new-life')
   const sharedBase = Math.min(
     sufferingIdx === -1 ? Infinity : sufferingIdx,
-    newLifeIdx === -1 ? Infinity : newLifeIdx
+    newLifeIdx === -1 ? Infinity : newLifeIdx,
   )
-  const rawIndex = list.findIndex(s => s.id === song.id)
+  const rawIndex = list.findIndex((s) => s.id === song.id)
   let displayNumber = rawIndex + 1
   if (song.id === 'holy-suffering' || song.id === 'holy-new-life') {
     displayNumber = 21
@@ -87,44 +92,50 @@ export default async function SongLyricsPage({
     <div className='flex flex-col min-h-[90vh]'>
       <div className='flex flex-1'>
         <LyricsSidebar songs={list} currentId={song.id} category={category} />
-  <main className='flex-1 flex flex-col justify-between mx-auto relative'>
-          <div className='flex-col flex items-center justify-between gap-6'>
-            {/* <div className='relative h-48 w-48 rounded-xl overflow-hidden shadow border bg-slate-100'>
+        <main className='relative mx-auto flex flex-1 flex-col justify-between bg-[#f6f7f5]'>
+          <div className='mx-auto flex w-full max-w-3xl justify-end px-5 pt-4 sm:px-8'>
+            <div>
+              <a
+                href='/music/lyrics'
+                className='inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:text-slate-950'
+                aria-label='Back to lyrics library'
+              >
+                ← Back
+              </a>
+            </div>
+          </div>
+          <div className='mx-auto grid w-full max-w-3xl grid-cols-[112px_1fr] items-end gap-5 px-5 pb-6 pt-5 sm:grid-cols-[144px_1fr] sm:px-8 md:pt-8'>
+            <div className='relative aspect-square w-full overflow-hidden rounded-lg bg-slate-100 shadow-sm ring-1 ring-slate-200'>
               <Image
-                src={song.cover}
-                alt={song.title}
+                src={getSongCover(song)}
+                alt=''
                 fill
+                priority
+                sizes='(max-width: 640px) 112px, 144px'
                 className='object-cover'
               />
-            </div> */}
-            <div className='flex flex-col gap-3 self-center pt-8'>
-              <div className='absolute top-4 right-4'>
-                <a
-                  href='/music/lyrics'
-                  className='inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide px-3 py-2 rounded-md bg-gradient-to-r from-slate-800 via-cyan-700 to-teal-600 text-white shadow hover:brightness-110'
-                  aria-label='Back to lyrics library'
-                >
-                  ← Back
-                </a>
-              </div>
-              <h1 className='text-3xl font-bold tracking-tight text-center'>
-                <span className='text-slate-400 mr-2 text-xl font-semibold'>#{displayNumber}</span>
-                {song.title}
-              </h1>
-              <div className='flex items-center justify-center gap-3'>
-                <span className='text-sm font-medium text-slate-700'>
-                  {song.artist}
+            </div>
+            <div className='min-w-0 pb-1'>
+              <div className='mb-3 flex flex-wrap items-center gap-2'>
+                <span className='rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-500 shadow-sm ring-1 ring-slate-200'>
+                  #{displayNumber}
                 </span>
                 <CategoryBadge category={category} />
               </div>
-              <p className='text-xs text-slate-500 text-center'>
+              <h1 className='text-3xl font-semibold tracking-normal text-slate-950 sm:text-4xl'>
+                {song.title}
+              </h1>
+              <p className='mt-3 text-sm font-medium text-slate-700'>
+                {song.artist}
+              </p>
+              <p className='mt-1 text-xs text-slate-500'>
                 Album: {song.album}
               </p>
             </div>
           </div>
           {/* Scrollable lyrics area without affecting overall page min-height */}
-          <div className='flex-1 w-full max-w-3xl mx-auto px-4 pb-4'>
-            <div className='h-full max-h-[calc(100vh-200px)] overflow-y-auto custom-lyrics-scroll rounded-md px-2'>
+          <div className='mx-auto w-full max-w-3xl flex-1 px-5 pb-5 sm:px-8'>
+            <div className='h-full max-h-[calc(100vh-280px)] overflow-y-auto custom-lyrics-scroll rounded-lg bg-white px-4 py-5 shadow-sm ring-1 ring-slate-200 sm:px-8'>
               {lines.map((l, i) => (
                 <p
                   key={i}
