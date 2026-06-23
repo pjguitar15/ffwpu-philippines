@@ -21,11 +21,8 @@ import {
   FiMail,
   FiUser,
   FiHome,
-  FiShoppingBag,
-  FiShoppingCart,
   FiMusic,
 } from 'react-icons/fi'
-import { useCart } from '@/context/CartContext'
 import { HeaderSearch } from './header-search'
 import { LiveIndicator } from '@/components/ui/live-indicator'
 
@@ -216,8 +213,8 @@ export const mainNavItems: MainNavItem[] = [
   },
   {
     href: '/news',
-    label: 'Updates',
-    desc: 'Latest updates & reports',
+    label: 'News',
+    desc: 'Latest news & reports',
     icon: FiFileText,
   },
   {
@@ -285,12 +282,6 @@ export const mainNavItems: MainNavItem[] = [
     label: 'Our History',
     desc: 'Our journey & milestones',
     icon: FiClock,
-  },
-  {
-    href: '/shop',
-    label: 'Shop',
-    desc: 'Holy items & devotional texts',
-    icon: FiShoppingBag,
   },
   {
     href: '/contact',
@@ -441,7 +432,6 @@ function DrawerGroup({
 }
 
 export function Header() {
-  const { items } = useCart()
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const pathname = usePathname()
@@ -564,7 +554,7 @@ export function Header() {
                   .filter(
                     (item) =>
                       item.label !== 'Contact' &&
-                      item.label !== 'Updates' &&
+                      item.label !== 'News' &&
                       item.label !== 'Home',
                   ) // Exclude Contact, News, and Home from main nav
                   .map((item) =>
@@ -621,7 +611,7 @@ export function Header() {
                     isActive('/news') ? 'font-bold text-slate-900' : '',
                   )}
                 >
-                  Updates
+                  News
                 </Link>
 
                 {/* Contact link - full text on lg+ screens */}
@@ -669,7 +659,7 @@ export function Header() {
               {/* News icon button - ONLY on md screens */}
               <Link
                 href='/news'
-                aria-label='Updates'
+                aria-label='News'
                 className={cn(
                   'hidden md:flex lg:hidden h-10 w-10 items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full cursor-pointer shrink-0 transition-all duration-150',
                   'hover:-translate-y-0.5',
@@ -695,22 +685,6 @@ export function Header() {
               >
                 <FiPhone className='h-4 w-4' strokeWidth={2.5} />
               </Link>
-
-              {items.length > 0 && (
-                <Link
-                  href='/shop/cart'
-                  aria-label='Cart'
-                  className={cn(
-                    'hidden md:flex h-10 w-10 items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full cursor-pointer shrink-0 transition-all duration-150 relative',
-                    'hover:-translate-y-0.5',
-                  )}
-                >
-                  <FiShoppingCart className='h-4 w-4' strokeWidth={2.5} />
-                  <span className='absolute -top-1 -right-1 bg-pink-600 text-white text-[10px] font-semibold px-1.5 py-0.5 leading-none'>
-                    {items.reduce((sum, i) => sum + i.quantity, 0)}
-                  </span>
-                </Link>
-              )}
 
               <button
                 type='button'

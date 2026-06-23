@@ -363,7 +363,7 @@ export default function AdminDashboardPage() {
                   Recent Activity
                 </CardTitle>
                 <CardDescription>
-                  Latest admin actions and updates
+                  Latest admin actions and news
                 </CardDescription>
               </CardHeader>
               <CardContent>

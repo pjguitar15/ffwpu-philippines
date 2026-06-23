@@ -51,7 +51,7 @@ export default function PrivacyPage() {
                   We use the information we collect to:
                 </p>
                 <ul className='list-disc list-inside space-y-2 text-muted-foreground ml-4'>
-                  <li>Send you newsletters and community updates</li>
+                  <li>Send you newsletters and community news</li>
                   <li>
                     Respond to your inquiries and provide customer support
                   </li>

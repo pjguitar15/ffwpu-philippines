@@ -164,15 +164,15 @@ export const pageMetadataConfigs = {
     ],
   },
   news: {
-    title: 'News & Updates',
+    title: 'News',
     description:
       'Stay updated with the latest news, announcements, and activities from FFWPU Philippines and our global community.',
-    keywords: ['news', 'updates', 'announcements', 'activities', 'events'],
+    keywords: ['news', 'announcements', 'activities', 'events'],
     section: 'news',
     canonical: '/news',
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Updates', url: '/news' },
+      { name: 'News', url: '/news' },
     ],
   },
   hjMediaWorks: {

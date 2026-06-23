@@ -15,7 +15,7 @@ const WotdSchema = new Schema(
 const WotdSettingSchema = new Schema(
   {
     currentId: { type: Schema.Types.ObjectId, ref: 'Wotd', default: null },
-    mode: { type: String, enum: ['fixed', 'random'], default: 'fixed' },
+    mode: { type: String, enum: ['fixed', 'random'], default: 'random' },
     nextChangeAt: { type: Date, default: null },
     scheduledId: { type: Schema.Types.ObjectId, ref: 'Wotd', default: null },
   },

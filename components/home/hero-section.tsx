@@ -87,7 +87,7 @@ export function HeroSection() {
               <DialogTrigger asChild>
                 <button className='group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur px-6 py-3 text-base font-semibold text-white transition duration-300 hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 cursor-pointer'>
                   <Mail className='h-4 w-4 opacity-90 transition-transform group-hover:-translate-y-0.5' />
-                  Get weekly updates
+                  Get weekly news
                 </button>
               </DialogTrigger>
               <DialogContent className='border-white/10 bg-slate-900/90 backdrop-blur-md [&>button]:text-white [&>button]:hover:text-white/80'>

@@ -65,7 +65,7 @@ export function NewsCard({ item, type }: NewsCardProps) {
               variant='secondary'
               className='bg-background/90 backdrop-blur-sm'
             >
-              {type === 'news' ? 'Updates' : 'Article'}
+              {type === 'news' ? 'News' : 'Article'}
             </Badge>
           </div>
         </div>

@@ -141,7 +141,7 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
       if (!cancelled && Array.isArray(data)) setItems(data)
     } catch (e: any) {
       console.error('[home] failed to load /api/news', e)
-      if (!cancelled) setError(e?.message || 'Failed to load updates')
+      if (!cancelled) setError(e?.message || 'Failed to load news')
     } finally {
       if (!cancelled) setLoading(false)
     }
@@ -190,7 +190,7 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
             Local News Update
           </span>
           <HighlightTitle
-            text='Updates on the Philippine Providence'
+            text='News on the Philippine Providence'
             highlightedText='Philippine Providence'
             as='h2'
             uppercase
@@ -209,11 +209,11 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
         >
           <Link
             href='/news'
-            aria-label='View all updates'
+            aria-label='View all news'
             className='inline-flex items-center'
           >
             <Newspaper className='mr-2 h-4 w-4' />
-            View All Updates
+            View All News
             <ArrowRight className='ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5' />
           </Link>
         </Button>
@@ -223,7 +223,7 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
       {error && !loading && (
         <div className='rounded-lg bg-red-50 text-red-800 border border-red-200 px-4 py-3'>
           <div className='flex items-center justify-between'>
-            <p className='text-sm'>Failed to load updates. {error}</p>
+            <p className='text-sm'>Failed to load news. {error}</p>
             <Button
               variant='outline'
               size='sm'
@@ -425,7 +425,7 @@ export function RecentNewsSection({ sampleNews = [] }: Props) {
             onClick={() => setVisible((v) => Math.min(v + 3, items.length))}
             className='rounded-full border-slate-300 text-slate-800 hover:bg-slate-50 hover:border-slate-400 inline-flex items-center cursor-pointer'
           >
-            View more updates
+            View more news
             <ChevronDown className='ml-2 h-4 w-4' />
           </Button>
         </div>

@@ -135,8 +135,8 @@ type Props = {
 export function NewsIndex({
   items,
   initialLimit = 12,
-  title = 'Latest Updates & Stories',
-  eyebrow = 'Updates • News & Events',
+  title = 'Latest News & Stories',
+  eyebrow = 'News • Events',
 }: Props) {
   const [q, setQ] = useState('')
   const [activeTag, setActiveTag] = useState<string>('All')
@@ -244,7 +244,7 @@ export function NewsIndex({
           <HighlightTitle
             as='h1'
             text={title}
-            highlightedText='Updates'
+            highlightedText='News'
             uppercase
             className='text-2xl md:text-4xl'
             gradientClassName='bg-gradient-to-r from-indigo-900 via-blue-800 to-sky-700 bg-clip-text text-transparent'
@@ -262,7 +262,7 @@ export function NewsIndex({
                 setQ(e.target.value)
                 setLimit(initialLimit)
               }}
-              placeholder='Search updates, tags, people…'
+              placeholder='Search news, tags, people…'
               className='w-full rounded-xl border bg-white px-9 py-2.5 text-sm outline-none ring-0 focus:border-slate-300'
             />
           </div>
@@ -350,7 +350,7 @@ export function NewsIndex({
         {filtered.length === 0 ? (
           <div className='rounded-2xl border bg-white p-10 text-center'>
             <p className='text-slate-700 font-semibold'>
-              No updates match your filters.
+              No news match your filters.
             </p>
             <p className='text-slate-500 text-sm mt-1'>
               Try clearing the search or switching tags.

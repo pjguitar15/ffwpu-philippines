@@ -2,6 +2,40 @@ import { NextResponse } from 'next/server'
 import { dbConnect } from '@/lib/db'
 import { Wotd, WotdSetting, WotdSchedule } from '@/models/Wotd'
 
+const WOTD_TIME_ZONE = 'Asia/Manila'
+
+function getLocalDateKey(date: Date, timeZone = WOTD_TIME_ZONE) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date)
+
+  const get = (type: string) => parts.find((part) => part.type === type)?.value
+  return `${get('year')}-${get('month')}-${get('day')}`
+}
+
+function stableHash(value: string) {
+  let hash = 0
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0
+  }
+  return hash
+}
+
+async function pickDailyRandomWotd(date = new Date()) {
+  const candidates = await Wotd.find({ status: 'published' })
+    .sort({ _id: 1 })
+    .lean()
+
+  if (candidates.length === 0) return null
+
+  const dateKey = getLocalDateKey(date)
+  const index = stableHash(`${dateKey}:wotd`) % candidates.length
+  return candidates[index]
+}
+
 async function getOrCreateSettings() {
   let s = await WotdSetting.findOne({})
   if (!s) s = await WotdSetting.create({})
@@ -60,8 +94,17 @@ export async function GET() {
     await s.save()
   }
 
-  let current: any = null
-  if (s.currentId) current = await Wotd.findById(s.currentId).lean()
+  const dailyRandom = await pickDailyRandomWotd(now)
+  if (dailyRandom && String(s.currentId || '') !== String(dailyRandom._id)) {
+    s.currentId = dailyRandom._id as any
+    s.mode = 'random'
+    s.nextChangeAt = null
+    s.scheduledId = null as any
+    await s.save()
+  }
+
+  let current: any = dailyRandom
+  if (!current && s.currentId) current = await Wotd.findById(s.currentId).lean()
   // Fallback: pick latest published
   if (!current) {
     current = await Wotd.findOne({ status: 'published' })

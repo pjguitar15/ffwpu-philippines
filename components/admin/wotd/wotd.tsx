@@ -383,6 +383,9 @@ export default function WotdAdmin({
               <CardTitle className='text-xl mt-1'>
                 {currentId ? 'Currently Showing' : 'No current selection yet'}
               </CardTitle>
+              <p className='mt-1 text-xs text-muted-foreground'>
+                Automatically rotates once per day using published entries.
+              </p>
             </div>
             <div className='flex flex-wrap gap-2'>
               <Button

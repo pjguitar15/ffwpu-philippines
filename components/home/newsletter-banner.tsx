@@ -85,7 +85,7 @@ export function NewsletterBanner() {
             </h2>
             <p className='text-blue-100 mb-4 md:mb-6 text-left text-sm md:text-base'>
               Receive {frequency === 'weekly' ? 'weekly' : 'monthly'}{' '}
-              inspiration, community updates, and spiritual guidance directly to
+              inspiration, community news, and spiritual guidance directly to
               your inbox
             </p>
           </div>
@@ -101,8 +101,8 @@ export function NewsletterBanner() {
               role='radiogroup'
               aria-label='Newsletter frequency'
             >
-              {makeRadio('weekly', 'Weekly updates', frequency === 'weekly')}
-              {makeRadio('monthly', 'Monthly updates', frequency === 'monthly')}
+              {makeRadio('weekly', 'Weekly news', frequency === 'weekly')}
+              {makeRadio('monthly', 'Monthly news', frequency === 'monthly')}
             </div>
           </div>
         </div>

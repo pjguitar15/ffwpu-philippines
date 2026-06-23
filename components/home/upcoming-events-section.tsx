@@ -77,6 +77,7 @@ const ORDERED_AREAS: Event['area'][] = [
 ] as const
 
 type AreaTab = 'All' | Event['area']
+type EventStatusTab = 'upcoming' | 'finished'
 
 /* ──────────────────────────────────────────────────────────────────────────
    Helpers
@@ -88,6 +89,11 @@ function fmtDate(d: Date) {
   return d.toLocaleDateString([], { month: 'long', day: 'numeric' })
 }
 
+function getStartOfToday() {
+  const now = new Date()
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate())
+}
+
 export function UpcomingEventsSection({
   eyebrow = 'Community Calendar',
 }: {
@@ -97,23 +103,43 @@ export function UpcomingEventsSection({
   const [items, setItems] = React.useState<Event[]>([])
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
+  const [statusTab, setStatusTab] =
+    React.useState<EventStatusTab>('upcoming')
 
   /** Active tab — constant default */
   const [tab, setTab] = React.useState<AreaTab>('All')
 
+  const scopedItems = React.useMemo(() => {
+    const startOfToday = getStartOfToday()
+    return items
+      .filter((event) => {
+        const start = new Date(event.date)
+        if (Number.isNaN(start.getTime())) return false
+        return statusTab === 'upcoming'
+          ? start >= startOfToday
+          : start < startOfToday
+      })
+      .sort((a, b) => {
+        const aTime = new Date(a.date).getTime()
+        const bTime = new Date(b.date).getTime()
+        return statusTab === 'upcoming' ? aTime - bTime : bTime - aTime
+      })
+  }, [items, statusTab])
+
   /** Counts (for dimming/disable) */
   const areaCounts = React.useMemo(() => {
     const m = new Map<Event['area'], number>()
-    items.forEach((e) => m.set(e.area, (m.get(e.area) ?? 0) + 1))
+    scopedItems.forEach((e) => m.set(e.area, (m.get(e.area) ?? 0) + 1))
     return m
-  }, [items])
+  }, [scopedItems])
 
   /** Always render all tabs */
   const areaTabs: AreaTab[] = ['All', ...ORDERED_AREAS]
   const hasEvents = (a: Event['area']) => (areaCounts.get(a) ?? 0) > 0
 
   /** Filtered list for the current tab */
-  const filtered = tab === 'All' ? items : items.filter((e) => e.area === tab)
+  const filtered =
+    tab === 'All' ? scopedItems : scopedItems.filter((e) => e.area === tab)
 
   const railRef = React.useRef<HTMLDivElement>(null)
   const scroll = (dir: 'left' | 'right') => {
@@ -150,23 +176,12 @@ export function UpcomingEventsSection({
           }
         })
 
-        // Hide past events (anything before today's date)
-        const now = new Date()
-        const startOfToday = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          0,
-          0,
-          0,
-          0,
+        setItems(
+          normalized.sort(
+            (a, b) =>
+              new Date(a.date).getTime() - new Date(b.date).getTime(),
+          ),
         )
-        const upcomingOnly = normalized.filter((e) => {
-          const start = new Date(e.date)
-          return !Number.isNaN(start.getTime()) && start >= startOfToday
-        })
-
-        setItems(upcomingOnly)
       }
     } catch (e: any) {
       console.error('[home] failed to load /api/events', e)
@@ -250,6 +265,37 @@ export function UpcomingEventsSection({
             </p>
           </FadeIn>
 
+          <div className='mb-5 flex justify-center'>
+            <div className='inline-grid grid-cols-2 rounded-full bg-white/10 p-1 ring-1 ring-white/15 backdrop-blur-sm'>
+              {(
+                [
+                  ['upcoming', 'Upcoming'],
+                  ['finished', 'Finished Events'],
+                ] as const
+              ).map(([value, label]) => {
+                const active = statusTab === value
+                return (
+                  <button
+                    key={value}
+                    type='button'
+                    onClick={() => {
+                      setStatusTab(value)
+                      setTab('All')
+                    }}
+                    className={[
+                      'cursor-pointer rounded-full px-4 py-1.5 text-xs font-extrabold uppercase tracking-wider transition-colors',
+                      active
+                        ? 'bg-amber-300 text-gray-900'
+                        : 'text-white/75 hover:text-white',
+                    ].join(' ')}
+                  >
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
           {/* Area Tabs (always visible) */}
           <StaggerContainer
             className='flex flex-wrap justify-center gap-2 md:gap-3 mb-8'
@@ -321,7 +367,9 @@ export function UpcomingEventsSection({
               {!loading && filtered.length === 0 && (
                 <div className='px-2 py-10 text-center w-full'>
                   <div className='inline-flex items-center rounded-lg px-4 py-2 text-sm font-semibold bg-white/10 text-white ring-1 ring-white/20 backdrop-blur'>
-                    No events in this area yet.
+                    {statusTab === 'upcoming'
+                      ? 'No upcoming events in this area yet.'
+                      : 'No finished events in this area yet.'}
                   </div>
                 </div>
               )}

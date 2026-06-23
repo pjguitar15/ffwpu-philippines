@@ -160,7 +160,7 @@ export default function UnderConstruction({
             <CardHeader className='space-y-1'>
               <CardTitle className='text-base'>Stay in the loop</CardTitle>
               <CardDescription className='text-white/80'>
-                Get an email when we launch and occasional community updates.
+                Get an email when we launch and occasional community news.
               </CardDescription>
             </CardHeader>
             <CardContent>

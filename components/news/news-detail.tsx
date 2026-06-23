@@ -433,7 +433,7 @@ export default function NewsDetailClient() {
                     href='/news'
                     className='inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 hover:bg-slate-100 hover:text-slate-900 transition'
                   >
-                    Updates
+                    News
                   </Link>
                 </li>
                 <li aria-hidden='true'>
@@ -576,7 +576,7 @@ export default function NewsDetailClient() {
             <aside className='lg:col-span-1'>
               <FadeIn>
                 <h3 className='text-slate-900 font-extrabold tracking-wide uppercase'>
-                  Related Updates{' '}
+                  Related News{' '}
                   <span className='text-slate-500'>in this topic</span>
                 </h3>
               </FadeIn>
@@ -618,7 +618,7 @@ export default function NewsDetailClient() {
                 <div className='mt-8 border-t pt-6'>
                   <FadeIn>
                     <h4 className='text-slate-900 font-extrabold tracking-wide uppercase text-sm'>
-                      More updates
+                      More news
                     </h4>
                   </FadeIn>
                   <StaggerContainer
@@ -665,4 +665,3 @@ export default function NewsDetailClient() {
     </div>
   )
 }
-

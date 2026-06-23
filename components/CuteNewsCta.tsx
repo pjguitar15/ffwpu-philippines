@@ -43,7 +43,7 @@ const CuteNewsCta = () => {
             Looking for more stories?
           </div>
           <p className='text-xs text-slate-600 dark:text-slate-300 mt-0.5'>
-            We share updates, events, and inspiring testimonies ✨
+            We share news, events, and inspiring testimonies ✨
           </p>
           <Link
             href='/news'

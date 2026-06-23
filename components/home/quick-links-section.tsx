@@ -39,8 +39,8 @@ const mainNavItems: NavItem[] = [
 const extraNavItems: NavItem[] = [
   {
     href: '/news',
-    label: 'Updates',
-    desc: 'Latest updates & reports',
+    label: 'News',
+    desc: 'Latest news & reports',
     icon: FileText,
   },
   {

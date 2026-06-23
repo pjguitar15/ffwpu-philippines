@@ -388,7 +388,7 @@ export default function AdminNewsPage() {
                 <div>
                   <CardTitle>All News Articles</CardTitle>
                   <CardDescription>
-                    Manage your community news and updates
+                    Manage your community news
                   </CardDescription>
                 </div>
                 <div className='flex items-center gap-3'>
