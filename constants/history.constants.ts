@@ -111,7 +111,7 @@ export const LEADERS: Leader[] = [
     name: 'Rev. Leo Angelo T. Halog',
     role: 'Current Regional Director',
     tenure: '2026.06.01 – Present',
-    imageUrl: '/leaders/leo-angelo-halog.webp',
+    imageUrl: '/national-leaders/leo-angelo-halog.png',
     // description: 'Photo & description coming soon.',
   },
 ]

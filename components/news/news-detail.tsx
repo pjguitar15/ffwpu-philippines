@@ -2,15 +2,12 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import {
   Calendar,
   User,
   Home,
   ChevronRight,
   Eye,
-  AlertTriangle,
   Share2,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -24,7 +21,7 @@ import {
   PopInItem,
 } from '@/components/ui/motion'
 import CuteNewsCta from '../CuteNewsCta'
-import OGNewsAuto from '../seo/og-news-auto'
+import type { PublicNewsItem } from '@/lib/news'
 
 // Tag gradient helpers
 const TAG_GRADIENTS: Record<string, string> = {
@@ -56,18 +53,6 @@ function pickRandom<T>(arr: T[], n: number) {
   return copy.slice(0, n)
 }
 
-// Simple skeleton block
-function SkeletonBlock({ className = '' }: { className?: string }) {
-  return (
-    <div
-      className={cn(
-        'animate-pulse rounded-md bg-slate-200/70 dark:bg-slate-700/50',
-        className,
-      )}
-    />
-  )
-}
-
 type Testimonial = {
   name: string
   role?: string
@@ -75,23 +60,7 @@ type Testimonial = {
   quote: string
 }
 
-type NewsItem = {
-  id: string
-  slug: string
-  title: string
-  subtitle?: string
-  author: string
-  date: string
-  image: string
-  gallery?: string[]
-  tags: string[]
-  status: string
-  views: number
-  likes: number
-  content: string
-  comments: any[]
-  testimonials?: Testimonial[]
-}
+type NewsItem = PublicNewsItem
 
 export function TestimonialsSection({ items }: { items: Testimonial[] }) {
   if (!items?.length) return null
@@ -198,34 +167,13 @@ export function GallerySection({
   )
 }
 
-export default function NewsDetailClient() {
-  const params = useParams()
-  const router = useRouter()
-  const slug = params.id as string
-  const [newsItem, setNewsItem] = useState<NewsItem | undefined>(undefined)
-  const [loading, setLoading] = useState<boolean>(true)
+export default function NewsDetailClient({
+  initialItem,
+}: {
+  initialItem: NewsItem
+}) {
+  const [newsItem, setNewsItem] = useState<NewsItem>(initialItem)
   const [allNews, setAllNews] = useState<NewsItem[]>([])
-
-  useEffect(() => {
-    let mounted = true
-    setLoading(true)
-    ;(async () => {
-      try {
-        const res = await fetch(`/api/news/${slug}`)
-        if (res.ok) {
-          const data = await res.json()
-          if (mounted) setNewsItem(data)
-          if (mounted) setLoading(false)
-          return
-        }
-      } catch {}
-      if (mounted) setNewsItem(undefined)
-      if (mounted) setLoading(false)
-    })()
-    return () => {
-      mounted = false
-    }
-  }, [slug])
 
   // Track views when news item is loaded
   useEffect(() => {
@@ -285,11 +233,6 @@ export default function NewsDetailClient() {
     }
   }, [])
 
-  const [shareUrl, setShareUrl] = useState('')
-  useEffect(() => {
-    if (typeof window !== 'undefined') setShareUrl(window.location.href)
-  }, [])
-
   const related = useMemo(() => {
     if (!newsItem) return []
     const source = allNews
@@ -309,104 +252,10 @@ export default function NewsDetailClient() {
     return pickRandom(pool, 3) as NewsItem[]
   }, [newsItem, related, allNews])
 
-  if (loading) {
-    return (
-      <div className='min-h-screen flex flex-col bg-background'>
-        <main className='flex-1'>
-          <div className='container mx-auto py-10 px-4 md:px-6 mb-12'>
-            {/* Breadcrumb skeleton */}
-            <div className='mb-4 flex items-center gap-2'>
-              <SkeletonBlock className='h-8 w-20 rounded-full' />
-              <SkeletonBlock className='h-8 w-16 rounded-full' />
-              <SkeletonBlock className='h-8 w-40 rounded-full' />
-            </div>
-
-            {/* Hero skeleton */}
-            <SkeletonBlock className='w-full h-[320px] md:h-[420px] rounded-xl ring-1 ring-black/10 shadow' />
-
-            {/* Main + Sidebar skeleton */}
-            <div className='mt-10 grid grid-cols-1 lg:grid-cols-4 gap-10'>
-              {/* MAIN */}
-              <div className='lg:col-span-3'>
-                <SkeletonBlock className='h-4 w-56 mb-3' />
-                <SkeletonBlock className='h-8 w-3/4 mb-2' />
-                <SkeletonBlock className='h-8 w-2/3 mb-4' />
-                <div className='flex gap-2 mb-6'>
-                  <SkeletonBlock className='h-6 w-16 rounded-full' />
-                  <SkeletonBlock className='h-6 w-20 rounded-full' />
-                  <SkeletonBlock className='h-6 w-14 rounded-full' />
-                </div>
-                <div className='space-y-3'>
-                  <SkeletonBlock className='h-4 w-[95%]' />
-                  <SkeletonBlock className='h-4 w-[90%]' />
-                  <SkeletonBlock className='h-4 w-[92%]' />
-                  <SkeletonBlock className='h-4 w-[88%]' />
-                  <SkeletonBlock className='h-4 w-[70%]' />
-                </div>
-              </div>
-
-              {/* SIDEBAR */}
-              <div className='lg:col-span-1'>
-                <SkeletonBlock className='h-6 w-48 mb-4' />
-                <div className='space-y-6'>
-                  {[0, 1, 2].map((i) => (
-                    <div key={i}>
-                      <SkeletonBlock className='w-full h-32 rounded-lg ring-1 ring-black/10 shadow' />
-                      <SkeletonBlock className='h-3 w-32 mt-2' />
-                      <SkeletonBlock className='h-4 w-48 mt-1' />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    )
-  }
-
-  if (!newsItem && !loading) {
-    return (
-      <div className='min-h-screen flex flex-col bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950'>
-        <main className='flex-1 flex items-center justify-center'>
-          <div className='max-w-md mx-auto text-center px-6'>
-            <div className='mx-auto w-14 h-14 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 flex items-center justify-center shadow-sm ring-1 ring-rose-200/60 dark:ring-rose-900/40'>
-              <AlertTriangle className='w-7 h-7' />
-            </div>
-            <h2 className='mt-4 text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white'>
-              Something's wrong to the page
-            </h2>
-            <p className='mt-2 text-slate-600 dark:text-slate-300'>
-              We couldn’t load this news article. It might be unavailable or
-              there was a connection hiccup.
-            </p>
-            <div className='mt-6 flex items-center justify-center gap-3'>
-              <Button variant='default' onClick={() => router.refresh()}>
-                Try again
-              </Button>
-              <Link href='/news'>
-                <Button variant='outline'>Back to news</Button>
-              </Link>
-            </div>
-          </div>
-        </main>
-      </div>
-    )
-  }
-
-  // At this point, loading is false and newsItem exists
-  const item = newsItem as NewsItem
+  const item = newsItem
 
   return (
     <div className='min-h-screen flex flex-col bg-background'>
-      <OGNewsAuto
-        title={item.title}
-        subtitle={item.subtitle}
-        image={item.image}
-        url={shareUrl}
-        publishedTime={item.date}
-        author={item.author}
-      />
       <main className='flex-1'>
         <div className='container mx-auto py-10 px-4 md:px-6 mb-12'>
           {/* Breadcrumbs */}
@@ -494,10 +343,13 @@ export default function NewsDetailClient() {
                       <span className='inline-flex items-center gap-1'>
                         <User className='h-4 w-4' /> {item.author}
                       </span>
-                      <span className='inline-flex items-center gap-1'>
+                      <time
+                        dateTime={item.date}
+                        className='inline-flex items-center gap-1'
+                      >
                         <Calendar className='h-4 w-4' />{' '}
                         {new Date(item.date).toLocaleDateString()}
-                      </span>
+                      </time>
                       <span className='inline-flex items-center gap-1'>
                         <Eye className='h-4 w-4' /> {item.views ?? 0}
                       </span>

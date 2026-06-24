@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { categories, getSongsByCategory } from '@/data/music-songs'
+import { getPublishedNewsSitemapEntries } from '@/lib/news'
 
 export const revalidate = 300
 
@@ -7,7 +8,6 @@ const siteUrl = (
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ffwpuph.com'
 ).replace(/\/+$/, '')
 
-type NewsItem = { slug: string; date?: string; modifiedDate?: string }
 type EventItem = { slug?: string; id?: string; date?: string }
 
 const staticPages = [
@@ -80,26 +80,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let dynamicNews: MetadataRoute.Sitemap = []
   try {
-    const res = await fetch(joinUrl(siteUrl, '/api/news'), {
-      next: { revalidate: 300 },
-      headers: { 'User-Agent': 'Sitemap Generator' },
-    })
-    if (res.ok) {
-      const items = (await res.json()) as NewsItem[]
-      dynamicNews = items
-        .filter((n) => n?.slug) // drop empties
-        .map((n) => ({
-          url: joinUrl(siteUrl, `/news/${n.slug}`),
-          lastModified:
-            (n.modifiedDate &&
-              !Number.isNaN(Date.parse(n.modifiedDate)) &&
-              new Date(n.modifiedDate)) ||
-            (n.date && !Number.isNaN(Date.parse(n.date)) && new Date(n.date)) ||
-            now,
-          changeFrequency: 'weekly' as const,
-          priority: 0.6,
-        }))
-    }
+    const items = await getPublishedNewsSitemapEntries()
+    dynamicNews = items.map((item) => ({
+      url: joinUrl(siteUrl, `/news/${item.slug}`),
+      lastModified:
+        (item.updatedAt &&
+          !Number.isNaN(Date.parse(item.updatedAt)) &&
+          new Date(item.updatedAt)) ||
+        (item.date &&
+          !Number.isNaN(Date.parse(item.date)) &&
+          new Date(item.date)) ||
+        now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }))
   } catch (err) {
     console.error('Failed to fetch news for sitemap:', err)
   }

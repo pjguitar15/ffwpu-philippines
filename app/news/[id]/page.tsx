@@ -1,56 +1,95 @@
-import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
-import { headers } from 'next/headers'
-// Route-level loader is handled by app/news/(index)/loading.tsx for the index route
+import { notFound, permanentRedirect } from 'next/navigation'
+import NewsDetailClient from '@/components/news/news-detail'
+import { getPublishedNews, type PublicNewsItem } from '@/lib/news'
+import { excerptFromHtml } from '@/lib/text'
 
-const NewsDetailClient = dynamic(() => import('@/components/news/news-detail'))
+export const revalidate = 300
 
-type NewsItem = {
-  id?: string
-  slug: string
-  title: string
-  subtitle?: string
-  author: string
-  date: string
-  image: string
-  gallery?: string[]
-  tags?: string[]
-  status?: string
-  views?: number
-  content?: string
+const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://ffwpuph.com'
+).replace(/\/+$/, '')
+
+function absoluteUrl(pathOrUrl: string) {
+  if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl
+  return `${siteUrl}/${pathOrUrl.replace(/^\/+/, '')}`
 }
 
-async function getBaseUrl() {
-  const h = await headers()
-  const proto = h.get('x-forwarded-proto') ?? 'http'
-  const host = h.get('host') ?? 'localhost:3000'
-  return `${proto}://${host}`
+function validIsoDate(value?: string) {
+  if (!value) return undefined
+  const timestamp = Date.parse(value)
+  return Number.isNaN(timestamp) ? undefined : new Date(timestamp).toISOString()
 }
 
-function stripHtml(html?: string) {
-  if (!html) return ''
-  return html
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
+function articleDescription(item: PublicNewsItem) {
+  return excerptFromHtml(item.subtitle || item.content || item.title, 160)
 }
 
-function toDescription(text: string, max = 160) {
-  if (!text) return ''
-  if (text.length <= max) return text
-  const cut = text.slice(0, max)
-  const lastSpace = cut.lastIndexOf(' ')
-  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).trim() + '…'
-}
+function articleJsonLd(item: PublicNewsItem) {
+  const articleUrl = `${siteUrl}/news/${item.slug}`
+  const published = validIsoDate(item.date)
+  const modified = validIsoDate(item.updatedAt) || published
 
-async function fetchNews(slug: string): Promise<NewsItem | undefined> {
-  try {
-    const base = await getBaseUrl()
-    const res = await fetch(`${base}/api/news/${slug}`, { cache: 'no-store' })
-    if (res.ok) return (await res.json()) as NewsItem
-  } catch {}
-  // No fallback to sample data; return undefined on failure
-  return undefined
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'NewsArticle',
+        '@id': `${articleUrl}#article`,
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': articleUrl,
+        },
+        headline: item.title,
+        description: articleDescription(item),
+        image: [absoluteUrl(item.image)],
+        datePublished: published,
+        dateModified: modified,
+        author: {
+          '@type': 'Person',
+          name: item.author,
+        },
+        publisher: {
+          '@type': 'Organization',
+          '@id': `${siteUrl}/#organization`,
+          name: 'FFWPU Philippines',
+          url: siteUrl,
+          logo: {
+            '@type': 'ImageObject',
+            url: `${siteUrl}/ffwpu-ph-logo.png`,
+          },
+        },
+        articleSection: 'News',
+        keywords: item.tags.join(', '),
+        inLanguage: 'en-PH',
+        url: articleUrl,
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${articleUrl}#breadcrumb`,
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: siteUrl,
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'News',
+            item: `${siteUrl}/news`,
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: item.title,
+            item: articleUrl,
+          },
+        ],
+      },
+    ],
+  }
 }
 
 export async function generateMetadata({
@@ -59,112 +98,88 @@ export async function generateMetadata({
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
-  const item = await fetchNews(id)
-  const slug = item?.slug || id
-  const description = toDescription(
-    stripHtml(item?.content) || item?.subtitle || item?.title || '',
-  )
+  const item = await getPublishedNews(id)
 
-  const canonical = `/news/${slug}`
-  const title = item?.title
-    ? `${item.title} | News`
-    : 'News Article | FFWPU Philippines'
+  if (!item) {
+    return {
+      title: 'News Article Not Found | FFWPU Philippines',
+      robots: { index: false, follow: false },
+    }
+  }
 
-  const publishedTime = item?.date
-    ? new Date(item.date).toISOString()
-    : undefined
+  const canonical = `/news/${item.slug}`
+  const title = `${item.title} | FFWPU Philippines`
+  const description = articleDescription(item)
+  const publishedTime = validIsoDate(item.date)
+  const modifiedTime = validIsoDate(item.updatedAt)
+  const image = absoluteUrl(item.image)
 
   return {
     title,
     description,
+    authors: [{ name: item.author }],
+    publisher: 'Family Federation for World Peace and Unification Philippines',
+    keywords: item.tags,
     alternates: { canonical },
     robots: {
-      index: item?.status !== 'draft',
+      index: true,
       follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+        'max-video-preview': -1,
+      },
     },
     openGraph: {
       type: 'article',
+      locale: 'en_PH',
+      siteName: 'FFWPU Philippines',
       url: canonical,
       title,
       description,
-      authors: item?.author ? [item.author] : undefined,
+      authors: [item.author],
       publishedTime,
-      tags: item?.tags,
-      images: item?.image
-        ? [
-            {
-              url: item.image,
-              alt: item.title,
-            },
-          ]
-        : undefined,
+      modifiedTime,
+      tags: item.tags,
+      images: [
+        {
+          url: image,
+          alt: item.title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: item?.image ? [item.image] : undefined,
+      images: [image],
     },
     category: 'news',
   }
 }
 
-async function NewsJsonLd({ slug }: { slug: string }) {
-  const base = await getBaseUrl()
-  const item = await fetchNews(slug)
-  if (!item) return null
-  const url = `${base}/news/${item.slug || slug}`
-  const imageUrl = item.image?.startsWith('http')
-    ? item.image
-    : `${base}${item.image}`
-  const description = toDescription(stripHtml(item.content) || item.subtitle || item.title || '')
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'NewsArticle',
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': url,
-    },
-    headline: item.title,
-    description,
-    image: [imageUrl],
-    datePublished: item.date,
-    dateModified: item.date,
-    author: item.author
-      ? {
-          '@type': 'Person',
-          name: item.author,
-        }
-      : undefined,
-    publisher: {
-      '@type': 'Organization',
-      name: 'FFWPU Philippines',
-      logo: {
-        '@type': 'ImageObject',
-        url: `${base}/ffwpu-ph-logo.png`,
-      },
-    },
-  }
-  return (
-    <script
-      type='application/ld+json'
-      suppressHydrationWarning
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
-  )
-}
+export default async function NewsArticlePage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
+  const item = await getPublishedNews(id)
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
-  const { id: slug } = await params
+  if (!item) notFound()
+  if (id !== item.slug) permanentRedirect(`/news/${item.slug}`)
+
+  const jsonLd = JSON.stringify(articleJsonLd(item)).replace(/</g, '\\u003c')
 
   return (
-    <div className='min-h-screen flex flex-col bg-background'>
-      <main className='flex-1'>
-        {/* Structured data for SEO */}
-        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-        <NewsJsonLd slug={slug} />
-        <NewsDetailClient />
-      </main>
-    </div>
+    <>
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: jsonLd }}
+      />
+      <NewsDetailClient initialItem={item} />
+    </>
   )
 }

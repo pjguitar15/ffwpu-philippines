@@ -1,7 +1,6 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Montserrat, Inter } from "next/font/google"
-import { Suspense } from "react"
 import './globals.css'
 import UnderConstruction from '@/components/under-construction'
 import { SiteShell } from '@/components/layout/site-shell'
@@ -9,7 +8,6 @@ import { CartProvider } from '@/context/CartContext'
 import { CartUrlSyncWrapper } from './CartUrlSyncWrapper'
 import { Toaster } from '@/components/ui/toaster'
 import { ThemeProvider } from '@/components/theme-provider'
-import { OgAuto } from '@/components/og-auto'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -24,7 +22,17 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
-const siteUrl = 'https://ffwpuph.com/'
+const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://ffwpuph.com'
+).replace(/\/+$/, '')
+const googleVerification = process.env.GOOGLE_SITE_VERIFICATION
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  interactiveWidget: 'resizes-content',
+  themeColor: '#3b82f6',
+}
 
 export const metadata: Metadata = {
   title:
@@ -71,14 +79,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_PH',
-    url: 'https://ffwpu-philippines.vercel.app',
+    url: siteUrl,
     siteName: 'FFWPU Philippines',
     title: 'FFWPU Philippines - Building World Peace and Unity',
     description:
       "Join the Family Federation for World Peace and Unification Philippines in creating a world of peace, love, and unity through True Parents' teachings.",
     images: [
       {
-        url: '/true-parents-portrait.png',
+        url: '/true-parents-portrait.jpg',
         width: 1200,
         height: 630,
         alt: 'True Parents - Rev. Sun Myung Moon and Hak Ja Han Moon',
@@ -92,9 +100,11 @@ export const metadata: Metadata = {
       "Join us in creating a world of peace, love, and unity through True Parents' teachings.",
     images: ['/true-parents-portrait.jpg'],
   },
-  verification: {
-    google: 'your-google-verification-code',
-  },
+  verification: googleVerification
+    ? {
+        google: googleVerification,
+      }
+    : undefined,
   category: 'religion',
 }
 
@@ -120,12 +130,6 @@ export default function RootLayout({
         />
         <link rel='manifest' href='/site.webmanifest' />
 
-        {/* Theme + viewport */}
-        <meta name='theme-color' content='#3b82f6' />
-        <meta
-          name='viewport'
-          content='width=device-width, initial-scale=1, interactive-widget=resizes-content'
-        />
       </head>
       <body className='font-body page-transition'>
         <ThemeProvider
@@ -135,9 +139,6 @@ export default function RootLayout({
           forcedTheme='light'
           enableColorScheme={false}
         >
-          <Suspense fallback={null}>
-            <OgAuto />
-          </Suspense>
           <CartProvider>
             {/* Sync cart param globally */}
             <CartUrlSyncWrapper>

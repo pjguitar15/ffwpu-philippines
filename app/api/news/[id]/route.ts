@@ -4,6 +4,7 @@ import { News } from '@/models/News'
 import { slugify, toParagraphHtml } from '@/lib/text'
 import mongoose from 'mongoose'
 import { recordAudit } from '@/lib/audit'
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 async function findByIdOrSlug(idOrSlug: string) {
   // Only try ObjectId lookup if the value is a valid ObjectId to avoid CastError
@@ -16,7 +17,7 @@ async function findByIdOrSlug(idOrSlug: string) {
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   await dbConnect()
   const { id } = await params
@@ -29,12 +30,13 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   await dbConnect()
   const { id } = await params
   const doc = await findByIdOrSlug(id)
   if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  const previousSlug = doc.slug
 
   const body = await req.json()
   if (body.title) doc.title = body.title
@@ -76,6 +78,11 @@ export async function PUT(
   }
 
   await doc.save()
+  revalidatePath('/news')
+  revalidatePath(`/news/${previousSlug}`)
+  revalidatePath(`/news/${doc.slug}`)
+  revalidatePath('/sitemap.xml')
+  revalidateTag('published-news')
   const o: any = doc.toObject()
   o.id = String(o._id)
   try {
@@ -92,13 +99,18 @@ export async function PUT(
 
 export async function DELETE(
   _: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   await dbConnect()
   const { id } = await params
   const doc = await findByIdOrSlug(id)
   if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  const deletedSlug = doc.slug
   await doc.deleteOne()
+  revalidatePath('/news')
+  revalidatePath(`/news/${deletedSlug}`)
+  revalidatePath('/sitemap.xml')
+  revalidateTag('published-news')
   // Audit log
   try {
     const o: any = doc.toObject()
@@ -111,4 +123,3 @@ export async function DELETE(
   } catch {}
   return NextResponse.json({ ok: true })
 }
-

@@ -1,85 +1,22 @@
-'use client'
-
-import { useMemo } from 'react'
-import Link from 'next/link'
-
 export function ArticleBody({ content }: { content: string }) {
-  const html = useMemo(() => {
-    let s = (content || '').trim()
-    if (!s) return ''
+  let html = (content || '').trim().replace(/\r\n?/g, '\n')
+  if (!html) return null
 
-    // Normalize Windows newlines
-    s = s.replace(/\r\n?/g, '\n')
-
-    // If it already has standard block tags, keep as-is
-    const hasStandardBlocks = /<(p|h[1-6]|ul|ol|li|blockquote)\b/i.test(s)
-
-    if (!hasStandardBlocks) {
-      if (/<div\b/i.test(s)) {
-        // Merge consecutive non-empty divs into one paragraph.
-        // New paragraph only when there's an intentionally blank div (or a div that only has <br/>).
-        const container = document.createElement('div')
-        container.innerHTML = s
-
-        const paras: string[] = []
-        let buf: string[] = []
-
-        const flush = () => {
-          if (!buf.length) return
-          // Join fragments with a single space; collapse extra whitespace
-          const inner = buf.join(' ').replace(/\s+/g, ' ').trim()
-          if (inner) paras.push(`<p>${inner}</p>`)
-          buf = []
-        }
-
-        Array.from(container.childNodes).forEach((node) => {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            const el = node as HTMLElement
-            if (el.tagName === 'DIV') {
-              const html = el.innerHTML.trim()
-              // Blank div if no text content and no media/embedded content
-              const isBlank =
-                (el.textContent || '').replace(/\u00A0/g, ' ').trim() === '' &&
-                !/<(img|iframe|video|audio|svg|canvas)\b/i.test(html)
-
-              if (isBlank) {
-                flush()
-              } else {
-                buf.push(html)
-              }
-            } else {
-              // Other elements: treat as inline fragments of current paragraph
-              buf.push(el.outerHTML || '')
-            }
-          } else if (node.nodeType === Node.TEXT_NODE) {
-            const txt = (node.textContent || '').trim()
-            if (txt) buf.push(txt)
-          }
-        })
-        flush()
-
-        // If we built paragraphs, use them; otherwise fall back to original
-        s = paras.length ? paras.join('\n') : container.innerHTML
-      } else {
-        // Plain text: split on blank lines into paragraphs;
-        // single newlines are just spaces (no <br/>).
-        s = s
-          .split(/\n{2,}|\n\s*\n/g)
-          .map((p) => p.trim())
-          .filter(Boolean)
-          .map((p) => `<p>${p}</p>`)
-          .join('\n')
-      }
-    }
-
-    return s
-  }, [content])
+  const hasStandardBlocks = /<(p|h[1-6]|ul|ol|li|blockquote|div)\b/i.test(html)
+  if (!hasStandardBlocks) {
+    html = html
+      .split(/\n{2,}|\n\s*\n/g)
+      .map((paragraph) => paragraph.trim())
+      .filter(Boolean)
+      .map((paragraph) => `<p>${paragraph.replace(/\n/g, ' ')}</p>`)
+      .join('\n')
+  }
 
   if (!html) return null
 
   return (
     <div className='mt-6 text-slate-800 dark:text-slate-100'>
-      <article
+      <div
         className='news-article max-w-none font-serif'
         dangerouslySetInnerHTML={{ __html: html }}
       />

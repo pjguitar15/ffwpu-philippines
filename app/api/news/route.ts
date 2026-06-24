@@ -3,6 +3,7 @@ import { dbConnect } from '@/lib/db'
 import { News } from '@/models/News'
 import { slugify, toParagraphHtml } from '@/lib/text'
 import { recordAudit } from '@/lib/audit'
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
@@ -147,6 +148,10 @@ export async function POST(req: NextRequest) {
   })
   const asJson: any = doc.toObject()
   asJson.id = String(asJson._id)
+  revalidatePath('/news')
+  revalidatePath(`/news/${doc.slug}`)
+  revalidatePath('/sitemap.xml')
+  revalidateTag('published-news')
   // Audit log
   recordAudit({
     action: 'Created',
@@ -156,4 +161,3 @@ export async function POST(req: NextRequest) {
   })
   return NextResponse.json(asJson)
 }
-

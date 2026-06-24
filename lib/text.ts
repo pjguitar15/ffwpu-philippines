@@ -1,6 +1,6 @@
 export function htmlToText(html: string) {
   return (
-    html
+    decodeHtmlEntities(html)
       // drop scripts/styles just in case
       .replace(/<script[\s\S]*?<\/script>/gi, '')
       .replace(/<style[\s\S]*?<\/style>/gi, '')
@@ -9,6 +9,30 @@ export function htmlToText(html: string) {
       // collapse whitespace
       .replace(/\s+/g, ' ')
       .trim()
+  )
+}
+
+export function decodeHtmlEntities(value: string) {
+  const named: Record<string, string> = {
+    amp: '&',
+    apos: "'",
+    gt: '>',
+    lt: '<',
+    nbsp: ' ',
+    quot: '"',
+  }
+
+  return (value || '').replace(
+    /&(#x?[0-9a-f]+|[a-z]+);/gi,
+    (entity, code: string) => {
+      if (code[0] === '#') {
+        const isHex = code[1]?.toLowerCase() === 'x'
+        const number = Number.parseInt(code.slice(isHex ? 2 : 1), isHex ? 16 : 10)
+        return Number.isFinite(number) ? String.fromCodePoint(number) : entity
+      }
+
+      return named[code.toLowerCase()] ?? entity
+    },
   )
 }
 
