@@ -92,7 +92,7 @@ export const LEADERS: Leader[] = [
   },
   {
     id: 'halog',
-    name: 'Rev. Leo Angelo Halog',
+    name: 'Rev. Leo Angelo T. Halog',
     role: 'Former National Leader',
     tenure: '2019.07.07 – 2025.05.01',
     imageUrl: '/national-leaders/leo-angelo-halog.png',
@@ -101,9 +101,17 @@ export const LEADERS: Leader[] = [
   {
     id: 'sodusta',
     name: 'Rev. Ronnie Sodusta',
-    role: 'Current National Leader',
-    tenure: '2025.05.01 – Present',
+    role: 'Former Regional Director',
+    tenure: '2025.05.01 – 2026.05.31',
     imageUrl: '/national-leaders/rev-ronnie-sodusta.png',
+    // description: 'Photo & description coming soon.',
+  },
+  {
+    id: 'halog-regional-director',
+    name: 'Rev. Leo Angelo T. Halog',
+    role: 'Current Regional Director',
+    tenure: '2026.06.01 – Present',
+    imageUrl: '/leaders/leo-angelo-halog.webp',
     // description: 'Photo & description coming soon.',
   },
 ]
