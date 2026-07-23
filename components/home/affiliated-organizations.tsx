@@ -26,7 +26,7 @@ const DEFAULT_ORGS: AffiliatedOrg[] = [
   {
     name: 'IAYSP (YSP)',
     logoUrl: '/logos/ysp-logo.png',
-    href: 'https://iaysp.org',
+    href: 'https://www.facebook.com/International.Association.YSP',
     contribution: 'Youth',
   },
   {
