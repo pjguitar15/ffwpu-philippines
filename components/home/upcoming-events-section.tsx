@@ -176,12 +176,18 @@ export function UpcomingEventsSection({
           }
         })
 
-        setItems(
-          normalized.sort(
-            (a, b) =>
-              new Date(a.date).getTime() - new Date(b.date).getTime(),
-          ),
+        const sortedEvents = normalized.sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
         )
+        const startOfToday = getStartOfToday()
+        const hasUpcomingEvents = sortedEvents.some((event) => {
+          const start = new Date(event.date)
+          return !Number.isNaN(start.getTime()) && start >= startOfToday
+        })
+
+        setItems(sortedEvents)
+        setStatusTab(hasUpcomingEvents ? 'upcoming' : 'finished')
+        setTab('All')
       }
     } catch (e: any) {
       console.error('[home] failed to load /api/events', e)
