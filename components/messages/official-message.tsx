@@ -8,7 +8,7 @@ export interface OfficialMessageProps {
   date: string;
   image: string;
   message: string[];
-  about: string;
+  about?: string;
   position?: string;
 }
 
@@ -41,7 +41,7 @@ export function OfficialMessage({ name, title, organization, date, image, messag
                 src={image}
                 alt={name}
                 fill
-                className='object-cover'
+                className='object-cover object-top'
                 priority
               />
             </div>
@@ -49,9 +49,6 @@ export function OfficialMessage({ name, title, organization, date, image, messag
               <h2 className='text-2xl font-bold text-slate-900 mb-1'>{name}</h2>
               <p className='text-base text-slate-700 font-medium mb-1'>
                 {title}
-              </p>
-              <p className='text-sm text-slate-500'>
-                Serving with vision, integrity, and dedication
               </p>
             </div>
           </div>
@@ -62,14 +59,16 @@ export function OfficialMessage({ name, title, organization, date, image, messag
               </p>
             ))}
           </div>
-          <div className='bg-slate-50 rounded-lg p-6 shadow-inner'>
-            <h3 className='text-lg font-semibold text-blue-800 mb-2'>
-              About {name}
-            </h3>
-            <p className='text-slate-700 text-base leading-relaxed font-serif'>
-              {about}
-            </p>
-          </div>
+          {about && (
+            <div className='bg-slate-50 rounded-lg p-6 shadow-inner'>
+              <h3 className='text-lg font-semibold text-blue-800 mb-2'>
+                About {name}
+              </h3>
+              <p className='text-slate-700 text-base leading-relaxed font-serif'>
+                {about}
+              </p>
+            </div>
+          )}
         </div>
       </section>
     </main>

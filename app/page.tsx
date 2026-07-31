@@ -67,10 +67,16 @@ const sampleArticles: NewsItem[] = [
 export default function HomePage() {
   const [recentNews, setRecentNews] = useState<NewsItem[]>([])
   const [recentArticles, setRecentArticles] = useState<NewsItem[]>([])
+  const [showRegionalDirectorMessage, setShowRegionalDirectorMessage] =
+    useState(false)
 
   useEffect(() => {
     setRecentNews(sampleNews.slice(0, 3))
     setRecentArticles(sampleArticles.slice(0, 3))
+
+    // This temporary homepage notice expires after October 31 in Manila.
+    const expiresAt = new Date('2026-11-01T00:00:00+08:00').getTime()
+    setShowRegionalDirectorMessage(Date.now() < expiresAt)
   }, [])
 
   return (
@@ -240,6 +246,38 @@ export default function HomePage() {
               />
             </div>
           </div>
+
+          {showRegionalDirectorMessage && (
+            <section className='border-y border-blue-100 bg-gradient-to-r from-slate-50 via-blue-50 to-sky-50'>
+              <div className='container mx-auto flex flex-col items-center gap-5 px-4 py-6 text-center sm:flex-row sm:text-left'>
+                <div className='relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full border-2 border-blue-200 shadow-md'>
+                  <Image
+                    src='/leaders/leo-angelo-halog.webp'
+                    alt='Rev. Leo Angelo Halog'
+                    fill
+                    className='object-cover object-top'
+                  />
+                </div>
+                <div className='flex-1'>
+                  <p className='mb-1 text-xs font-semibold uppercase tracking-wider text-blue-700'>
+                    A message from our Regional Director
+                  </p>
+                  <h2 className='text-xl font-bold text-slate-900 md:text-2xl'>
+                    Rev. Leo Angelo Halog
+                  </h2>
+                  <p className='mt-2 max-w-3xl border-l-2 border-blue-300 pl-3 text-sm italic leading-relaxed text-slate-600'>
+                    “With humility and a deep sense of responsibility, I greet you as we begin this new chapter of our providential journey together...”
+                  </p>
+                </div>
+                <a
+                  href='/messages/regional-director'
+                  className='inline-flex flex-shrink-0 items-center rounded-full bg-blue-700 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-blue-800 hover:shadow-lg'
+                >
+                  Read the Message
+                </a>
+              </div>
+            </section>
+          )}
 
           <UpcomingEventsSection />
           <div className='container mx-auto py-12 space-y-16'>

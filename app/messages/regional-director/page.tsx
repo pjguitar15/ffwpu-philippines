@@ -4,28 +4,21 @@ import {
 
 export default function RegionalDirectorMessagePage() {
   const message = {
-    name: 'Rev. Ronnie D. Sodusta',
+    name: 'Rev. Leo Angelo Halog',
     title: 'Regional Director, FFWPU Philippines',
     organization: 'FFWPU Philippines',
-    date: 'September 14, 2025',
-    image: '/leaders/ronnie-sodusta.png',
+    date: 'July 31, 2026',
+    image: '/leaders/leo-angelo-halog.webp',
     message: [
-      `Beloved leaders, families, youth, and friends of FFWPU Philippines,
-
-  On this meaningful occasion, I humbly accept the responsibility entrusted to me by our Heavenly Parent and True Parents. With deep gratitude, I reaffirm our commitment to unity, faith, and the way of true love. Our strength as a community is found in our shared values and our resolve to live for the sake of others.
-
-  Let us move forward together to build a nation where every family thrives, every young person discovers a clear purpose, and every individual is empowered to serve the greater good. We will strengthen family life through principled education and care, cultivate leaders of integrity, deepen ministries and partnerships that uplift communities, practice transparent stewardship, and offer a consistent witness of peace, reconciliation, and hope.
-
-  I am honored to serve as your Regional Director and extend my heartfelt gratitude to all who tirelessly contribute to our mission. With one heart and one vision, let us advance God’s dream for the Philippines and bring joy to Heaven and True Parents through our unity and our results.
-
-  Determination: With absolute faith, absolute love, and absolute obedience, I will dedicate myself to raising principled families, empowering the next generation, and expanding a culture of service that reflects Heavenly Parent’s heart. I will lead with transparency and humility, unite our leaders and members, and work ceaselessly until our offering brings joy to True Parents and tangible blessing to our nation. May Heavenly Parent bless our families and this beloved country. Aju!
-
-  Ronnie D. Sodusta
-  Regional Director, FFWPU Philippines
-  September 14, 2025`,
+      `Dear Blessed Families and Members,`,
+      `With humility and a deep sense of responsibility, I greet you as we begin this new chapter of our providential journey together. I am sincerely grateful to Heavenly Parent and the True Parents for entrusting us with this precious time and opportunity to serve once again the Philippines.`,
+      `As I assume this responsibility as Regional Director of FFWPU Philippines, I do so with the conviction that this position is not a title, but a calling to serve, unite, and walk together with our members toward the fulfillment of Heavenly Parent's will. I therefore humbly ask for your prayers, support, cooperation, and unity as we move forward together.`,
+      `Our foremost responsibility at this time is to unite our hearts with True Mother, our Holy Mother Han, and sincerely understand and fulfill Her wishes for the providence. True Mother has carried the providential responsibility with unwavering devotion. As Blessed Families and members, we should not remain merely as observers of Her efforts. We must become people who can stand beside Her through our faith, our families, our witnessing, our service, and our sincere devotion.`,
+      `I humbly invite all leaders, Blessed Families, and members to work together with the Regional Headquarters and with one another. Whatever our past experiences, differences, or individual perspectives may have been, let us place the providential mission above ourselves.`,
+      `With one heart and one purpose, let us build a Philippines where Heavenly Parent's love can be experienced, where Blessed Families can flourish, where young people can find hope and purpose, and where the dream of Cheon Il Guk can become a living reality.`,
+      `I sincerely ask for your prayers and continued support as we begin this journey together. May Heavenly Parent and the True Parents bless you and your family always.`,
+      `Aju!`,
     ],
-    about:
-      'Rev. Sodusta has served as Regional Director of FFWPU Philippines for one year, guiding the movement with wisdom and compassion. His leadership is marked by a deep commitment to family values, interfaith harmony, and the vision of a peaceful world. He is respected for his integrity, dedication, and ability to inspire others to live for the greater good.',
   }
 
   return <OfficialMessage {...message} position="Regional Director" />
